@@ -1,18 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-
+#include <arpa/inet.h>
 #include <netinet/in.h>
 
-int main()
+int main(int ac, char **av)
 {
-
-    // create socket
-
+	// create socket
     int net_socket = socket(AF_INET, SOCK_STREAM, 0);
+	char pseudo[100];
+
+	strcpy(pseudo, av[1]);
 
     // specify an address for the socket
     struct sockaddr_in server_address;
@@ -26,12 +27,20 @@ int main()
     if (connection_status == -1)
         printf("Error making connection to the remote socket\n\n");
 
-    // receive data from server
-    char server_response[256];
-    recv(net_socket, &server_response, sizeof(server_response), 0);
-
-    // print out server's response
-    printf("The server sent the data: %s\n", server_response);
+	char message[100] = "";
+	inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
+	char ex[100];
+	strcpy(ex, pseudo);
+    while(1)
+	{
+		strcpy(pseudo, ex);
+		printf("%s: ", pseudo);
+		fgets(message, 100, stdin);
+		strcat(pseudo, ": ");
+		strcat(pseudo, message);
+		send(net_socket, pseudo, strlen(pseudo), 0);
+		//An extra breaking condition can be added here (to terminate the while loop)
+	}
 
     // close socket
     close(net_socket);
