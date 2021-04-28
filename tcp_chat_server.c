@@ -7,36 +7,154 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-int main()
+int main(int argc, char *argv[])
 {
-	char message[100] = "";
+	/* master file descriptor list */
+	fd_set master;
 
-    // create the server socket
-    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+	/* temp file descriptor list for select() */
+	fd_set read_fds;
 
-    // define the server address
-    struct sockaddr_in server_address;
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(9002);
-    server_address.sin_addr.s_addr = INADDR_ANY;
+	/* server address */
+	struct sockaddr_in serveraddr;
 
-    // bind the socket to our specified IP and port
-    bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address));
-    listen(server_socket, 5);
+	/* client address */
+	struct sockaddr_in clientaddr;
 
-	int conn;
-	while ((conn = accept(server_socket, (struct sockaddr *)NULL, NULL)))
+	/* maximum file descriptor number */
+	int fdmax;
+
+	/* listening socket descriptor */
+	int listener;
+
+	/* newly accept()ed socket descriptor */
+	int newfd;
+
+	/* buffer for client data */
+	char buf[1024];
+	int nbytes;
+
+	/* for setsockopt() SO_REUSEADDR, below */
+	int yes = 1;
+	int addrlen;
+	int i, j;
+
+	/* clear the master and temp sets */
+	FD_ZERO(&master);
+	FD_ZERO(&read_fds);
+
+	/* get the listener */
+	if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
-		int pid;
-		if((pid = fork()) == 0)
-		{
-			while (recv(conn, message, 100, 0)>0)
-			{
-				printf("%s\n", message);
-				message[0] = 0;
-			}
-			exit(0);
-    	}
+		perror("Server-socket() error lol!");
+		/*just exit lol!*/
+		exit(1);
 	}
+
+	printf("Server-socket() is OK...\n");
+
+	/*"address already in use" error message */
+	if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+	{
+		perror("Server-setsockopt() error lol!");
+		exit(1);
+	}
+	printf("Server-setsockopt() is OK...\n");
+
+	/* bind */
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = INADDR_ANY;
+	serveraddr.sin_port = htons(9002);
+	memset(&(serveraddr.sin_zero), '\0', 8);
+	if(bind(listener, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) == -1)
+	{
+		perror("Server-bind() error lol!");
+		exit(1);
+	}
+	printf("Server-bind() is OK...\n");
+	/* listen */
+	if(listen(listener, 10) == -1)
+	{
+		perror("Server-listen() error lol!");
+		exit(1);
+	}
+	printf("Server-listen() is OK...\n");
+	/* add the listener to the master set */
+	FD_SET(listener, &master);
+
+	/* keep track of the biggest file descriptor */
+	fdmax = listener; /* so far, it's this one*/
+
+	/* loop */
+	for(;;)
+	{
+		bzero(buf, 1024);
+		/* copy it */
+		read_fds = master;
+		if(select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1)
+		{
+			perror("Server-select() error lol!");
+			exit(1);
+		}
+		/*run through the existing connections looking for data to be read*/
+		for(i = 0; i <= fdmax; i++)
+		{
+			if(FD_ISSET(i, &read_fds))
+			{ /* we got one... */
+				if(i == listener)
+				{
+					/* handle new connections */
+					addrlen = sizeof(clientaddr);
+					if((newfd = accept(listener, (struct sockaddr *)&clientaddr, &addrlen)) == -1)
+						perror("Server-accept() error lol!");
+					else
+					{
+						printf("Server-accept() is OK...\n");
+						FD_SET(newfd, &master); /* add to master set */
+						if(newfd > fdmax) /* keep track of the maximum */
+							fdmax = newfd;
+						printf("%s: New connection from %s on socket %d\n", argv[0], inet_ntoa(clientaddr.sin_addr), newfd);
+					}
+				}
+				else
+				{
+					/* handle data from a client */
+					if((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
+					{
+						/* got error or connection closed by client */
+						if(nbytes == 0)
+						/* connection closed */
+							printf("%s: socket %d hung up\n", argv[0], i);
+						else
+							perror("recv() error lol!");
+						/* close it... */
+						close(i);
+						/* remove from master set */
+						FD_CLR(i, &master);
+
+					}
+					else
+					{
+						printf("%s", buf);
+						/* we got some data from a client*/
+						for(j = 0; j <= fdmax; j++)
+						{
+							/* send to everyone! */
+							if(FD_ISSET(j, &master))
+							{
+								/* except the listener and ourselves */
+								if(j != listener && j != i)
+								{
+									if(send(j, buf, nbytes, 0) == -1)
+										perror("send() error lol!");
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	return 0;
 }

@@ -28,20 +28,17 @@ int main(int ac, char **av)
         printf("Error making connection to the remote socket\n\n");
 
 	char message[100] = "";
-	inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
-	char ex[100];
-	strcpy(ex, pseudo);
+	server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
     while(1)
 	{
-		strcpy(pseudo, ex);
 		printf("%s: ", pseudo);
 		fgets(message, 100, stdin);
-		strcat(pseudo, ": ");
-		strcat(pseudo, message);
 		send(net_socket, pseudo, strlen(pseudo), 0);
+		send(net_socket, ": ", 2, 0);
+		send(net_socket, message, strlen(message), 0);
+		bzero(message, 100);
 		//An extra breaking condition can be added here (to terminate the while loop)
 	}
-
     // close socket
     close(net_socket);
 
