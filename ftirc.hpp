@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 12:55:56 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/05 16:15:44 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/06 16:45:50 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,7 +50,7 @@ class Params;
 
 int     addclient(std::vector<Client> *clients, int listener);
 void    rec_data(Server &serv, std::vector<Client> *clients, int i, Fds *fdmax);
-void    parse_message(Server &serv, char buf[]);
+Message *parse_message(Server &serv, char buf[]);
 
 
 /* UTILS */

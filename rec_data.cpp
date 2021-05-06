@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/03 11:02:36 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/05 17:00:32 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/06 16:47:28 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,16 +34,17 @@ void rec_data(Server &serv, std::vector<Client> *clients, int i, Fds *fds)
     {
         std::cout << buf;
         parse_message(serv, buf);
-        for(int j = 0; j <= fds->fdmax; j++)
-        {
-            if(FD_ISSET(j, &fds->master))
-            {
-                if(j != serv.listener && j != i)
-                {
-                    if(send(j, buf, nbytes, 0) == -1)
-                        perror("send() error");
-                }
-            }
-        }
+        
+    //     for(int j = 0; j <= fds->fdmax; j++)
+    //     {
+    //         if(FD_ISSET(j, &fds->master))
+    //         {
+    //             if(j != serv.listener && j != i)
+    //             {
+    //                 if(send(j, buf, nbytes, 0) == -1)
+    //                     perror("send() error");
+    //             }
+    //         }
+    //     }
     }
 }

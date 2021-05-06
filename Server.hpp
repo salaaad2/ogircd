@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.hpp                                         :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/03 16:57:27 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/06 16:39:49 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ private:
 
 	struct sockaddr_in			_addr;
 	char						*_ip;
+	char						_password[32];
+	std::map<char[9], char[32]> _register;
 	
 public:
 
@@ -54,6 +56,7 @@ private:
 		_addr.sin_family = AF_INET;
 		_addr.sin_addr.s_addr = INADDR_ANY;
 		_addr.sin_port = htons(pm->getPort());
+		strcpy(_password, pm->getPwd());
 		ft_bzero(&(_addr.sin_zero), 8);
 		_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 		_ip = inet_ntoa(_addr.sin_addr);
@@ -86,6 +89,7 @@ private:
 		_addr.sin_family = AF_INET;
 		_addr.sin_addr.s_addr = INADDR_ANY;
 		_addr.sin_port = htons(pm->getPort());
+		strcpy(_password, pm->getPwd());
 		ft_bzero(&(_addr.sin_zero), 8);
 		_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 		_ip = inet_ntoa(_addr.sin_addr);

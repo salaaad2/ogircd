@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 13:41:20 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/05 17:07:40 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/06 16:45:45 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void add_params(char params[32][32], char buf[], int i)
     }
 }
 
-void parse_message(Server &serv, char buf[])
+Message *parse_message(Server &serv, char buf[])
 {
     Message *nm = new Message;
     int i = 1;
@@ -98,4 +98,5 @@ void parse_message(Server &serv, char buf[])
     std::cout << "\nprefix : " << nm->prefix << "\ncmd : " << nm->command;
     for (int i = 0 ; nm->params[i][0] != 0 ; i++)
         std::cout << "\nparam : " << nm->params[i];
+    return nm;
 }
