@@ -19,6 +19,7 @@ int addclient(std::vector<Client> *clients, int listener)
 
     nc.is_server = false;
     int addrlen = sizeof(nc.clientaddr);
+    (void)addrlen;
     if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
     {
 		std::cout << "Server-accept() error\n";

@@ -55,5 +55,5 @@ Message *parse_message(Server &serv, char buf[]);
 
 /* UTILS */
 
-const int	ft_atoi(const char *str);
+int	ft_atoi(const char *str);
 void	    ft_bzero(void *s, size_t n);
