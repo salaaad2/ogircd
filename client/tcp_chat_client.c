@@ -6,7 +6,6 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include "../libft/libft.h"
 
 int main(int ac, char **av)
 {

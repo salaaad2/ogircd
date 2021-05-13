@@ -22,6 +22,7 @@ SRCS_NAME		  += parse_message
 SRCS_NAME		  += rec_data
 SRCS_NAME		  += tcp_main
 SRCS_NAME		  += Utils
+SRCS_NAME		  += error
 #------------------------------------------------------------------------------#
 SRCS			 = $(addprefix ${SRCS_DIR}, $(addsuffix .cpp, ${SRCS_NAME}))
 #------------------------------------------------------------------------------#
@@ -38,7 +39,7 @@ CC				 = clang++
 # CFLAGS			+= -Wextra
 # CFLAGS			+= -Werror
 # CFLAGS			+= -pedantic
-# CFLAGS			+= -std=c++98
+CFLAGS			+= -std=c++98
 #--------------------------------- UNIX ---------------------------------------#
 #==============================================================================#
 RM				= rm -rf

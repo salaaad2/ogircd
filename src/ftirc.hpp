@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 12:55:56 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/06 18:22:37 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 11:57:23 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,5 @@ char    *msg_error(int code);
 
 /* UTILS */
 
-const int	ft_atoi(const char *str);
+int	        ft_atoi(const char *str);
 void	    ft_bzero(void *s, size_t n);
