@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 14:15:10 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 14:43:12 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ public:
 
 	Server(Params *pm);
 
-	void do_command(Message *msg, Client &client);
-	void passcmd(Message *msg, Client &client);
 	void setFds(Fds *fds);
 
 private:
@@ -41,4 +39,14 @@ private:
 	void new_serv(Params *pm);
 	void connect_serv(Params *pm);
 	void do_connect(Params *pm);
+
+/* MESSAGE TREATMENT */
+
+public:
+
+	void do_command(Message *msg, Client &client);
+
+	void passcmd(Message *msg, Client &client);
+	void nickcmd(Message *msg, Client &client);
+
 };

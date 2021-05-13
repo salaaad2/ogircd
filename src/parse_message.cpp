@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 13:41:20 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/06 16:45:45 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 13:40:15 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ void add_params(char params[32][32], char buf[], int i)
             }
         }
     }
+    j++;
+    params[j][0] = 0;
 }
 
 Message *parse_message(Server &serv, char buf[])
