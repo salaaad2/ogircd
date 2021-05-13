@@ -23,6 +23,8 @@ SRCS_NAME		  += rec_data
 SRCS_NAME		  += tcp_main
 SRCS_NAME		  += Utils
 SRCS_NAME		  += error
+SRCS_NAME		  += Server
+
 #------------------------------------------------------------------------------#
 SRCS			 = $(addprefix ${SRCS_DIR}, $(addsuffix .cpp, ${SRCS_NAME}))
 #------------------------------------------------------------------------------#
