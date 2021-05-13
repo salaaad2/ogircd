@@ -1,8 +1,8 @@
 ##
 # ft_irc
 #
-# @file
-# @version 0.4
+# @make
+# @version 0.1.1
 #
 default: all
 #==============================================================================#
@@ -78,9 +78,12 @@ clean:
 	${RM} ${OBJS_DIR} vgcore*
 #------------------------------------------------------------------------------#
 fclean: clean
-	${RM} ${NAME} ${NAME}.core ${NAME}.dSYM/ valgrind.log
+	${RM} ${NAME} ${NAME}.core ${NAME}.dSYM/ valgrind.log ctest
 #------------------------------------------------------------------------------#
-re: fclean run
+re: fclean all
+#------------------------------------------------------------------------------#
+ctest:
+	clang src/tcp_chat_client.c -o ctest
 #------------------------------------------------------------------------------#
 .PHONY:	all clean clean fclean re debug asan
 
