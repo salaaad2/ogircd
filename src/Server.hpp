@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/06 16:39:49 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/06 18:30:32 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,28 @@ public:
 			new_serv(pm);
 		else
 			connect_serv(pm);
+	}
+
+	void do_command(Message *msg, Client client)
+	{
+		if (!strcmp(msg->command, "PASS"))
+			passcmd(msg, client);
+	}
+
+	void passcmd(Message *msg, Client client)
+	{
+		if (client.is_register == true)
+			send(client.clfd, msg_error(ERR_ALREADYREGISTERED), sizeof(msg_error(ERR_ALREADYREGISTERED)), 0);
+		else
+		{
+			if (!strcmp(msg->params[0], _password))
+			{
+				client.is_register = true;
+				send(client.clfd, "welcome\n", 8, 0);
+			}
+			else
+				send(client.clfd, "Bad password\n", 13, 0);
+		}
 	}
 
 private:

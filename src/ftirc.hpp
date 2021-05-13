@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 12:55:56 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/06 16:45:50 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/06 18:22:37 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,15 @@
 
 #include "replies.hpp"
 
-struct Client;
+struct Client
+{
+    sockaddr_in  clientaddr;
+    unsigned int addrlen;
+    int          clfd;
+    char         nickname[9];
+    bool         is_server;
+    bool         is_register;
+};
 
 struct Message
 {
@@ -48,12 +56,13 @@ struct Fds
 class Server;
 class Params;
 
-int     addclient(std::vector<Client> *clients, int listener);
-void    rec_data(Server &serv, std::vector<Client> *clients, int i, Fds *fdmax);
+int     addclient(std::map<int, Client> *clients, int listener);
+void    rec_data(Server &serv, std::map<int, Client> *clients, int i, Fds *fdmax);
 Message *parse_message(Server &serv, char buf[]);
+char    *msg_error(int code);
 
 
 /* UTILS */
 
-int	ft_atoi(const char *str);
+const int	ft_atoi(const char *str);
 void	    ft_bzero(void *s, size_t n);

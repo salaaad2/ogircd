@@ -6,15 +6,14 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/03 11:02:36 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/06 16:47:28 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/06 18:21:17 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ftirc.hpp"
 #include "Server.hpp"
-#include "Client.hpp"
 
-void rec_data(Server &serv, std::vector<Client> *clients, int i, Fds *fds)
+void rec_data(Server &serv, std::map<int, Client> *clients, int i, Fds *fds)
 {
     int nbytes;
     char buf[512];
@@ -33,8 +32,7 @@ void rec_data(Server &serv, std::vector<Client> *clients, int i, Fds *fds)
     else
     {
         std::cout << buf;
-        parse_message(serv, buf);
-        
+        serv.do_command(parse_message(serv, buf), clients->at(i));
     //     for(int j = 0; j <= fds->fdmax; j++)
     //     {
     //         if(FD_ISSET(j, &fds->master))
