@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/03 11:02:36 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 12:07:13 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 13:15:56 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void rec_data(Server &serv, std::map<int, Client> *clients, int i, Fds *fds)
     else
     {
         std::cout << buf;
-        //serv.do_command(parse_message(serv, buf), clients->at(i));
+        serv.do_command(parse_message(serv, buf), clients->at(i));
     //     for(int j = 0; j <= fds->fdmax; j++)
     //     {
     //         if(FD_ISSET(j, &fds->master))

@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/06 18:30:32 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 13:22:06 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,10 @@ public:
 	void passcmd(Message *msg, Client client)
 	{
 		if (client.is_register == true)
+		{
+			std::cout << msg_error(ERR_ALREADYREGISTERED) << std::endl;
 			send(client.clfd, msg_error(ERR_ALREADYREGISTERED), sizeof(msg_error(ERR_ALREADYREGISTERED)), 0);
+		}
 		else
 		{
 			if (!strcmp(msg->params[0], _password))
@@ -80,7 +83,6 @@ private:
 		_addr.sin_port = htons(pm->getPort());
 		strcpy(_password, pm->getPwd());
 		ft_bzero(&(_addr.sin_zero), 8);
-		_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 		_ip = inet_ntoa(_addr.sin_addr);
 		printf("ip : %s\n", _ip);
 		if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
@@ -113,7 +115,6 @@ private:
 		_addr.sin_port = htons(pm->getPort());
 		strcpy(_password, pm->getPwd());
 		ft_bzero(&(_addr.sin_zero), 8);
-		_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 		_ip = inet_ntoa(_addr.sin_addr);
 		printf("ip : %s\n", _ip);
 		if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
@@ -139,7 +140,6 @@ private:
 		server_address.sin_family = AF_INET;
 		server_address.sin_port = htons(pm->getPortNetwork());
 		server_address.sin_addr.s_addr = INADDR_ANY;
-		server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
 		this->_network->push_back(server_address);
 		
 		int connection_status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));

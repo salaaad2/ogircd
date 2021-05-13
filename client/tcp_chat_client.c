@@ -21,6 +21,8 @@ int main(int ac, char **av)
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(atoi(av[1]));
     server_address.sin_addr.s_addr = INADDR_ANY;
+	server_address.sin_addr.s_addr = inet_addr("10.4.5.7");
+
 
     int connection_status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
     if (connection_status == -1)
@@ -29,7 +31,7 @@ int main(int ac, char **av)
 	//send(net_socket, "password", strlen("password"), 0);
 
 	char message[512] = "";
-	server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
+	//server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
 	// strcpy(message, ":user!user@host cmd blabla dodo :ffrr  b\r\n");
 	// send(net_socket, message, strlen(message), 0);
 	bzero(message, 512);

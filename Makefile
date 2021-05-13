@@ -84,7 +84,7 @@ fclean: clean
 re: fclean all
 #------------------------------------------------------------------------------#
 ctest:
-	clang src/tcp_chat_client.c -o ctest
+	clang client/tcp_chat_client.c -o ctest
 #------------------------------------------------------------------------------#
 .PHONY:	all clean clean fclean re debug asan
 
