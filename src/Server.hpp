@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 13:22:06 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 13:59:43 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ private:
 	char						*_ip;
 	char						_password[32];
 	std::map<char[9], char[32]> _register;
+	Fds							*_fds;
 	
 public:
 
@@ -38,17 +39,17 @@ public:
 			connect_serv(pm);
 	}
 
-	void do_command(Message *msg, Client client)
+	void do_command(Message *msg, Client &client)
 	{
 		if (!strcmp(msg->command, "PASS"))
 			passcmd(msg, client);
 	}
 
-	void passcmd(Message *msg, Client client)
+	void passcmd(Message *msg, Client &client)
 	{
 		if (client.is_register == true)
 		{
-			std::cout << msg_error(ERR_ALREADYREGISTERED) << std::endl;
+			std::cout << std::endl << msg_error(ERR_ALREADYREGISTERED) << std::endl;
 			send(client.clfd, msg_error(ERR_ALREADYREGISTERED), sizeof(msg_error(ERR_ALREADYREGISTERED)), 0);
 		}
 		else
@@ -56,12 +57,20 @@ public:
 			if (!strcmp(msg->params[0], _password))
 			{
 				client.is_register = true;
+				std::cout << "\nWelcome\n";
 				send(client.clfd, "welcome\n", 8, 0);
 			}
 			else
-				send(client.clfd, "Bad password\n", 13, 0);
+			{
+				std::cout << "\nBad password : deconnexion\n";
+				send(client.clfd, "\nBad password\n", 13, 0);
+				close(client.clfd);
+				FD_CLR(client.clfd, &_fds->master);
+			}
 		}
 	}
+
+	void setFds(Fds *fds) {_fds = fds;}
 
 private:
 

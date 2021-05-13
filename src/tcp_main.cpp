@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 14:32:03 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/06 18:21:25 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 13:59:59 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ int main(int ac, char *av[])
 	Params *pm = new Params(ac, av);
 	Server serv(pm);
 	Fds *fds = new Fds;
+	serv.setFds(fds);
 
 	FD_ZERO(&fds->master);
 	FD_ZERO(&fds->read);
