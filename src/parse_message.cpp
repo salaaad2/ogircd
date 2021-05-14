@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 13:41:20 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 15:13:48 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/14 14:00:14 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,11 +89,10 @@ void add_params(char params[32][32], char buf[], int i)
 Message *parse_message(Server &serv, char buf[])
 {
     Message *nm = new Message;
-    int i = 1;
+    int i = 0;
     int j = 0;
 
-    ft_bzero(nm, 1152);
-    i = add_prefix(nm->prefix, buf);
+    ft_bzero(nm, 1088);
     i = add_cmd(nm->command, buf, i);
     add_params(nm->params, buf, i);
     return nm;

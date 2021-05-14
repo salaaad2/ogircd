@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/14 13:25:04 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/14 14:06:44 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,9 +136,12 @@ void Server::do_connect(Params *pm)
 /* TREAT COMMANDS */
 /******************/
 
-void Server::send_reply(int fd, int code)
+void Server::send_reply(int fd, char cmd[], char prefix[])
 {
-    
+    send(fd, prefix, sizeof(prefix), 0);
+    send(fd, " ", 1, 0);
+    send(fd, cmd, sizeof(cmd), 0);
+    send(fd, " :", 1, 0);
 }
 
 void Server::do_command(Message *msg, Client &client)
@@ -152,28 +155,26 @@ void Server::passcmd(Message *msg, Client &client)
     if (client.is_register == true)
     {
         std::cout << std::endl << msg_error(ERR_ALREADYREGISTERED) << std::endl;
+        send_reply(client.clfd, "462", _prefix);
         send(client.clfd, client.nickname, 9, 0);
         send(client.clfd, " ", 1, 0);
         send(client.clfd, msg_error(ERR_ALREADYREGISTERED), sizeof(msg_error(ERR_ALREADYREGISTERED)), 0);
     }
-    else
-    {
-        if (!msg->params[0][0])
-            send(client.clfd, msg_error(ERR_NEEDMOREPARAMS), sizeof(msg_error(ERR_NEEDMOREPARAMS)), 0);
-        else if (!strcmp(msg->params[0], _password))
-        {
-            client.is_register = true;
-            std::cout << "\nWelcome\n";
-            send(client.clfd, "welcome", 8, 0);
-        }
-        else
-        {
-            std::cout << "\nBad password : deconnexion\n";
-            send(client.clfd, "\nBad password\n", 13, 0);
-            close(client.clfd);
-            FD_CLR(client.clfd, &_fds->master);
-        }
-    }
+    else if (!msg->params[0][0])
+        send(client.clfd, msg_error(ERR_NEEDMOREPARAMS), sizeof(msg_error(ERR_NEEDMOREPARAMS)), 0);
+        // else if (!strcmp(msg->params[0], _password))
+        // {
+        //     client.is_register = true;
+        //     std::cout << "\nWelcome\n";
+        //     send(client.clfd, "welcome", 8, 0);
+        // }
+        // else
+        // {
+        //     std::cout << "\nBad password : deconnexion\n";
+        //     send(client.clfd, "\nBad password\n", 13, 0);
+        //     close(client.clfd);
+        //     FD_CLR(client.clfd, &_fds->master);
+        //}
 }
 
 void Server::nickcmd(Message *msg, Client &client)

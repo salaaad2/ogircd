@@ -12,9 +12,7 @@ p_send(char pseudo[], char password[], int net_socket)
 {
     char psend[110];
 
-    strcpy(psend, ":");
-    strcat(psend, pseudo);
-    strcat(psend, " PASS :");
+    strcat(psend, "PASS :");
     strcat(psend, password);
     strcat(psend, "\r\n");
     send(net_socket, psend, strlen(psend), 0);

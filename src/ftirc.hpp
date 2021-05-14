@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 12:55:56 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 11:57:23 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/14 14:05:10 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,13 @@ struct Client
     unsigned int addrlen;
     int          clfd;
     char         nickname[9];
+    char         host[16];
     bool         is_server;
     bool         is_register;
 };
 
 struct Message
 {
-    char    prefix[64];
     char    command[64];
     char    params[32][32];
 };
