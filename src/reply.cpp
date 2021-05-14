@@ -1,24 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
+/*   reply.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/30 12:46:11 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/06 16:32:43 by tbajrami         ###   ########lyon.fr   */
+/*   Created: 2021/05/14 13:25:43 by tbajrami          #+#    #+#             */
+/*   Updated: 2021/05/14 13:28:29 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
 #include "ftirc.hpp"
+#include "Server.hpp"
 
-struct Client
+void Server::send_reply(int fd, int code)
 {
-    sockaddr_in  clientaddr;
-    unsigned int addrlen;
-    int          clfd;
-    char         nickname[9];
-    bool         is_server;
-};
+    
+}

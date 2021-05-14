@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 14:32:03 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 13:59:59 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/14 11:57:04 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 int main_loop(Server &serv, std::map<int, Client> *clients, Fds *fds)
 {
 	int newfd;
-	
+
 	for (int i = 0 ; i <= fds->fdmax ; i++)
 	{
 		if(FD_ISSET(i, &fds->read))

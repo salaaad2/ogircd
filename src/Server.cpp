@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 14:18:26 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/14 13:25:04 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,39 @@ Server::Server(Params *pm)
         connect_serv(pm);
 }
 
+void Server::getIP()
+{
+    const char* google_dns_server = "8.8.8.8";
+    int dns_port = 53;
+	struct sockaddr_in serv;
+    int sock = socket ( AF_INET, SOCK_DGRAM, 0);
+
+	memset( &serv, 0, sizeof(serv) );
+    serv.sin_family = AF_INET;
+    serv.sin_addr.s_addr = inet_addr( google_dns_server );
+    serv.sin_port = htons( dns_port );
+    int err = connect( sock , (const struct sockaddr*) &serv , sizeof(serv) );
+    struct sockaddr_in name;
+    socklen_t namelen = sizeof(name);
+    err = getsockname(sock, (struct sockaddr*) &name, &namelen);
+	char buffer[100];
+    const char* p = inet_ntoa(name.sin_addr);
+	if(p != NULL)
+	{
+		printf("Local ip is : %s \n" , p);
+	}
+    strcpy(_ip, p);
+    _prefix[0] = ':';
+    strcat(_prefix, _ip);
+}
+
 void Server::setFds(Fds *fds) {_fds = fds;}
 
 void Server::new_serv(Params *pm)
 {
     int yes = 1;
+    getIP();
+    
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cout << "Server-socket() error\n";
@@ -41,8 +69,6 @@ void Server::new_serv(Params *pm)
     _addr.sin_port = htons(pm->getPort());
     strcpy(_password, pm->getPwd());
     ft_bzero(&(_addr.sin_zero), 8);
-    _ip = inet_ntoa(_addr.sin_addr);
-    printf("ip : %s\n", _ip);
     if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
     {
         perror("Server-bind() error");
@@ -73,8 +99,6 @@ void Server::connect_serv(Params *pm)
     _addr.sin_port = htons(pm->getPort());
     strcpy(_password, pm->getPwd());
     ft_bzero(&(_addr.sin_zero), 8);
-    _ip = inet_ntoa(_addr.sin_addr);
-    printf("ip : %s\n", _ip);
     if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
     {
         perror("Server-bind() error");
@@ -112,7 +136,10 @@ void Server::do_connect(Params *pm)
 /* TREAT COMMANDS */
 /******************/
 
-
+void Server::send_reply(int fd, int code)
+{
+    
+}
 
 void Server::do_command(Message *msg, Client &client)
 {
@@ -125,15 +152,19 @@ void Server::passcmd(Message *msg, Client &client)
     if (client.is_register == true)
     {
         std::cout << std::endl << msg_error(ERR_ALREADYREGISTERED) << std::endl;
+        send(client.clfd, client.nickname, 9, 0);
+        send(client.clfd, " ", 1, 0);
         send(client.clfd, msg_error(ERR_ALREADYREGISTERED), sizeof(msg_error(ERR_ALREADYREGISTERED)), 0);
     }
     else
     {
-        if (!strcmp(msg->params[0], _password))
+        if (!msg->params[0][0])
+            send(client.clfd, msg_error(ERR_NEEDMOREPARAMS), sizeof(msg_error(ERR_NEEDMOREPARAMS)), 0);
+        else if (!strcmp(msg->params[0], _password))
         {
             client.is_register = true;
             std::cout << "\nWelcome\n";
-            send(client.clfd, "welcome\n", 8, 0);
+            send(client.clfd, "welcome", 8, 0);
         }
         else
         {

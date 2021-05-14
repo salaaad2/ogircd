@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 14:01:08 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/05 14:37:35 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/13 16:44:43 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@
 #define ERR_NOOPERHOST 491
 #define ERR_UMODEUNKNOWNFLAG 501
 #define ERR_USERSDONTMATCH 502
+
+#define RPL_WELCOME 001
 
 #define RPL_NONE 300
 #define RPL_USERHOST 302
