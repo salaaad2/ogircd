@@ -138,10 +138,12 @@ void Server::do_connect(Params *pm)
 
 void Server::send_reply(int fd, char cmd[], char prefix[])
 {
-    send(fd, prefix, sizeof(prefix), 0);
-    send(fd, " ", 1, 0);
-    send(fd, cmd, sizeof(cmd), 0);
-    send(fd, " :", 1, 0);
+    std::string tmp(prefix);
+
+    tmp += " ";
+    tmp += cmd;
+    tmp += " :";
+    send(fd, tmp.c_str(), tmp.size(), 0);
 }
 
 void Server::do_command(Message *msg, Client &client)
