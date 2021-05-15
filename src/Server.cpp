@@ -156,11 +156,12 @@ void Server::passcmd(Message *msg, Client &client)
 {
     if (client.is_register == true)
     {
+        std::string tmp(client.nickname);
         std::cout << std::endl << msg_error(ERR_ALREADYREGISTERED) << std::endl;
+        tmp += " ";
+        tmp += msg_error(ERR_ALREADYREGISTERED);
         send_reply(client.clfd, "462", _prefix);
-        send(client.clfd, client.nickname, 9, 0);
-        send(client.clfd, " ", 1, 0);
-        send(client.clfd, msg_error(ERR_ALREADYREGISTERED), sizeof(msg_error(ERR_ALREADYREGISTERED)), 0);
+        send(client.clfd, tmp.c_str(), tmp.size(), 0);
     }
     else if (!msg->params[0][0])
         send(client.clfd, msg_error(ERR_NEEDMOREPARAMS), sizeof(msg_error(ERR_NEEDMOREPARAMS)), 0);
