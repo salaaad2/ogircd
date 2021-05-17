@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/17 16:59:11 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/17 18:40:53 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,10 @@ int     addclient(Server &serv, int i);
 		void new_serv(Params *pm);
 		void connect_serv(Params *pm);
 		void do_connect(Params *pm);
+		void do_registration(int fd);
+		void create_client_prefix(int fd);
 		void getIP();
-		void send_reply(int fd, int code, const char *msg);
+		void send_reply(int fd, int code);
 
 /* MESSAGE TREATMENT */
 
@@ -71,5 +73,5 @@ int     addclient(Server &serv, int i);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
 
-
+		const char *msg_rpl(int code, int fd);
 };

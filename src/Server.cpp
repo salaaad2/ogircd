@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/17 18:04:54 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/17 18:42:02 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,13 +136,13 @@ void Server::do_connect(Params *pm)
 /* TREAT COMMANDS */
 /******************/
 
-void Server::send_reply(int fd, int code, const char *msg)
+void Server::send_reply(int fd, int code)
 {
 
     std::string ccmd = ft_format_cmd(ft_utoa(code));
     std::string to_send;
 
-    to_send += (std::string(_prefix) + " " + ccmd + " " + std::string(msg) + "\r\n");
+    to_send += (std::string(_prefix) + " " + ccmd + " " + msg_rpl(code, fd) + "\r\n");
     send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
@@ -161,7 +161,7 @@ void Server::do_command(Message *msg, int fd)
         usercmd(msg, fd);
     }
     else
-        send_reply(fd, RPL_NONE, "");
+        send_reply(fd, RPL_NONE);
     // case "PASS":
         //     passcmd(msg, client);
         //     break;
@@ -178,11 +178,11 @@ void Server::do_command(Message *msg, int fd)
 void Server::passcmd(Message *msg, int fd)
 {
     if (_fd_clients[fd].is_register == true)
-    {
-        send_reply(fd, 462, msg_error(ERR_ALREADYREGISTERED));
-    }
+        send_reply(fd, ERR_ALREADYREGISTERED);
     else if (!msg->params[0][0])
-        send(fd, msg_error(ERR_NEEDMOREPARAMS), strlen(msg_error(ERR_NEEDMOREPARAMS)), 0);
+        send_reply(fd, ERR_NEEDMOREPARAMS);
+    else
+        strcpy(_fd_clients[fd].password, msg->params[0]);
     // else if (!strcmp(msg->params[0], _password))
     // {
     //     client.is_register = true;
@@ -209,19 +209,41 @@ void Server::nickcmd(Message *msg, int fd)
         else
             _nick_clients.insert(std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
         strcpy(_fd_clients[fd].nickname, msg->params[0]);
-        send_reply(fd, RPL_NONE, "");
+        send_reply(fd, RPL_NONE);
     }
     else {
-        send(fd, msg_error(ERR_NICKNAMEINUSE), strlen(msg_error(ERR_NICKNAMEINUSE)), 0);
+        send_reply(fd, ERR_NICKNAMEINUSE);
     }
 }
 
 void Server::usercmd(Message *msg, int fd)
 {
+    if (_fd_clients[fd].is_register == true)
+        send_reply(fd, ERR_ALREADYREGISTERED);
     if (!msg->params[0][0] || !msg->params[1][0] || msg->params[2][0] || msg->params[3][0])
-        send(fd, msg_error(ERR_NEEDMOREPARAMS), strlen(msg_error(ERR_NEEDMOREPARAMS)), 0);
+        send_reply(fd, ERR_NEEDMOREPARAMS);
     strcpy(_fd_clients[fd].username, msg->params[0]);
     strcpy(_fd_clients[fd].realname, msg->params[3]);
+    do_registration(fd);
+}
+
+void Server::do_registration(int fd)
+{
+    if (_fd_clients[fd].nickname[0] && !strcmp(_fd_clients[fd].password, _password))
+    {
+        _fd_clients[fd].is_register = true;
+        create_client_prefix(fd);
+        send_reply(fd, RPL_WELCOME);
+    }
+}
+
+void Server::create_client_prefix(int fd)
+{
+    strcat(_fd_clients[fd].prefix, _fd_clients[fd].nickname);
+    strcat(_fd_clients[fd].prefix, "!");
+    strcat(_fd_clients[fd].prefix, _fd_clients[fd].username);
+    strcat(_fd_clients[fd].prefix, "@");
+    strcat(_fd_clients[fd].prefix, _fd_clients[fd].host);
 }
 
 std::map<int, Client> Server::getFDClients(void) const {
@@ -255,6 +277,7 @@ int Server::addclient(Server &serv,  int listener)
     else
         std::cout << "Server-accept() is OK...\n";
     std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
+    strcpy(nc.host, inet_ntoa(nc.clientaddr.sin_addr));
     std::cout << " on socket " << nc.clfd << std::endl;
     serv.setFDClients(nc.clfd, nc);
     return (nc.clfd);
