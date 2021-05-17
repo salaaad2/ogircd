@@ -32,7 +32,7 @@ int main(int ac, char **av)
     }
     else
     {
-        printf("insufficient parameters.\nUsage : ./ctest [PORT] [NICK] [PASS]")
+        printf("insufficient parameters.\nUsage : ./ctest [PORT] [NICK] [PASS]");
         return (1);
     }
     // specify an address for the socket
