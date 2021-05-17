@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/14 14:06:44 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/17 15:37:02 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,14 +136,15 @@ void Server::do_connect(Params *pm)
 /* TREAT COMMANDS */
 /******************/
 
-void Server::send_reply(int fd, char cmd[], char prefix[])
+void Server::send_reply(int fd, int cmd, char *prefix)
 {
-    std::string tmp(prefix);
+    char *msg = msg_error(cmd);
 
-    tmp += " ";
-    tmp += cmd;
-    tmp += " :";
-    send(fd, tmp.c_str(), tmp.size(), 0);
+    std::string ccmd = ft_format_cmd(ft_utoa(cmd));
+    std::string to_send;
+
+    to_send += (std::string(prefix) + " " + ccmd + " " + std::string(msg) + "\r\n");
+    send(fd, to_send.c_str(), ft_strlen(to_send.c_str()), 0);
 }
 
 void Server::do_command(Message *msg, Client &client)
@@ -178,7 +179,7 @@ void Server::passcmd(Message *msg, Client &client)
         std::cout << std::endl << msg_error(ERR_ALREADYREGISTERED) << std::endl;
         tmp += " ";
         tmp += msg_error(ERR_ALREADYREGISTERED);
-        send_reply(client.clfd, "462", _prefix);
+        send_reply(client.clfd, 462, _prefix);
         send(client.clfd, tmp.c_str(), tmp.size(), 0);
     }
     else if (!msg->params[0][0])
