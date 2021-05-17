@@ -12,9 +12,10 @@ p_send(char pseudo[], char password[], int net_socket)
 {
     char psend[110];
 
-    strcat(psend, "PASS :");
-    strcat(psend, password);
-    strcat(psend, "\r\n");
+    /* strcat(psend, "PASS :"); */
+    /* strcat(psend, password); */
+    /* strcat(psend, "\r\n"); */
+    sprintf(psend, "NICK :%s\r\nPASS :%s\r\n", pseudo, password);
     send(net_socket, psend, strlen(psend), 0);
 }
 
@@ -61,17 +62,19 @@ int main(int ac, char **av)
         /* bzero(response, 256); */
         /* recv(net_socket, &response, sizeof(response), 0); */
         /* printf("%s\n", response); */
-        strcpy(all, ":");
-        strcat(all, pseudo);
-        strcat(all, " ");
         printf("{%s}", all);
         fgets(message, 512, stdin);
         strcat(all, message);
-        all[strlen(all) - 1] = '\r';
-        all[strlen(all)] = '\n';
+        sprintf(all, "%s\r\n", message);
         send(net_socket, all, strlen(all), 0);
     }
     close(net_socket);
 
     return 0;
 }
+
+/* strcpy(all, ":"); */
+/* strcat(all, pseudo); */
+/* strcat(all, " "); */
+/* all[strlen(all) - 1] = '\r'; */
+/* all[strlen(all)] = '\n'; */

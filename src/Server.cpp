@@ -150,10 +150,11 @@ void Server::do_command(Message *msg, Client &client)
 {
     std::string tmp(msg->command);
 
+    std::cout << "{" << client.nickname << "} says : " << msg->command << std::endl;
     if (tmp == "PASS") {
         passcmd(msg, client);
     }
-    else if (tmp == "PASS") {
+    else if (tmp == "NICK") {
         nickcmd(msg, client);
     }
     // case "PASS":
@@ -202,9 +203,10 @@ void Server::nickcmd(Message *msg, Client &client)
     // check against other usernicks
     // return :
     // ERR_NICKCOLLISION ERR_NICKNAMEINUSE ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE
-    // if (strcmp(msg->params[0] == client.nickname)) {
-    // }
-
+    if (_nick_clients.count(msg->params[0]) == 0) {
+        _nick_clients.insert(_nick_clients.find(client.nickname),  std::pair<std::string, Client>(msg->params[0], client));
+        strcpy(client.nickname, msg->params[0]);
+    }
 }
 
 std::map<int, Client> Server::getFDClients(void) const {
@@ -238,6 +240,7 @@ int Server::addclient(Server &serv,  int listener)
         std::cout << "Server-accept() is OK...\n";
     std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
     std::cout << " on socket " << nc.clfd << std::endl;
+    serv.setNickClients(nc.nickname, nc);
     serv.setFDClients(nc.clfd, nc);
     return (nc.clfd);
 }
