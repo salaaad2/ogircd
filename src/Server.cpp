@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/17 15:37:02 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/17 15:55:56 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ void Server::send_reply(int fd, int cmd, char *prefix)
     std::string to_send;
 
     to_send += (std::string(prefix) + " " + ccmd + " " + std::string(msg) + "\r\n");
-    send(fd, to_send.c_str(), ft_strlen(to_send.c_str()), 0);
+    send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
 void Server::do_command(Message *msg, Client &client)
@@ -208,6 +208,7 @@ void Server::nickcmd(Message *msg, Client &client)
         _nick_clients.insert(_nick_clients.find(client.nickname),  std::pair<std::string, Client>(msg->params[0], client));
         strcpy(client.nickname, msg->params[0]);
     }
+    std::cout << client.nickname << "\n";
 }
 
 std::map<int, Client> Server::getFDClients(void) const {
