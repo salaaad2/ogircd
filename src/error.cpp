@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "replies.hpp"
+#include "../inc/replies.hpp"
 
 char *msg_error(int code)
 {

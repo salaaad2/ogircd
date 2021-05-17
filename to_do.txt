@@ -1,5 +1,4 @@
  Sont éliminatoires pour ce projet:
-- utilisation de fcntl()
 - read(2)/write(2) bloquants (c'est à dire non précédés d'une
 vérification par select(2) qu'ils ne seront pas bloquants)
 - threads

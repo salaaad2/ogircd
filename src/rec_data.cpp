@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ftirc.hpp"
-#include "Server.hpp"
+#include "../inc/ftirc.hpp"
+#include "../inc/Server.hpp"
 
 void rec_data(Server &serv, std::map<int, Client> *clients, int i, Fds *fds)
 {

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ftirc.hpp"
+#include "../inc/ftirc.hpp"
 
 int	ft_atoi(const char *str)
 {

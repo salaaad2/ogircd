@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ftirc.hpp"
-#include "Params.hpp"
-#include "Server.hpp"
+#include "../inc/ftirc.hpp"
+#include "../inc/Params.hpp"
+#include "../inc/Server.hpp"
 
 int main_loop(Server &serv, std::map<int, Client> *clients, Fds *fds)
 {

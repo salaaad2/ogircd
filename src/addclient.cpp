@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ftirc.hpp"
+#include "../inc/ftirc.hpp"
 
 int addclient(std::map<int, Client> *clients, int listener)
 {

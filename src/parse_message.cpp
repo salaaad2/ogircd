@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ftirc.hpp"
-#include "Server.hpp"
+#include "../inc/ftirc.hpp"
+#include "../inc/Server.hpp"
 
 int add_prefix(char pr[], char buf[])
 {
