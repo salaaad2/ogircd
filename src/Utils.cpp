@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 11:38:14 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 11:57:26 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/17 15:38:12 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,50 @@ int ft_isnum(const char c)
 		return (1);
 	else
 		return (0);
+}
+
+size_t  ft_strlen(const char *src) 
+{
+	size_t i = 0;
+
+	while (src[i])
+		i++;
+	return i;
+}
+
+size_t  ft_strlcpy(char *dst, const char *src, size_t size)
+{
+        size_t  i;
+
+        if (!dst || !src)
+                return (0);
+        i = 0;
+        if (size == 0)
+                return (ft_strlen(src));
+        while (i < size - 1 && src[i])
+        {
+                dst[i] = src[i];
+                i++;
+        }
+        dst[i] = '\0';
+        return (ft_strlen(src));
+}
+
+std::string ft_utoa(unsigned int n)
+{
+	std::string str;
+	size_t i = n;
+	while (i)
+	{
+		str.insert(str.begin(), (i % 10) + 48);
+		i /= 10;
+	}
+	return (str);
+}
+
+std::string ft_format_cmd(std::string cmd)
+{
+	while (cmd.size() < 3)
+		cmd.insert(cmd.begin(), '0');
+	return (cmd);
 }
