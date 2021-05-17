@@ -13,7 +13,7 @@
 #include "../inc/ftirc.hpp"
 #include "../inc/Server.hpp"
 
-void rec_data(Server &serv, std::map<int, Client> *clients, int i, Fds *fds)
+void rec_data(Server &serv, int i, Fds *fds)
 {
     int nbytes;
     char buf[512];
@@ -32,7 +32,7 @@ void rec_data(Server &serv, std::map<int, Client> *clients, int i, Fds *fds)
     else
     {
         std::cout << buf;
-        serv.do_command(parse_message(serv, buf), clients->at(i));
+        serv.do_command(parse_message(serv, buf), serv.getFDClients()[i]);
     //     for(int j = 0; j <= fds->fdmax; j++)
     //     {
     //         if(FD_ISSET(j, &fds->master))

@@ -14,7 +14,7 @@
 #include "../inc/Params.hpp"
 #include "../inc/Server.hpp"
 
-int main_loop(Server &serv, std::map<int, Client> *clients, Fds *fds)
+int main_loop(Server &serv, Fds *fds)
 {
 	int newfd;
 
@@ -24,7 +24,7 @@ int main_loop(Server &serv, std::map<int, Client> *clients, Fds *fds)
 		{
 			if (i == serv.listener)
 			{
-				if ((newfd = addclient(clients, serv.listener)) != -1)
+				if ((newfd = serv.addclient(serv, serv.listener)) != -1)
 				{
 					if(newfd > fds->fdmax)
 						fds->fdmax = newfd;
@@ -32,7 +32,7 @@ int main_loop(Server &serv, std::map<int, Client> *clients, Fds *fds)
 				}
 			}
 			else
-				rec_data(serv, clients, i, fds);
+				rec_data(serv, i, fds);
 		}
 	}
 	return 0;
@@ -45,7 +45,6 @@ int main(int ac, char *av[])
 		std::cout << "Insufficient parameters. \nUsage : ./ircserv [PORT] [PASS]" << std::endl;
 		return (1);
 	}
-	std::map<int, Client> *clients = new std::map<int, Client>;
 	int newfd;
 	Params *pm = new Params(ac, av);
 	Server serv(pm);
@@ -64,7 +63,7 @@ int main(int ac, char *av[])
 			std::cout << "Server-select() error";
 			exit(1);
 		}
-		if ((newfd = main_loop(serv, clients, fds)) > 0)
+		if ((newfd = main_loop(serv, fds)) > 0)
 			FD_SET(newfd, &fds->master);
 	}
 	return 0;

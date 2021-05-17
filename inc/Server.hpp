@@ -12,8 +12,13 @@
 
 #pragma once
 
-#include "ftirc.hpp"
+#include "message.hpp"
+#include "client.hpp"
+#include "fds.hpp"
 #include "Params.hpp"
+#include <map>
+#include "replies.hpp"
+#include <vector>
 
 #define SOCKET_ERROR "Error: creating socket"
 #define LISTEN_ERROR "Error: listening server"
@@ -23,38 +28,46 @@
 
 class Server
 {
-private:
+	private:
 
-	struct sockaddr_in			_addr;
-	char						_ip[INET_ADDRSTRLEN];
-	char						_prefix[17];
-	char						_password[32];
-	std::map<char[9], char[32]> _register;
-	Fds							*_fds;
-	
-public:
+		struct sockaddr_in			_addr;
+		char						_ip[INET_ADDRSTRLEN];
+		char						_prefix[17];
+		char						_password[32];
+		std::map<char[9], char[32]> _register;
+		Fds							*_fds;
+		std::map<int, Client> _fd_clients;
+		std::map<std::string, Client> _nick_clients;
 
-	int							listener;
-	std::vector<sockaddr_in> 	*_network;
+	public:
 
-	Server(Params *pm);
+		int							listener;
+		std::vector<sockaddr_in> 	*_network;
 
-	void setFds(Fds *fds);
+		Server(Params *pm);
+int     addclient(Server &serv, int i);
 
-private:
+		void setFds(Fds *fds);
+		std::map<int, Client> getFDClients(void) const;
+		void setFDClients(int, Client);
+		std::map<std::string, Client> getNickClients(void) const;
+		void setNickClients(std:: string, Client);
 
-	void new_serv(Params *pm);
-	void connect_serv(Params *pm);
-	void do_connect(Params *pm);
-	void getIP();
-	void send_reply(int fd, char code[3], char prefix[]);
+
+	private:
+
+		void new_serv(Params *pm);
+		void connect_serv(Params *pm);
+		void do_connect(Params *pm);
+		void getIP();
+		void send_reply(int fd, char code[3], char prefix[]);
 
 /* MESSAGE TREATMENT */
 
-public:
+	public:
 
-	void do_command(Message *msg, Client &client);
-	void passcmd(Message *msg, Client &client);
-	void nickcmd(Message *msg, Client &client);
+		void do_command(Message *msg, Client &client);
+		void passcmd(Message *msg, Client &client);
+		void nickcmd(Message *msg, Client &client);
 
 };

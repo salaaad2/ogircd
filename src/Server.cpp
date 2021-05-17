@@ -25,10 +25,10 @@ void Server::getIP()
 {
     const char* google_dns_server = "8.8.8.8";
     int dns_port = 53;
-	struct sockaddr_in serv;
+    struct sockaddr_in serv;
     int sock = socket ( AF_INET, SOCK_DGRAM, 0);
 
-	memset( &serv, 0, sizeof(serv) );
+    memset( &serv, 0, sizeof(serv) );
     serv.sin_family = AF_INET;
     serv.sin_addr.s_addr = inet_addr( google_dns_server );
     serv.sin_port = htons( dns_port );
@@ -36,12 +36,12 @@ void Server::getIP()
     struct sockaddr_in name;
     socklen_t namelen = sizeof(name);
     err = getsockname(sock, (struct sockaddr*) &name, &namelen);
-	char buffer[100];
+    char buffer[100];
     const char* p = inet_ntoa(name.sin_addr);
-	if(p != NULL)
-	{
-		printf("Local ip is : %s \n" , p);
-	}
+    if(p != NULL)
+    {
+        printf("Local ip is : %s \n" , p);
+    }
     strcpy(_ip, p);
     _prefix[0] = ':';
     strcat(_prefix, _ip);
@@ -153,6 +153,7 @@ void Server::do_command(Message *msg, Client &client)
 }
 
 
+
 void Server::passcmd(Message *msg, Client &client)
 {
     if (client.is_register == true)
@@ -166,22 +167,57 @@ void Server::passcmd(Message *msg, Client &client)
     }
     else if (!msg->params[0][0])
         send(client.clfd, msg_error(ERR_NEEDMOREPARAMS), sizeof(msg_error(ERR_NEEDMOREPARAMS)), 0);
-        // else if (!strcmp(msg->params[0], _password))
-        // {
-        //     client.is_register = true;
-        //     std::cout << "\nWelcome\n";
-        //     send(client.clfd, "welcome", 8, 0);
-        // }
-        // else
-        // {
-        //     std::cout << "\nBad password : deconnexion\n";
-        //     send(client.clfd, "\nBad password\n", 13, 0);
-        //     close(client.clfd);
-        //     FD_CLR(client.clfd, &_fds->master);
-        //}
+    // else if (!strcmp(msg->params[0], _password))
+    // {
+    //     client.is_register = true;
+    //     std::cout << "\nWelcome\n";
+    //     send(client.clfd, "welcome", 8, 0);
+    // }
+    // else
+    // {
+    //     std::cout << "\nBad password : deconnexion\n";
+    //     send(client.clfd, "\nBad password\n", 13, 0);
+    //     close(client.clfd);
+    //     FD_CLR(client.clfd, &_fds->master);
+    //}
 }
 
 void Server::nickcmd(Message *msg, Client &client)
 {
     
+}
+
+std::map<int, Client> Server::getFDClients(void) const {
+    return (_fd_clients);
+}
+std::map<std::string, Client> Server::getNickClients(void) const {
+    return (_nick_clients);
+}
+
+void Server::setFDClients(int i, Client cl) {
+    _fd_clients[i] = cl;
+}
+
+void Server::setNickClients(std::string s, Client cl) {
+    _nick_clients[s] = cl;
+}
+
+int Server::addclient(Server &serv,  int listener)
+{
+    Client nc;
+
+    nc.is_server = false;
+    nc.is_register = false;
+    int addrlen = sizeof(nc.clientaddr);
+    if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
+    {
+		std::cout << "Server-accept() error\n";
+        return (-1);
+    }
+    else
+        std::cout << "Server-accept() is OK...\n";
+    std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
+    std::cout << " on socket " << nc.clfd << std::endl;
+    serv.setFDClients(nc.clfd, nc);
+    return (nc.clfd);
 }

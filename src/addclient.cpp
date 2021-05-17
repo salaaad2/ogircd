@@ -12,7 +12,7 @@
 
 #include "../inc/ftirc.hpp"
 
-int addclient(std::map<int, Client> *clients, int listener)
+int addclient(Server &serv,  int listener)
 {
     Client nc;
 
@@ -28,7 +28,6 @@ int addclient(std::map<int, Client> *clients, int listener)
         std::cout << "Server-accept() is OK...\n";
     std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
     std::cout << " on socket " << nc.clfd << std::endl;
-    std::pair<int, Client> n(nc.clfd, nc);
-    clients->insert(n);
+    serv.setFDClients(nc.clfd, nc);
     return (nc.clfd);
 }

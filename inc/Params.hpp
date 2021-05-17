@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "ftirc.hpp"
-
+#include "utils.hpp"
+#include <iostream>
 class Params
 {
 private:
