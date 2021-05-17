@@ -30,6 +30,11 @@ int main(int ac, char **av)
         strcpy(pseudo, av[2]);
         strcpy(passwd, av[3]);
     }
+    else
+    {
+        printf("insufficient parameters.\nUsage : ./ctest [PORT] [NICK] [PASS]")
+        return (1);
+    }
     // specify an address for the socket
     struct sockaddr_in server_address;
 

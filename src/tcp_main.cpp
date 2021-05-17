@@ -40,6 +40,11 @@ int main_loop(Server &serv, std::map<int, Client> *clients, Fds *fds)
 
 int main(int ac, char *av[])
 {
+	if (ac < 3)
+	{
+		std::cout << "Insufficient parameters. \nUsage : ./ircserv [PORT] [PASS]" << std::endl;
+		return (1);
+	}
 	std::map<int, Client> *clients = new std::map<int, Client>;
 	int newfd;
 	Params *pm = new Params(ac, av);
