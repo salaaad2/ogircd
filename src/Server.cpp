@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/17 17:52:29 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/17 18:04:54 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ void Server::send_reply(int fd, int code, const char *msg)
     std::string ccmd = ft_format_cmd(ft_utoa(code));
     std::string to_send;
 
-        to_send += (std::string(_prefix) + " " + ccmd + " " + std::string(msg) + "\r\n");
+    to_send += (std::string(_prefix) + " " + ccmd + " " + std::string(msg) + "\r\n");
     send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
@@ -207,11 +207,9 @@ void Server::nickcmd(Message *msg, int fd)
         if (_fd_clients[fd].nickname[0] != 0)
             _nick_clients.insert(_nick_clients.find(_fd_clients[fd].nickname),  std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
         else
-        {
             _nick_clients.insert(std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
-            send_reply(fd, RPL_NONE, "");
-        }
         strcpy(_fd_clients[fd].nickname, msg->params[0]);
+        send_reply(fd, RPL_NONE, "");
     }
     else {
         send(fd, msg_error(ERR_NICKNAMEINUSE), strlen(msg_error(ERR_NICKNAMEINUSE)), 0);

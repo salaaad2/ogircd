@@ -79,7 +79,8 @@ int main(int ac, char **av)
         printf("%s\n", response);
         printf("{%s}", all);
         fgets(message, 512, stdin);
-        strcat(all, message);
+        message[strlen(message) - 1] = 0;
+        //strcat(all, message);
         sprintf(all, "%s\r\n", message);
         send(net_socket, all, strlen(all), 0);
     }
