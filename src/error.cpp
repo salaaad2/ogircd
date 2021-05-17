@@ -12,8 +12,12 @@
 
 #include "../inc/replies.hpp"
 
-char *msg_error(int code)
+const char *msg_error(int code)
 {
-    if (code == ERR_ALREADYREGISTERED)
-        return (":You may not reregister");
+    switch(code) {
+        case  ERR_ALREADYREGISTERED :
+            return (":You may not reregister");
+        case ERR_NICKNAMEINUSE :
+            return(":Nickname already in use");
+    }
 }

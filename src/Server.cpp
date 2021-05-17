@@ -183,7 +183,7 @@ void Server::passcmd(Message *msg, Client &client)
         send(client.clfd, tmp.c_str(), tmp.size(), 0);
     }
     else if (!msg->params[0][0])
-        send(client.clfd, msg_error(ERR_NEEDMOREPARAMS), sizeof(msg_error(ERR_NEEDMOREPARAMS)), 0);
+        send(client.clfd, msg_error(ERR_NEEDMOREPARAMS), strlen(msg_error(ERR_NEEDMOREPARAMS)), 0);
     // else if (!strcmp(msg->params[0], _password))
     // {
     //     client.is_register = true;
@@ -212,6 +212,9 @@ void Server::nickcmd(Message *msg, int fd)
             _nick_clients.insert(std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
         strcpy(_fd_clients[fd].nickname, msg->params[0]);
         std::cout << "New client.nickname = " << _fd_clients[fd].nickname << std::endl;
+    }
+    else {
+        send(fd, msg_error(ERR_NICKNAMEINUSE), strlen(msg_error(ERR_NICKNAMEINUSE)), 0);
     }
 }
 
