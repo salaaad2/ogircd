@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ifaddrs.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
@@ -44,6 +45,20 @@ int main(int ac, char **av)
     server_address.sin_addr.s_addr = INADDR_ANY;
     /* server_address.sin_addr.s_addr = inet_addr("10.4.5.7"); */
 
+
+    struct ifaddrs *ifaddr, *ifa;
+    const char* ifname = "en0";
+
+    getifaddrs(&ifaddr);
+    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+        if((ifa->ifa_addr != NULL) &&
+           (strcmp(ifa->ifa_name, ifname) == 0) &&  
+           (ifa->ifa_addr->sa_family == AF_INET)) {
+            printf("\tAddress: <%s>\n", inet_ntoa(((struct sockaddr_in *)ifa->ifa_addr)->sin_addr));
+            char *hostname = inet_ntoa(((struct sockaddr_in *)ifa->ifa_addr)->sin_addr);
+            break;
+        }
+    }
 
     int connection_status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
     if (connection_status == -1) {
