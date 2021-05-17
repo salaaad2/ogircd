@@ -1,6 +1,7 @@
 #ifndef __UTILS_H_
 #define __UTILS_H_
 
+#include <string.h>
 #include <string>
 #include <sys/types.h>
 

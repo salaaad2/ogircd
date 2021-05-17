@@ -40,7 +40,7 @@ void Server::getIP()
     const char* p = inet_ntoa(name.sin_addr);
     if(p != NULL)
     {
-        printf("Local ip is : %s \n" , p);
+        std::cout << "Local ip is : " << p << "\n";
     }
     strcpy(_ip, p);
     _prefix[0] = ':';
@@ -126,7 +126,7 @@ void Server::do_connect(Params *pm)
     
     int connection_status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
     if (connection_status == -1)
-        printf("Error making connection to the remote socket\n\n");
+        std::cout << "Error making connection to the remote socket\n\n";
     send(net_socket, "SERVER", 6, 0);
 }
 

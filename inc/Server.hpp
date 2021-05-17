@@ -12,14 +12,18 @@
 
 #pragma once
 
+#include <map>
+#include <vector>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+
 #include "message.hpp"
 #include "client.hpp"
 #include "fds.hpp"
 #include "Params.hpp"
-#include <map>
 #include "replies.hpp"
-#include <vector>
-#include <cstring>
+
 #define SOCKET_ERROR "Error: creating socket"
 #define LISTEN_ERROR "Error: listening server"
 #define BIND_ERROR "Error: binding server"
