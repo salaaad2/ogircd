@@ -148,8 +148,25 @@ void Server::send_reply(int fd, char cmd[], char prefix[])
 
 void Server::do_command(Message *msg, Client &client)
 {
-    if (!strcmp(msg->command, "PASS"))
-        passcmd(msg, client);
+    std::string tmp(msg->command);
+
+    switch (tmp) {
+        case "PASS":
+            passcmd(msg, client);
+            break;
+        case "NICK":
+            nickcmd(msg, client);
+            break;
+        // case "PASS":
+        //     passcmd(msg, client);
+        //     break;
+        // case "PASS":
+        //     passcmd(msg, client);
+        //     break;
+        // case "PASS":
+        //     passcmd(msg, client);
+        //     break;
+    }
 }
 
 
@@ -183,5 +200,10 @@ void Server::passcmd(Message *msg, Client &client)
 
 void Server::nickcmd(Message *msg, Client &client)
 {
-    
+    // check against other usernicks
+    // return :
+    // ERR_NICKCOLLISION ERR_NICKNAMEINUSE ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE
+    // if (strcmp(msg->params[0] == client.nickname)) {
+    // }
+
 }

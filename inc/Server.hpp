@@ -31,7 +31,7 @@ private:
 	char						_password[32];
 	std::map<char[9], char[32]> _register;
 	Fds							*_fds;
-	
+
 public:
 
 	int							listener;

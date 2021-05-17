@@ -40,11 +40,14 @@ int add_cmd(char cmd[], char buf[], int i)
         cmd[2] = buf[i + 2];
         i += 3;
     }
-    else while ((buf[i] > 64 && buf[i] < 91) || (buf[i] > 96 && buf[i] < 123))
+    else
     {
-        cmd[j] = buf[i];
-        i++;
-        j++;
+        while ((buf[i] > 64 && buf[i] < 91) || (buf[i] > 96 && buf[i] < 123))
+        {
+            cmd[j] = buf[i];
+            i++;
+            j++;
+        }
     }
     while (buf[i] == ' ')
         i++;
