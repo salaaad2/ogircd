@@ -7,6 +7,8 @@ struct Client
     unsigned int addrlen;
     int          clfd;
     char         nickname[9];
+    char         username[32];
+    char         realname[32];
     char         host[16];
     bool         is_server;
     bool         is_register;

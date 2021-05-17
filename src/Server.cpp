@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/17 15:55:56 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/17 17:50:41 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,9 @@ void Server::do_command(Message *msg, int fd)
     else if (tmp == "NICK") {
         nickcmd(msg, fd);
     }
+    else if (tmp == "USER") {
+        usercmd(msg, fd);
+    }
     // case "PASS":
         //     passcmd(msg, client);
         //     break;
@@ -216,6 +219,14 @@ void Server::nickcmd(Message *msg, int fd)
     else {
         send(fd, msg_error(ERR_NICKNAMEINUSE), strlen(msg_error(ERR_NICKNAMEINUSE)), 0);
     }
+}
+
+void Server::usercmd(Message *msg, int fd)
+{
+    if (!msg->params[0][0] || !msg->params[1][0] || msg->params[2][0] || msg->params[3][0])
+        send(fd, msg_error(ERR_NEEDMOREPARAMS), strlen(msg_error(ERR_NEEDMOREPARAMS)), 0);
+    strcpy(_fd_clients[fd].username, msg->params[0]);
+    strcpy(_fd_clients[fd].realname, msg->params[3]);
 }
 
 std::map<int, Client> Server::getFDClients(void) const {
