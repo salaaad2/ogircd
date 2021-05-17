@@ -1,4 +1,4 @@
-.ccls-*
+.ccls*
 ### C ###
 # Prerequisites
 *.d
