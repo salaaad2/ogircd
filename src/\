@@ -152,7 +152,7 @@ void Server::do_command(Message *msg, int fd)
 
     std::cout << "{" << _fd_clients[fd].nickname << "} says : " << msg->command << std::endl;
     if (tmp == "PASS") {
-        passcmd(msg, _fd_clients[fd]);
+        passcmd(msg, fd);
     }
     else if (tmp == "NICK") {
         nickcmd(msg, fd);
@@ -205,12 +205,12 @@ void Server::nickcmd(Message *msg, int fd)
     // ERR_NICKCOLLISION ERR_NICKNAMEINUSE ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE
     std::cout << "msg->params[0] : |" << msg->params[0] << "|\n";
     if (_nick_clients.count(msg->params[0]) == 0) {
-        if (_fd_clients[fd].nickname[0] != 0)
-            _nick_clients.insert(_nick_clients.find(_fd_clients[fd].nickname),  std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
+        if (client.nickname[0] != 0)
+            _nick_clients.insert(_nick_clients.find(client.nickname),  std::pair<std::string, Client>(msg->params[0], client));
         else
-            _nick_clients.insert(std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
-        strcpy(_fd_clients[fd].nickname, msg->params[0]);
-        std::cout << "New client.nickname = " << _fd_clients[fd].nickname << std::endl;
+            _nick_clients.insert(std::pair<std::string, Client>(msg->params[0], client));
+        strcpy(client.nickname, msg->params[0]);
+        std::cout << "New client.nickname = " << client.nickname << std::endl;
     }
 }
 

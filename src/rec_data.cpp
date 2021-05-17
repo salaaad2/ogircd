@@ -32,7 +32,7 @@ void rec_data(Server &serv, int i, Fds *fds)
     else
     {
         std::cout << buf;
-        serv.do_command(parse_message(serv, buf), serv.getFDClients()[i]);
+        serv.do_command(parse_message(serv, buf), i);
     //     for(int j = 0; j <= fds->fdmax; j++)
     //     {
     //         if(FD_ISSET(j, &fds->master))
