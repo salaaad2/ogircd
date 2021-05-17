@@ -19,7 +19,7 @@
 #include <map>
 #include "replies.hpp"
 #include <vector>
-
+#include <cstring>
 #define SOCKET_ERROR "Error: creating socket"
 #define LISTEN_ERROR "Error: listening server"
 #define BIND_ERROR "Error: binding server"
@@ -66,8 +66,8 @@ int     addclient(Server &serv, int i);
 
 	public:
 
-		void do_command(Message *msg, Client &client);
+		void do_command(Message *msg, int fd);
 		void passcmd(Message *msg, Client &client);
-		void nickcmd(Message *msg, Client &client);
+		void nickcmd(Message *msg, int fd);
 
 };

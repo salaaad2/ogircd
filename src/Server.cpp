@@ -147,16 +147,16 @@ void Server::send_reply(int fd, int cmd, char *prefix)
     send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
-void Server::do_command(Message *msg, Client &client)
+void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
 
-    std::cout << "{" << client.nickname << "} says : " << msg->command << std::endl;
+    std::cout << "{" << _fd_clients[fd].nickname << "} says : " << msg->command << std::endl;
     if (tmp == "PASS") {
-        passcmd(msg, client);
+        passcmd(msg, _fd_clients[fd]);
     }
     else if (tmp == "NICK") {
-        nickcmd(msg, client);
+        nickcmd(msg, fd);
     }
     // case "PASS":
         //     passcmd(msg, client);
@@ -199,14 +199,19 @@ void Server::passcmd(Message *msg, Client &client)
     //}
 }
 
-void Server::nickcmd(Message *msg, Client &client)
+void Server::nickcmd(Message *msg, int fd)
 {
     // check against other usernicks
     // return :
     // ERR_NICKCOLLISION ERR_NICKNAMEINUSE ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE
+    std::cout << "msg->params[0] : |" << msg->params[0] << "|\n";
     if (_nick_clients.count(msg->params[0]) == 0) {
-        _nick_clients.insert(_nick_clients.find(client.nickname),  std::pair<std::string, Client>(msg->params[0], client));
-        strcpy(client.nickname, msg->params[0]);
+        if (_fd_clients[fd].nickname[0] != 0)
+            _nick_clients.insert(_nick_clients.find(_fd_clients[fd].nickname),  std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
+        else
+            _nick_clients.insert(std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
+        strcpy(_fd_clients[fd].nickname, msg->params[0]);
+        std::cout << "New client.nickname = " << _fd_clients[fd].nickname << std::endl;
     }
     std::cout << client.nickname << "\n";
 }
@@ -232,6 +237,7 @@ int Server::addclient(Server &serv,  int listener)
 
     nc.is_server = false;
     nc.is_register = false;
+    memset(nc.nickname, '\0', 9);
     int addrlen = sizeof(nc.clientaddr);
     if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
     {
@@ -242,7 +248,6 @@ int Server::addclient(Server &serv,  int listener)
         std::cout << "Server-accept() is OK...\n";
     std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
     std::cout << " on socket " << nc.clfd << std::endl;
-    serv.setNickClients(nc.nickname, nc);
     serv.setFDClients(nc.clfd, nc);
     return (nc.clfd);
 }
