@@ -15,6 +15,12 @@
 #include "ftirc.hpp"
 #include "Params.hpp"
 
+#define SOCKET_ERROR "Error: creating socket"
+#define LISTEN_ERROR "Error: listening server"
+#define BIND_ERROR "Error: binding server"
+#define SETSOCK_ERROR "Error: setting socket options"
+
+
 class Server
 {
 private:

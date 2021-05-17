@@ -56,12 +56,12 @@ void Server::new_serv(Params *pm)
     
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        std::cout << "Server-socket() error\n";
+        std::cout << SOCKET_ERROR << std::endl;
         exit(1);
     }
     if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
     {
-        std::cout << "Server-setsockopt() error\n";
+        std::cout << SETSOCK_ERROR << std::endl;;
         exit(1);
     }
     _addr.sin_family = AF_INET;
@@ -71,12 +71,12 @@ void Server::new_serv(Params *pm)
     ft_bzero(&(_addr.sin_zero), 8);
     if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
     {
-        perror("Server-bind() error");
+        perror(BIND_ERROR);
         exit(1);
     }
     if(listen(listener, 10) == -1)
     {
-        perror("Server-listen() error");
+        perror(LISTEN_ERROR);
         exit(1);
     }
 }
@@ -86,12 +86,12 @@ void Server::connect_serv(Params *pm)
     int yes = 1;
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        std::cout << "Server-socket() error\n";
+        std::cout << SOCKET_ERROR << std::endl;
         exit(1);
     }
     if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
     {
-        std::cout << "Server-setsockopt() error\n";
+        std::cout << SETSOCK_ERROR << std::endl;
         exit(1);
     }
     _addr.sin_family = AF_INET;
@@ -101,12 +101,12 @@ void Server::connect_serv(Params *pm)
     ft_bzero(&(_addr.sin_zero), 8);
     if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
     {
-        perror("Server-bind() error");
+        perror(BIND_ERROR);
         exit(1);
     }
     if(listen(listener, 10) == -1)
     {
-        perror("Server-listen() error");
+        perror(LISTEN_ERROR);
         exit(1);
     }
     do_connect(pm);
@@ -151,6 +151,7 @@ void Server::do_command(Message *msg, Client &client)
     if (!strcmp(msg->command, "PASS"))
         passcmd(msg, client);
 }
+
 
 void Server::passcmd(Message *msg, Client &client)
 {
