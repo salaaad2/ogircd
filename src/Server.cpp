@@ -213,7 +213,6 @@ void Server::nickcmd(Message *msg, int fd)
         strcpy(_fd_clients[fd].nickname, msg->params[0]);
         std::cout << "New client.nickname = " << _fd_clients[fd].nickname << std::endl;
     }
-    std::cout << client.nickname << "\n";
 }
 
 std::map<int, Client> Server::getFDClients(void) const {

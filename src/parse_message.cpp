@@ -59,7 +59,7 @@ void add_params(char params[32][32], char buf[], int i)
     int j = 0;
     int k = 0;
 
-    while (buf[i] != '\r')
+    while (buf[i] && buf[i] != '\r')
     {
         if (buf[i] != ':')
         {
@@ -77,7 +77,7 @@ void add_params(char params[32][32], char buf[], int i)
         else
         {
             i++;
-            while (buf[i] != '\r')
+            while (buf[i] && buf[i] != '\r')
             {
                 params[j][k] = buf[i];
                 i++;
