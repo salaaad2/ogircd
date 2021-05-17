@@ -74,9 +74,9 @@ int main(int ac, char **av)
     {
         char all[512];
         bzero(all, 512);
-        /* bzero(response, 256); */
-        /* recv(net_socket, &response, sizeof(response), 0); */
-        /* printf("%s\n", response); */
+        bzero(response, 256);
+        recv(net_socket, &response, sizeof(response), 0);
+        printf("%s\n", response);
         printf("{%s}", all);
         fgets(message, 512, stdin);
         strcat(all, message);

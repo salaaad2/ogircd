@@ -60,14 +60,14 @@ int     addclient(Server &serv, int i);
 		void connect_serv(Params *pm);
 		void do_connect(Params *pm);
 		void getIP();
-		void send_reply(int fd, int cmd, char prefix[]);
+		void send_reply(int fd, int code, const char *msg);
 
 /* MESSAGE TREATMENT */
 
 	public:
 
 		void do_command(Message *msg, int fd);
-		void passcmd(Message *msg, Client &client);
+		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
 

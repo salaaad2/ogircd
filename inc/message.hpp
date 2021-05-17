@@ -8,5 +8,6 @@ struct Message
 };
 
 
-char    *msg_error(int code);
+const char    *msg_error(int code);
+const char    *msg_rpl(int code);
 #endif // __MESSAGE_H_
