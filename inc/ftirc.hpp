@@ -34,4 +34,3 @@
 #include "Params.hpp"
 
 void    rec_data(Server &serv, int i, Fds *fdmax);
-Message *parse_message(Server &serv, char buf[]);
