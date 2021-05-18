@@ -3,7 +3,7 @@
 
 void Server::joincmd(Message *msg, int fd)
 {
-    std::vector<std::string> channels = parse_channels(msg->params[0]);
+    std::vector<std::string> channels = parse_channels(msg->params[0].c_str());
 
     for (size_t i = 0 ; i < channels.size() ; i++)
         join2(channels[i], fd);
@@ -24,7 +24,8 @@ void Server::join2(std::string chan, int fd)
     //     new_channel(chan, fd);
     _channels[chan].push_back(_fd_clients[fd]);
     _fd_clients[fd].chans.push_back(chan);
-    _topics[chan] = "Welcome to the channel you chose";
+    //_topics[chan] = "Welcome to the channel you chose";
+
     send_reply(fd, RPL_TOPIC, chan);
     send_reply(fd, RPL_NAMREPLY, chan);
     send_reply(fd, RPL_ENDOFNAMES, chan);
@@ -42,7 +43,7 @@ void Server::new_channel(std::string chan, int fd)
     _topics[chan] = "Welcome to the channel you chose";
 }
 
-std::vector<std::string> Server::parse_channels(char params[])
+std::vector<std::string> Server::parse_channels(const char params[])
 {
     size_t count = 0;
     std::vector<std::string> channels;

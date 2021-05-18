@@ -46,6 +46,8 @@ std::string Server::msg_rpl(int code, int fd, std::string chan)
             return std::string(":Password doesn't match the server's");
         case ERR_NONICKNAMEGIVEN :
             return std::string(":User must provide a nickname");
+        case ERR_NEEDMOREPARAMS :
+            return std::string(":Insufficient parameter count");
 
         default :
             return std::string("");
