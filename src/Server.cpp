@@ -281,6 +281,30 @@ void Server::privmsgcmd(Message *msg, int fd)
 {
     size_t i = 0;
     std::vector<Client> vec;
+    std::string s;
+    while (i < msg->params.size() && msg->params[i][0] != ':')
+    {
+        if (msg->params[i].compare(",") || msg->params[i].compare(" "))
+        {
+            if (_nick_clients.count(msg->params[i]) == 0)
+            {
+                std::cout << "Error username : " << msg->params[i] << "\n";
+                send_reply(fd, ERR_USERSDONTMATCH);
+                return;
+            }
+            else
+                vec.push_back(_nick_clients[msg->params[i]]);
+        }
+        i++;
+    }
+    i++;
+    while (i < msg->params.size())
+    {
+        s += msg->params[i];
+        i++;
+    }
+    std::cout << "Receiver " << vec[0].nickname << "\nMessage :" << s << std::endl;
+    send_reply_broad(_fd_clients[fd], vec, -1, s.c_str());
 }
 
 //===============================================================================

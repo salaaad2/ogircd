@@ -35,6 +35,7 @@ get_params(char buf[], Message *nm, int i) {
         if (buf[i] == ':' || buf[i] == ' ' || buf[i] == ',' || buf[i] == '#')
         {
             nm->params.push_back(tmp);
+            nm->params.push_back(&buf[i]);
             tmp.clear();
         }
         else

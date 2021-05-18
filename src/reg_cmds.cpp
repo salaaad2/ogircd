@@ -42,7 +42,6 @@ void Server::usercmd(Message *msg, int fd)
     }
     else
     {
-        std::cout << "register this guy\n";
         strcpy(_fd_clients[fd].username, msg->params[0].c_str());
         strcpy(_fd_clients[fd].realname, msg->params[3].c_str());
         do_registration(fd);
