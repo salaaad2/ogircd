@@ -1,9 +1,9 @@
 #include "../inc/replies.hpp"
 #include "../inc/Server.hpp"
 
-const char *Server::msg_rpl(int code, int fd)
+std::string Server::msg_rpl(int code, int fd)
 {
-    char response[512];
+    std::string response;
 
     switch(code){
 
@@ -11,8 +11,9 @@ const char *Server::msg_rpl(int code, int fd)
 
         case RPL_WELCOME :
         {
-            strcpy(response, "Welcome to the Internet Relay Network\n");
-            return(strcat(response, _fd_clients[fd].prefix));
+            response += "Welcome to the Internet Relay Network ";
+            response += _fd_clients[fd].prefix;
+            return response;
         }
         case RPL_TOPIC :
             return("Welcome to the channel you chose");
@@ -26,13 +27,13 @@ const char *Server::msg_rpl(int code, int fd)
         /* ERRORS */
 
         case ERR_ALREADYREGISTERED :
-            return (":You may not reregister");
+            return std::string(":You may not reregister");
         case ERR_NICKNAMEINUSE :
-            return(":Nickname already in use");
+            return std::string(":Nickname already in use");
         case ERR_USERONCHANNEL :
-            return(":User already on channel");
+            return std::string(":User already on channel");
 
         default :
-            return ("");
+            return std::string("");
     }
 }
