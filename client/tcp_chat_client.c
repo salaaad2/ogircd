@@ -9,16 +9,23 @@
 #include <netinet/in.h>
 
 void
-p_send(char pseudo[], char password[], int net_socket)
+p_send(char pseudo[], char password[], int net_socket, char user[], char realname[])
 {
     char psend[110];
 
     /* strcat(psend, "PASS :"); */
     /* strcat(psend, password); */
     /* strcat(psend, "\r\n"); */
-    sprintf(psend, "NICK :%s\r\nPASS :%s\r\n", pseudo, password);
+    sprintf(psend, "PASS :%s\r\n", password);
     send(net_socket, psend, strlen(psend), 0);
-    
+    sleep(1);
+    bzero(psend, 110);
+    sprintf(psend, "NICK :%s\r\n", pseudo);
+    send(net_socket, psend, strlen(psend), 0);
+    sleep(1);
+    bzero(psend, 110);
+    sprintf(psend, "USER %s 0 * :%s\r\n", user, realname);
+    send(net_socket, psend, strlen(psend), 0);
 }
 
 
@@ -28,12 +35,18 @@ int main(int ac, char **av)
     int net_socket = socket(AF_INET, SOCK_STREAM, 0);
     char pseudo[100] = "salad";
     char passwd[100] = "PASS ";
+    char user[100] = "user";
+    char realname[100] = "jack ma";
 
-    if (ac >= 4) {
+    if (ac == 4) {
         strcpy(pseudo, av[2]);
         strcpy(passwd, av[3]);
     }
-    else
+    if (ac == 5)
+        strcpy(user, av[4]);
+    if (ac == 6)
+        strcpy(realname, av[5]);
+    if (ac < 4)
     {
         printf("insufficient parameters.\nUsage : ./ctest [PORT] [NICK] [PASS]");
         return (1);
@@ -68,7 +81,7 @@ int main(int ac, char **av)
 
     char message[512];
     bzero(message, 512);
-    p_send(pseudo, passwd, net_socket);
+    p_send(pseudo, passwd, net_socket, user, realname);
     char response[256];
     bzero(response, 256);
 
