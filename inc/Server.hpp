@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/18 12:40:37 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/18 16:14:14 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,16 @@ int     addclient(Server &serv, int i);
 /* MESSAGE TREATMENT */
 
 	public:
-
+		/*registration*/
 		void do_command(Message *msg, int fd);
 		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
+		
+		/*channels*/
 		void joincmd(Message*, int);
+		void join2(std::string chan, int fd);
+		std::vector<std::string> parse_channels(char params[]);
 
 		std::string msg_rpl(int code, int fd);
 };
