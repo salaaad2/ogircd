@@ -193,7 +193,7 @@ void Server::chan_msg(Message * msg, int fd) {
     size_t i = 1;
 
     s += ("[" + std::string(_fd_clients[fd].nickname) + "] : ");
-    while (i < (msg->params.size() / 2))
+    while (i < ((msg->params.size() / 2)))
     {
         s += msg->params[i];
         i++;
