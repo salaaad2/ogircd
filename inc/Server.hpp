@@ -79,6 +79,7 @@ int     addclient(Server &serv, int i);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
 		void joincmd(Message*, int);
+		void privmsgcmd(Message*, int);
 
 		std::string msg_rpl(int code, int fd);
 };

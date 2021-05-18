@@ -12,6 +12,24 @@
 
 #include "../inc/Server.hpp"
 
+void Server::setFds(Fds *fds) {_fds = fds;}
+
+std::map<int, Client> Server::getFDClients(void) const {
+    return (_fd_clients);
+}
+std::map<std::string, Client> Server::getNickClients(void) const {
+    return (_nick_clients);
+}
+
+void Server::setFDClients(int i, Client cl) {
+    _fd_clients[i] = cl;
+}
+
+void Server::setNickClients(std::string s, Client cl) {
+    _nick_clients[s] = cl;
+}
+
+
 Server::Server(Params *pm)
 {
     _network = new std::vector<sockaddr_in>;
@@ -21,39 +39,13 @@ Server::Server(Params *pm)
         connect_serv(pm);
 }
 
-void Server::getIP()
-{
-    const char* google_dns_server = "8.8.8.8";
-    int dns_port = 53;
-    struct sockaddr_in serv;
-    int sock = socket ( AF_INET, SOCK_DGRAM, 0);
-
-    memset( &serv, 0, sizeof(serv) );
-    serv.sin_family = AF_INET;
-    serv.sin_addr.s_addr = inet_addr( google_dns_server );
-    serv.sin_port = htons( dns_port );
-    int err = connect( sock , (const struct sockaddr*) &serv , sizeof(serv) );
-    struct sockaddr_in name;
-    socklen_t namelen = sizeof(name);
-    err = getsockname(sock, (struct sockaddr*) &name, &namelen);
-    char buffer[100];
-    const char* p = inet_ntoa(name.sin_addr);
-    if(p != NULL)
-    {
-        std::cout << "Local ip is : " << p << "\n";
-    }
-    strcpy(_ip, p);
-    _prefix[0] = ':';
-    strcat(_prefix, _ip);
-}
-
-void Server::setFds(Fds *fds) {_fds = fds;}
+//=====================CREATION AND CONNECTION OF THE SERVER============================
 
 void Server::new_serv(Params *pm)
 {
     int yes = 1;
     getIP();
-    
+
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cout << SOCKET_ERROR << std::endl;
@@ -123,18 +115,69 @@ void Server::do_connect(Params *pm)
     server_address.sin_port = htons(pm->getPortNetwork());
     server_address.sin_addr.s_addr = INADDR_ANY;
     this->_network->push_back(server_address);
-    
+
     int connection_status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
     if (connection_status == -1)
         std::cout << "Error making connection to the remote socket\n\n";
     send(net_socket, "SERVER", 6, 0);
 }
 
+//========================================================================================
 
 
-/******************/
-/* TREAT COMMANDS */
-/******************/
+
+int Server::addclient(Server &serv,  int listener)
+{
+    Client nc;
+
+    nc.is_server = false;
+    nc.is_register = false;
+    memset(nc.nickname, '\0', 9);
+    int addrlen = sizeof(nc.clientaddr);
+    if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
+    {
+		std::cout << "Server-accept() error\n";
+        return (-1);
+    }
+    else
+        std::cout << "Server-accept() is OK...\n";
+    std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
+    strcpy(nc.host, inet_ntoa(nc.clientaddr.sin_addr));
+    std::cout << " on socket " << nc.clfd << std::endl;
+    serv.setFDClients(nc.clfd, nc);
+    return (nc.clfd);
+}
+
+void Server::getIP()
+{
+    const char* google_dns_server = "8.8.8.8";
+    int dns_port = 53;
+    struct sockaddr_in serv;
+    int sock = socket ( AF_INET, SOCK_DGRAM, 0);
+
+    memset( &serv, 0, sizeof(serv) );
+    serv.sin_family = AF_INET;
+    serv.sin_addr.s_addr = inet_addr( google_dns_server );
+    serv.sin_port = htons( dns_port );
+    int err = connect( sock , (const struct sockaddr*) &serv , sizeof(serv) );
+    struct sockaddr_in name;
+    socklen_t namelen = sizeof(name);
+    err = getsockname(sock, (struct sockaddr*) &name, &namelen);
+    char buffer[100];
+    const char* p = inet_ntoa(name.sin_addr);
+    if(p != NULL)
+    {
+        std::cout << "Local ip is : " << p << "\n";
+    }
+    strcpy(_ip, p);
+    _prefix[0] = ':';
+    strcat(_prefix, _ip);
+}
+
+
+
+
+//==============================TREAT COMMANDS======================================
 
 void Server::send_reply(int fd, int code)
 {
@@ -172,6 +215,8 @@ void Server::do_command(Message *msg, int fd)
     {
         if (tmp == "JOIN")
             joincmd(msg, fd);
+        else if (tmp == "PRIVMSG")
+            privmsgcmd(msg, fd);
     }
     else
         send_reply(fd, ERR_NOTREGISTERED);
@@ -205,11 +250,10 @@ void Server::joincmd(Message *msg, int fd)
 {
     std::string s;
     for (size_t i = 0; i < _fd_clients[fd].chans.size(); i++) {
-        if (msg->params[0] == _fd_clients[fd].chans[i])
-        {
-            send_reply(fd, ERR_USERONCHANNEL);
-            return;
-        }
+      if (msg->params[0] == _fd_clients[fd].chans[i]) {
+        send_reply(fd, ERR_USERONCHANNEL);
+        return;
+      }
     }
     _channels[msg->params[0]].push_back(_fd_clients[fd]);
     _fd_clients[fd].chans.push_back(msg->params[0]);
@@ -223,41 +267,16 @@ void Server::joincmd(Message *msg, int fd)
     send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], -1, s.c_str());
 }
 
-
-
-std::map<int, Client> Server::getFDClients(void) const {
-    return (_fd_clients);
-}
-std::map<std::string, Client> Server::getNickClients(void) const {
-    return (_nick_clients);
-}
-
-void Server::setFDClients(int i, Client cl) {
-    _fd_clients[i] = cl;
-}
-
-void Server::setNickClients(std::string s, Client cl) {
-    _nick_clients[s] = cl;
-}
-
-int Server::addclient(Server &serv,  int listener)
+void Server::privmsgcmd(Message *msg, int fd)
 {
-    Client nc;
-
-    nc.is_server = false;
-    nc.is_register = false;
-    memset(nc.nickname, '\0', 9);
-    int addrlen = sizeof(nc.clientaddr);
-    if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
+    size_t i = 0;
+    std::vector<Client> vec;
+    while (msg->params[i] != 0)
     {
-		std::cout << "Server-accept() error\n";
-        return (-1);
+        vec.push_back(_nick_clients[msg->params[i]]);
+        i++;
     }
-    else
-        std::cout << "Server-accept() is OK...\n";
-    std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
-    strcpy(nc.host, inet_ntoa(nc.clientaddr.sin_addr));
-    std::cout << " on socket " << nc.clfd << std::endl;
-    serv.setFDClients(nc.clfd, nc);
-    return (nc.clfd);
+    send_reply_broad(_fd_clients[fd], vec,  -1, "a message has been sent\n");
 }
+
+//===============================================================================
