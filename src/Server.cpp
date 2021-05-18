@@ -160,6 +160,9 @@ void Server::do_command(Message *msg, int fd)
     else if (tmp == "USER") {
         usercmd(msg, fd);
     }
+    else if (tmp == "JOIN") {
+        joincmd(msg, fd);
+    }
     else
         send_reply(fd, RPL_NONE);
     // case "PASS":
@@ -173,7 +176,45 @@ void Server::do_command(Message *msg, int fd)
         //     break;
 }
 
+void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code, const char *s)
+{
+    for (size_t i = 0; i < cl.size(); i++)
+    {
+        if (cl[i].clfd != sender.clfd)
+        {
+            if (code != -1)
+                send_reply(cl[i].clfd, code);
+            else
+                send(cl[i].clfd, s, strlen(s), 0);
+        }
+    }
+}
 
+void Server::join(Message *msg, int fd)
+{
+    std::string s;
+    for (size_t i = 0; i < _fd_clients[fd].chans.size(); i++) {
+        if (msg->params[0] == _fd_clients[fd].chans[i])
+        {
+            send_reply(fd, ERR_USERONCHANNEL);
+            return;
+        }
+    }
+    if (_channels.count(msg->params[0]) == 0)
+    {
+        _fd_clients[fd].chans.push_back(msg->params[0]);
+        _channels.insert(std::pair<std::string, std::vector<Client>(msg->params[0], _fd_clients[fd]));
+        send_reply(fd, RPL_TOPIC);
+        send_reply(fd, RPL_NAMREPLY); 
+        send_reply(fd, RPL_ENDOFNAMES);
+        s += _fd_clients[fd].nickname;
+        s += " joined channel ";
+        s += msg->params[0];
+        send_reply_broad(_fd_clients[fd], _fd_clients[fd].chans, s.c_str());
+    }
+    // if (msg->params[0][0]) {
+    // }
+}
 
 void Server::passcmd(Message *msg, int fd)
 {

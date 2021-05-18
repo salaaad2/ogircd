@@ -42,6 +42,7 @@ class Server
 		Fds							*_fds;
 		std::map<int, Client> _fd_clients;
 		std::map<std::string, Client> _nick_clients;
+		std::map<std::string, std::vector<Client>> _channels;
 
 	public:
 
