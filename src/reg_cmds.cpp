@@ -37,7 +37,7 @@ void Server::usercmd(Message *msg, int fd)
     std::cout << "1 nick : " << _fd_clients[fd].nickname << " pass : " << _fd_clients[fd].password << "\n";
     if (_fd_clients[fd].is_register == true)
         send_reply(fd, ERR_ALREADYREGISTERED);
-    else if (!msg->params[0][0] || !msg->params[1][0] || msg->params[2][0] || msg->params[3][0])
+    else if (!msg->params[0][0] || !msg->params[1][0] || !msg->params[2][0] || !msg->params[3][0])
         send_reply(fd, ERR_NEEDMOREPARAMS);
     else
     {

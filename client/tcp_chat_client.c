@@ -70,18 +70,32 @@ int main(int ac, char **av)
     p_send(pseudo, passwd, net_socket);
     char response[256];
     bzero(response, 256);
-    while(1)
+
+    pid_t pid;
+
+    pid = fork();
+    
+    if (pid == 0)
+    {        
+        while(1)
+        {
+            char all[512];
+            bzero(all, 512);
+            printf("{%s}", all);
+            fgets(message, 512, stdin);
+            message[strlen(message) - 1] = 0;
+            sprintf(all, "%s\r\n", message);
+            send(net_socket, all, strlen(all), 0);
+        }
+    }
+    else
     {
-        char all[512];
-        bzero(all, 512);
-        bzero(response, 256);
-        recv(net_socket, &response, sizeof(response), 0);
-        printf("%s\n", response);
-        printf("{%s}", all);
-        fgets(message, 512, stdin);
-        message[strlen(message) - 1] = 0;
-        sprintf(all, "%s\r\n", message);
-        send(net_socket, all, strlen(all), 0);
+        while (1)
+        {
+            bzero(response, 256);
+            recv(net_socket, &response, sizeof(response), 0);
+            printf("%s\n", response);
+        }
     }
     close(net_socket);
 
