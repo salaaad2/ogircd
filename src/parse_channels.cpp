@@ -24,11 +24,11 @@ void Server::join2(std::string chan, int fd)
     //     new_channel(chan, fd);
     _channels[chan].push_back(_fd_clients[fd]);
     _fd_clients[fd].chans.push_back(chan);
-    //_topics[chan] = "Welcome to the channel you chose";
+    _topics[chan] = "Welcome to the channel you chose";
 
     send_reply(fd, RPL_TOPIC, chan);
     send_reply(fd, RPL_NAMREPLY, chan);
-    send_reply(fd, RPL_ENDOFNAMES, chan);
+    //send_reply(fd, RPL_ENDOFNAMES, chan);
     s += _fd_clients[fd].nickname;
     s += " joined channel ";
     s += chan;

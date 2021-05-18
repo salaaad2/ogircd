@@ -25,6 +25,7 @@ std::string Server::msg_rpl(int code, int fd, std::string chan)
                 response += _channels[chan][i].nickname;
                 response += " ";
             }
+            return response;
         }
         case RPL_ENDOFNAMES :
             return(chan + ":End of /NAMES list");
