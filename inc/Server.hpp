@@ -42,7 +42,7 @@ class Server
 		Fds							*_fds;
 		std::map<int, Client> _fd_clients;
 		std::map<std::string, Client> _nick_clients;
-		std::map<std::string, std::vector<Client>> _channels;
+		std::map<std::string, std::vector<Client> > _channels;
 
 	public:
 
@@ -68,6 +68,7 @@ int     addclient(Server &serv, int i);
 		void create_client_prefix(int fd);
 		void getIP();
 		void send_reply(int fd, int code);
+		void send_reply_broad(Client &sender, std::vector<Client> &cl, int code, const char *s);
 
 /* MESSAGE TREATMENT */
 
@@ -77,6 +78,7 @@ int     addclient(Server &serv, int i);
 		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
+		void joincmd(Message*, int);
 
 		const char *msg_rpl(int code, int fd);
 };

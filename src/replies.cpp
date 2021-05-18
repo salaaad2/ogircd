@@ -12,9 +12,16 @@ const char *Server::msg_rpl(int code, int fd)
         case RPL_WELCOME :
         {
             strcpy(response, "Welcome to the Internet Relay Network\n");
-            strcat(response, _fd_clients[fd].prefix);
-            return response;
+            return(strcat(response, _fd_clients[fd].prefix));
         }
+        case RPL_TOPIC :
+            return("Welcome to the channel you chose");
+        case RPL_NAMREPLY :
+            return("Namerply");
+        case RPL_ENDOFNAMES :
+            return("Endofnames");
+        case RPL_SUMMONING :
+            return ("You have been summoned");
 
         /* ERRORS */
 
@@ -22,6 +29,8 @@ const char *Server::msg_rpl(int code, int fd)
             return (":You may not reregister");
         case ERR_NICKNAMEINUSE :
             return(":Nickname already in use");
+        case ERR_USERONCHANNEL :
+            return(":User already on channel");
 
         default :
             return ("");
