@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/18 16:14:14 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/18 16:41:57 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int     addclient(Server &serv, int i);
 		void do_registration(int fd);
 		void create_client_prefix(int fd);
 		void getIP();
-		void send_reply(int fd, int code);
+		void send_reply(int fd, int code, std::string chan = std::string());
 		void send_reply_broad(Client &sender, std::vector<Client> &cl, int code, const char *s);
 
 /* MESSAGE TREATMENT */
@@ -84,5 +84,5 @@ int     addclient(Server &serv, int i);
 		void join2(std::string chan, int fd);
 		std::vector<std::string> parse_channels(char params[]);
 
-		std::string msg_rpl(int code, int fd);
+		std::string msg_rpl(int code, int fd, std::string chan = std::string());
 };

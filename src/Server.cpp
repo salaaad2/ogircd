@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/18 16:08:08 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/18 16:37:48 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,12 +136,12 @@ void Server::do_connect(Params *pm)
 /* TREAT COMMANDS */
 /******************/
 
-void Server::send_reply(int fd, int code)
+void Server::send_reply(int fd, int code, std::string chan)
 {
     std::string ccmd = ft_format_cmd(ft_utoa(code));
     std::string to_send;
 
-    to_send += (std::string(_prefix) + " " + ccmd + " " + msg_rpl(code, fd) + "\r\n");
+    to_send += (std::string(_prefix) + " " + ccmd + " " + msg_rpl(code, fd, chan) + "\r\n");
     send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
@@ -149,7 +149,7 @@ void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
     std::cout << "{" << _fd_clients[fd].nickname << "} says : " << msg->command << std::endl;
-    std::cout << msg->params[0];
+    //std::cout << msg->params[0];
     if (tmp == "PASS") {
         passcmd(msg, fd);
         }

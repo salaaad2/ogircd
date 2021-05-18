@@ -22,9 +22,9 @@ void Server::join2(std::string chan, int fd)
     }
     _channels[chan].push_back(_fd_clients[fd]);
     _fd_clients[fd].chans.push_back(chan);
-    send_reply(fd, RPL_TOPIC);
-    send_reply(fd, RPL_NAMREPLY);
-    send_reply(fd, RPL_ENDOFNAMES);
+    send_reply(fd, RPL_TOPIC, chan);
+    send_reply(fd, RPL_NAMREPLY, chan);
+    send_reply(fd, RPL_ENDOFNAMES, chan);
     s += _fd_clients[fd].nickname;
     s += " joined channel ";
     s += chan;
@@ -46,7 +46,5 @@ std::vector<std::string> Server::parse_channels(char params[])
         }
     }
     channels.push_back(std::string(params + count));
-    for (unsigned int i = 0 ; i < channels.size() ; i++)
-        std::cout << "\nchannel " << i << ": " << channels[i] << "\n";
     return channels;
 }

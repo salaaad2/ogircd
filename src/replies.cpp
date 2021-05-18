@@ -1,7 +1,7 @@
 #include "../inc/replies.hpp"
 #include "../inc/Server.hpp"
 
-std::string Server::msg_rpl(int code, int fd)
+std::string Server::msg_rpl(int code, int fd, std::string chan)
 {
     std::string response;
 
@@ -16,7 +16,7 @@ std::string Server::msg_rpl(int code, int fd)
             return response;
         }
         case RPL_TOPIC :
-            return("Welcome to the channel you chose");
+            return(chan + " :Welcome to the channel you chose");
         case RPL_NAMREPLY :
             return("Namerply");
         case RPL_ENDOFNAMES :
