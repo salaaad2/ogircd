@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/18 16:41:57 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/18 16:54:29 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class Server
 		std::map<int, Client> _fd_clients;
 		std::map<std::string, Client> _nick_clients;
 		std::map<std::string, std::vector<Client> > _channels;
+		std::map<std::string, std::string> _topics;
 
 	public:
 
@@ -83,6 +84,8 @@ int     addclient(Server &serv, int i);
 		void joincmd(Message*, int);
 		void join2(std::string chan, int fd);
 		std::vector<std::string> parse_channels(char params[]);
+		void new_channel(std::string chan, int fd);
+
 
 		std::string msg_rpl(int code, int fd, std::string chan = std::string());
 };

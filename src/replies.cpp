@@ -16,11 +16,18 @@ std::string Server::msg_rpl(int code, int fd, std::string chan)
             return response;
         }
         case RPL_TOPIC :
-            return(chan + " :Welcome to the channel you chose");
+            return(chan + " :" + _topics[chan]);
         case RPL_NAMREPLY :
-            return("Namerply");
+        {
+            for (size_t i = 0 ; i < _channels[chan].size() ; i++)
+            {
+                response += "+";
+                response += _channels[chan][i].nickname;
+                response += " ";
+            }
+        }
         case RPL_ENDOFNAMES :
-            return("Endofnames");
+            return(chan + ":End of /NAMES list");
         case RPL_SUMMONING :
             return ("You have been summoned");
 

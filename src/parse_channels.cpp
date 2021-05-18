@@ -20,8 +20,11 @@ void Server::join2(std::string chan, int fd)
             return;
         }
     }
+    // if (_channels.find(chan) == _channels.end())
+    //     new_channel(chan, fd);
     _channels[chan].push_back(_fd_clients[fd]);
     _fd_clients[fd].chans.push_back(chan);
+    _topics[chan] = "Welcome to the channel you chose";
     send_reply(fd, RPL_TOPIC, chan);
     send_reply(fd, RPL_NAMREPLY, chan);
     send_reply(fd, RPL_ENDOFNAMES, chan);
@@ -30,6 +33,13 @@ void Server::join2(std::string chan, int fd)
     s += chan;
     s += "\r\n";
     send_reply_broad(_fd_clients[fd], _channels[chan], -1, s.c_str());
+}
+
+void Server::new_channel(std::string chan, int fd)
+{
+    _channels[chan].push_back(_fd_clients[fd]);
+    _fd_clients[fd].chans.push_back(chan);
+    _topics[chan] = "Welcome to the channel you chose";
 }
 
 std::vector<std::string> Server::parse_channels(char params[])
