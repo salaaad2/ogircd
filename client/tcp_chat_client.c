@@ -18,6 +18,7 @@ p_send(char pseudo[], char password[], int net_socket)
     /* strcat(psend, "\r\n"); */
     sprintf(psend, "NICK :%s\r\nPASS :%s\r\n", pseudo, password);
     send(net_socket, psend, strlen(psend), 0);
+    
 }
 
 
@@ -82,7 +83,11 @@ int main(int ac, char **av)
             char all[512];
             bzero(all, 512);
             printf("{%s}", all);
-            fgets(message, 512, stdin);
+            if (fgets(message, 512, stdin) == NULL)
+            {
+                close(net_socket);
+                break ;
+            }
             message[strlen(message) - 1] = 0;
             sprintf(all, "%s\r\n", message);
             send(net_socket, all, strlen(all), 0);
@@ -93,7 +98,8 @@ int main(int ac, char **av)
         while (1)
         {
             bzero(response, 256);
-            recv(net_socket, &response, sizeof(response), 0);
+            if (recv(net_socket, &response, sizeof(response), 0) <= 0)
+                exit(0);
             printf("%s\n", response);
         }
     }

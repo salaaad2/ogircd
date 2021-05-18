@@ -34,7 +34,6 @@ void Server::nickcmd(Message *msg, int fd)
 
 void Server::usercmd(Message *msg, int fd)
 {
-    std::cout << "1 nick : " << _fd_clients[fd].nickname << " pass : " << _fd_clients[fd].password << "\n";
     if (_fd_clients[fd].is_register == true)
         send_reply(fd, ERR_ALREADYREGISTERED);
     else if (!msg->params[0][0] || !msg->params[1][0] || !msg->params[2][0] || !msg->params[3][0])
@@ -49,11 +48,8 @@ void Server::usercmd(Message *msg, int fd)
 
 void Server::do_registration(int fd)
 {
-    std::cout << "2 nick : " << _fd_clients[fd].nickname << " pass : " << _fd_clients[fd].password << "\n";
-
     if (_fd_clients[fd].nickname[0] && !strcmp(_fd_clients[fd].password, _password))
     {
-        std::cout << "registration 2\n";
         _fd_clients[fd].is_register = true;
         create_client_prefix(fd);
         send_reply(fd, RPL_WELCOME);
