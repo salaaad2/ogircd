@@ -49,7 +49,6 @@ std::string Server::msg_rpl(int code, int fd, std::string chan)
             return std::string(":User must provide a nickname");
         case ERR_NEEDMOREPARAMS :
             return std::string(":Insufficient parameter count");
-
         default :
             return std::string("");
     }
