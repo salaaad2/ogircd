@@ -43,7 +43,7 @@ int main(int ac, char **av)
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(atoi(av[1]));
     server_address.sin_addr.s_addr = INADDR_ANY;
-    /* server_address.sin_addr.s_addr = inet_addr("10.4.5.7"); */
+    /* server_address.sin_addr.s_addr = inet_addr("10.4.2.1"); */
 
 
     struct ifaddrs *ifaddr, *ifa;

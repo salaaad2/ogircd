@@ -21,7 +21,7 @@ const char *Server::msg_rpl(int code, int fd)
         case ERR_ALREADYREGISTERED :
             return (":You may not reregister");
         case ERR_NICKNAMEINUSE :
-            return(":Nickname already in u`se");
+            return(":Nickname already in use");
 
         default :
             return ("");
