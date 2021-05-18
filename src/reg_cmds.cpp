@@ -7,10 +7,11 @@ void Server::passcmd(Message *msg, int fd)
         send_reply(fd, ERR_ALREADYREGISTERED);
     else if (!msg->params[0][0])
         send_reply(fd, ERR_NEEDMOREPARAMS);
+    else if (strncmp(msg->params[0], _password, strlen(_password)))
+        send_reply(fd, ERR_PASSWDMISMATCH);
     else
     {
         strcpy(_fd_clients[fd].password, msg->params[0]);
-        send_reply(fd, RPL_NONE);
     }
 }
 
@@ -25,7 +26,6 @@ void Server::nickcmd(Message *msg, int fd)
         else
             _nick_clients.insert(std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
         strcpy(_fd_clients[fd].nickname, msg->params[0]);
-        send_reply(fd, RPL_NONE);
     }
     else {
         send_reply(fd, ERR_NICKNAMEINUSE);

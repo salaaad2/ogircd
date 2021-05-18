@@ -148,22 +148,33 @@ void Server::send_reply(int fd, int code)
 void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
-
     std::cout << "{" << _fd_clients[fd].nickname << "} says : " << msg->command << std::endl;
+    std::cout << msg->params[0];
     if (tmp == "PASS") {
         passcmd(msg, fd);
+        }
+    else if (tmp == "NICK")
+    {
+        if (strncmp(_fd_clients[fd].password, _password, strlen(_password)))
+            send_reply(fd, ERR_PASSWDMISMATCH);
+        else
+            nickcmd(msg, fd);
     }
-    else if (tmp == "NICK") {
-        nickcmd(msg, fd);
+    else if (tmp == "USER" ) {
+        if (strncmp(_fd_clients[fd].password, _password, strlen(_password)))
+            send_reply(fd, ERR_PASSWDMISMATCH);
+        else if (_fd_clients[fd].nickname[0] == 0)
+            send_reply(fd, ERR_NONICKNAMEGIVEN);
+        else
+            usercmd(msg, fd);
     }
-    else if (tmp == "USER") {
-        usercmd(msg, fd);
-    }
-    else if (tmp == "JOIN") {
-        joincmd(msg, fd);
+    else if (_fd_clients[fd].is_register == true)
+    {
+        if (tmp == "JOIN")
+            joincmd(msg, fd);
     }
     else
-        send_reply(fd, RPL_NONE);
+        send_reply(fd, ERR_NOTREGISTERED);
     delete msg;
     // case "PASS":
         //     passcmd(msg, client);
@@ -182,7 +193,10 @@ void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code,
     {
         if (cl[i].clfd != sender.clfd)
         {
+            if (code != -1)
                 send_reply(cl[i].clfd, code);
+            else
+                send(cl[i].clfd, s, strlen(s), 0);
         }
     }
 }
@@ -206,7 +220,7 @@ void Server::joincmd(Message *msg, int fd)
     s += " joined channel ";
     s += msg->params[0];
     s += "\r\n";
-    send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], RPL_SUMMONING, s.c_str());
+    send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], -1, s.c_str());
 }
 
 

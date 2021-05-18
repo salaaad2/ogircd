@@ -38,7 +38,7 @@ int main(int ac, char **av)
     char user[100] = "user";
     char realname[100] = "jack ma";
 
-    if (ac == 4) {
+    if (ac >= 4) {
         strcpy(pseudo, av[2]);
         strcpy(passwd, av[3]);
     }
@@ -95,7 +95,7 @@ int main(int ac, char **av)
         {
             char all[512];
             bzero(all, 512);
-            printf("{%s}", all);
+            printf("{->}");
             if (fgets(message, 512, stdin) == NULL)
             {
                 close(net_socket);

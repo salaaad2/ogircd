@@ -24,6 +24,7 @@ std::string Server::msg_rpl(int code, int fd)
         case RPL_SUMMONING :
             return ("You have been summoned");
 
+
         /* ERRORS */
 
         case ERR_ALREADYREGISTERED :
@@ -32,6 +33,12 @@ std::string Server::msg_rpl(int code, int fd)
             return std::string(":Nickname already in use");
         case ERR_USERONCHANNEL :
             return std::string(":User already on channel");
+        case ERR_NOTREGISTERED :
+            return std::string(":You need to register before trying this command");
+        case ERR_PASSWDMISMATCH :
+            return std::string(":Password doesn't match the server's");
+        case ERR_NONICKNAMEGIVEN :
+            return std::string(":User must provide a nickname");
 
         default :
             return std::string("");
