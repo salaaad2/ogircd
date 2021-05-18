@@ -44,7 +44,7 @@ void Server::usercmd(Message *msg, int fd)
     {
         std::cout << "register this guy\n";
         strcpy(_fd_clients[fd].username, msg->params[0].c_str());
-        strcpy(_fd_clients[fd].realname, msg->params[7].c_str());
+        strcpy(_fd_clients[fd].realname, msg->params[msg->params.size() - 1].c_str());
         do_registration(fd);
     }
 }

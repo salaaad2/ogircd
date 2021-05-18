@@ -18,11 +18,11 @@ p_send(char pseudo[], char password[], int net_socket, char user[], char realnam
     /* strcat(psend, "\r\n"); */
     sprintf(psend, "PASS :%s\r\n", password);
     send(net_socket, psend, strlen(psend), 0);
-    sleep(1);
+    usleep(1000);
     bzero(psend, 110);
     sprintf(psend, "NICK :%s\r\n", pseudo);
     send(net_socket, psend, strlen(psend), 0);
-    sleep(1);
+    usleep(1000);
     bzero(psend, 110);
     sprintf(psend, "USER %s 0 * :%s\r\n", user, realname);
     send(net_socket, psend, strlen(psend), 0);

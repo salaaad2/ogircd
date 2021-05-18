@@ -193,11 +193,10 @@ void Server::chan_msg(Message * msg, int fd) {
     size_t i = 1;
 
     s += ("[" + std::string(_fd_clients[fd].nickname) + "] : ");
-    while (i < ((msg->params.size() / 2)))
+    while (i < msg->params.size())
     {
-        s += msg->params[i];
+        s += (msg->params[i] + " ");
         i++;
-        std::cout << "s  : {" << s << "}\n";
     }
     s += "\r\n";
     send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], -1, s.c_str());
