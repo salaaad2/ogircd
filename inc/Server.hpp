@@ -82,4 +82,6 @@ int     addclient(Server &serv, int i);
 		void privmsgcmd(Message*, int);
 
 		std::string msg_rpl(int code, int fd);
+		void chan_msg(Message * msg, int fd);
+
 };

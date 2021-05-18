@@ -188,6 +188,23 @@ void Server::send_reply(int fd, int code)
     send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
+void Server::chan_msg(Message * msg, int fd) {
+    std::string s;
+    size_t i = 0;
+
+    std::cout << "this should be sent to the channel" << std::endl;
+
+
+    s += ("[" + std::string(_fd_clients[fd].nickname) + "]");
+    while (msg->params[i][0] != 0) {
+        std::cout << "going over the sentence" << std::endl;
+        s += msg->params[i];
+        i++;
+    }
+    s += ":";
+    send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], -1, s.c_str());
+}
+
 void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
@@ -195,7 +212,7 @@ void Server::do_command(Message *msg, int fd)
     std::cout << msg->params[0];
     if (tmp == "PASS") {
         passcmd(msg, fd);
-        }
+    }
     else if (tmp == "NICK")
     {
         if (strncmp(_fd_clients[fd].password, _password, strlen(_password)))
@@ -217,19 +234,12 @@ void Server::do_command(Message *msg, int fd)
             joincmd(msg, fd);
         else if (tmp == "PRIVMSG")
             privmsgcmd(msg, fd);
+        else
+            chan_msg(msg, fd);
     }
     else
         send_reply(fd, ERR_NOTREGISTERED);
     delete msg;
-    // case "PASS":
-        //     passcmd(msg, client);
-        //     break;
-        // case "PASS":
-        //     passcmd(msg, client);
-        //     break;
-        // case "PASS":
-        //     passcmd(msg, client);
-        //     break;
 }
 
 void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code, const char *s)
@@ -271,12 +281,6 @@ void Server::privmsgcmd(Message *msg, int fd)
 {
     size_t i = 0;
     std::vector<Client> vec;
-    while (msg->params[i] != 0)
-    {
-        vec.push_back(_nick_clients[msg->params[i]]);
-        i++;
-    }
-    send_reply_broad(_fd_clients[fd], vec,  -1, "a message has been sent\n");
 }
 
 //===============================================================================
