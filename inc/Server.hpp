@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/17 18:40:53 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/18 12:40:37 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,5 @@ int     addclient(Server &serv, int i);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
 
-		const char *msg_rpl(int code, int fd);
+		std::string msg_rpl(int code, int fd);
 };

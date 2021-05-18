@@ -23,6 +23,7 @@ SRCS_NAME		  += tcp_main
 SRCS_NAME		  += Utils
 SRCS_NAME		  += Server
 SRCS_NAME		  += replies
+SRCS_NAME		  += reg_cmds
 #------------------------------------------------------------------------------#
 CLIENTSRC		 = client/tcp_chat_client
 #------------------------------------------------------------------------------#

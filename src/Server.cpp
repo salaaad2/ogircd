@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/17 18:42:02 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/18 13:05:13 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,6 @@ void Server::do_connect(Params *pm)
 
 void Server::send_reply(int fd, int code)
 {
-
     std::string ccmd = ft_format_cmd(ft_utoa(code));
     std::string to_send;
 
@@ -162,6 +161,7 @@ void Server::do_command(Message *msg, int fd)
     }
     else
         send_reply(fd, RPL_NONE);
+    delete msg;
     // case "PASS":
         //     passcmd(msg, client);
         //     break;
@@ -175,76 +175,7 @@ void Server::do_command(Message *msg, int fd)
 
 
 
-void Server::passcmd(Message *msg, int fd)
-{
-    if (_fd_clients[fd].is_register == true)
-        send_reply(fd, ERR_ALREADYREGISTERED);
-    else if (!msg->params[0][0])
-        send_reply(fd, ERR_NEEDMOREPARAMS);
-    else
-        strcpy(_fd_clients[fd].password, msg->params[0]);
-    // else if (!strcmp(msg->params[0], _password))
-    // {
-    //     client.is_register = true;
-    //     std::cout << "\nWelcome\n";
-    //     send(client.clfd, "welcome", 8, 0);
-    // }
-    // else
-    // {
-    //     std::cout << "\nBad password : deconnexion\n";
-    //     send(client.clfd, "\nBad password\n", 13, 0);
-    //     close(client.clfd);
-    //     FD_CLR(client.clfd, &_fds->master);
-    //}
-}
 
-void Server::nickcmd(Message *msg, int fd)
-{
-    // check against other usernicks
-    // return :
-    // ERR_NICKCOLLISION ERR_NICKNAMEINUSE ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE
-    if (_nick_clients.count(msg->params[0]) == 0) {
-        if (_fd_clients[fd].nickname[0] != 0)
-            _nick_clients.insert(_nick_clients.find(_fd_clients[fd].nickname),  std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
-        else
-            _nick_clients.insert(std::pair<std::string, Client>(msg->params[0], _fd_clients[fd]));
-        strcpy(_fd_clients[fd].nickname, msg->params[0]);
-        send_reply(fd, RPL_NONE);
-    }
-    else {
-        send_reply(fd, ERR_NICKNAMEINUSE);
-    }
-}
-
-void Server::usercmd(Message *msg, int fd)
-{
-    if (_fd_clients[fd].is_register == true)
-        send_reply(fd, ERR_ALREADYREGISTERED);
-    if (!msg->params[0][0] || !msg->params[1][0] || msg->params[2][0] || msg->params[3][0])
-        send_reply(fd, ERR_NEEDMOREPARAMS);
-    strcpy(_fd_clients[fd].username, msg->params[0]);
-    strcpy(_fd_clients[fd].realname, msg->params[3]);
-    do_registration(fd);
-}
-
-void Server::do_registration(int fd)
-{
-    if (_fd_clients[fd].nickname[0] && !strcmp(_fd_clients[fd].password, _password))
-    {
-        _fd_clients[fd].is_register = true;
-        create_client_prefix(fd);
-        send_reply(fd, RPL_WELCOME);
-    }
-}
-
-void Server::create_client_prefix(int fd)
-{
-    strcat(_fd_clients[fd].prefix, _fd_clients[fd].nickname);
-    strcat(_fd_clients[fd].prefix, "!");
-    strcat(_fd_clients[fd].prefix, _fd_clients[fd].username);
-    strcat(_fd_clients[fd].prefix, "@");
-    strcat(_fd_clients[fd].prefix, _fd_clients[fd].host);
-}
 
 std::map<int, Client> Server::getFDClients(void) const {
     return (_fd_clients);
