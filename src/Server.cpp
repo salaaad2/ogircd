@@ -192,7 +192,7 @@ void Server::chan_msg(Message * msg, int fd) {
     std::string s;
     size_t i = 1;
 
-    s += ("[" + std::string(_fd_clients[fd].nickname) + "] : ");
+    s += ("[" + std::string(_fd_clients[fd].nickname) + "] : " += msg->command);
     while (i < msg->params.size())
     {
         s += (msg->params[i] + " ");
@@ -231,7 +231,7 @@ void Server::do_command(Message *msg, int fd)
             joincmd(msg, fd);
         else if (tmp == "PRIVMSG")
             privmsgcmd(msg, fd);
-        else
+        else if (tmp[0] < 65 && tmp[0] > 90)
             chan_msg(msg, fd);
     }
     else
