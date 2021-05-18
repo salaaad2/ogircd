@@ -196,7 +196,7 @@ void Server::chan_msg(Message * msg, int fd) {
 
 
     s += ("[" + std::string(_fd_clients[fd].nickname) + "]");
-    while (msg->params[i][0] != 0) {
+    while (i < msg->params.size()) {
         std::cout << "going over the sentence" << std::endl;
         s += msg->params[i];
         i++;

@@ -36,7 +36,7 @@ void Server::usercmd(Message *msg, int fd)
 {
     if (_fd_clients[fd].is_register == true)
         send_reply(fd, ERR_ALREADYREGISTERED);
-    else if (msg->params.size() == 4)
+    else if (msg->params.size() == 8)
     {
         send_reply(fd, ERR_NEEDMOREPARAMS);
     }
@@ -44,7 +44,7 @@ void Server::usercmd(Message *msg, int fd)
     {
         std::cout << "register this guy\n";
         strcpy(_fd_clients[fd].username, msg->params[0].c_str());
-        strcpy(_fd_clients[fd].realname, msg->params[3].c_str());
+        strcpy(_fd_clients[fd].realname, msg->params[7].c_str());
         do_registration(fd);
     }
 }

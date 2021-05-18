@@ -30,12 +30,15 @@ get_params(char buf[], Message *nm, int i) {
     std:: string tmp;
     while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
             || buf[i] == ':' || buf[i] == ',' || buf[i] == '#'))
+    {
         i++;
+    }
     while (buf[i] && buf[i] != '\r') {
         if (buf[i] == ':' || buf[i] == ' ' || buf[i] == ',' || buf[i] == '#')
         {
             nm->params.push_back(tmp);
             tmp.clear();
+            nm->params.push_back(std::string(&buf[i]));
         }
         else
             tmp += buf[i];
