@@ -190,18 +190,16 @@ void Server::send_reply(int fd, int code)
 
 void Server::chan_msg(Message * msg, int fd) {
     std::string s;
-    size_t i = 0;
+    size_t i = 1;
 
-    std::cout << "this should be sent to the channel" << std::endl;
-
-
-    s += ("[" + std::string(_fd_clients[fd].nickname) + "]");
-    while (i < msg->params.size()) {
-        std::cout << "going over the sentence" << std::endl;
+    s += ("[" + std::string(_fd_clients[fd].nickname) + "] : ");
+    while (i < (msg->params.size() / 2))
+    {
         s += msg->params[i];
         i++;
+        std::cout << "s  : {" << s << "}\n";
     }
-    s += ":";
+    s += "\r\n";
     send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], -1, s.c_str());
 }
 
