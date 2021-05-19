@@ -70,7 +70,7 @@ int     addclient(Server &serv, int i);
 		void create_client_prefix(int fd);
 		void getIP();
 		void send_reply(std::string s, int fd, int code);
-		void send_reply_broad(Client &sender, std::vector<Client> &cl, int code, const char *s);
+		void send_reply_broad(Client &sender, std::vector<Client> &cl, int code, std::string s);
 
 /* MESSAGE TREATMENT */
 

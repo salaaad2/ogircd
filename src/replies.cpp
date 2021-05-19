@@ -58,6 +58,6 @@ std::string Server::msg_rpl(std::string s = "", int code = -1, int fd = -1)
         case ERR_NOTOCHANNEL :
             return std::string (":To join a channel, type : JOIN #" + s);
         default :
-            return std::string("");
+            return s;
     }
 }
