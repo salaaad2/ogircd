@@ -16,7 +16,7 @@ void Server::join2(std::string chan, int fd)
     for (size_t i = 0; i < _fd_clients[fd].chans.size(); i++) {
         if (chan == _fd_clients[fd].chans[i])
         {
-            send_reply(fd, ERR_USERONCHANNEL);
+            send_reply("", fd, ERR_USERONCHANNEL);
             return;
         }
     }
@@ -26,8 +26,8 @@ void Server::join2(std::string chan, int fd)
     _fd_clients[fd].chans.push_back(chan);
     _topics[chan] = "Welcome to the channel you chose";
 
-    send_reply(fd, RPL_TOPIC, chan);
-    send_reply(fd, RPL_NAMREPLY, chan);
+    send_reply(chan, fd, RPL_TOPIC);
+    send_reply(chan, fd, RPL_NAMREPLY);
     //send_reply(fd, RPL_ENDOFNAMES, chan);
     s += _fd_clients[fd].nickname;
     s += " joined channel ";
