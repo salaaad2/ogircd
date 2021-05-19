@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/18 17:19:37 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/19 16:34:10 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void Server::setFDClients(int i, Client cl) {
 void Server::setNickClients(std::string s, Client cl) {
     _nick_clients[s] = cl;
 }
-
 
 Server::Server(Params *pm)
 {

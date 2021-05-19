@@ -8,17 +8,17 @@ struct Client
 {
     std::vector<std::string> chans;
     std::string              current_chan;
-    sockaddr_in  clientaddr;
-    unsigned int addrlen;
-    int          clfd;
+    sockaddr_in         clientaddr;
+    unsigned int        addrlen;
+    int                 clfd;
     std::string         password;
     std::string         nickname;
     std::string         username;
     std::string         realname;
     std::string         host;
     std::string         prefix;
-    bool         is_server;
-    bool         is_register;
+    bool                is_server;
+    bool                is_register;
 
     public:
         bool operator==(const Client &rhs) const {

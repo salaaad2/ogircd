@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/19 15:44:18 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/19 16:33:51 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class Server
 		char						_prefix[17];
 		char						_password[32];
 		Fds							*_fds;
+
 		std::map<int, Client>		 _fd_clients;
 		std::map<std::string, Client> _nick_clients;
 
