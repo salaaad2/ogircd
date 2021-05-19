@@ -80,6 +80,7 @@ int     addclient(Server &serv, int i);
 		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
+		void noticecmd(Message *msg, int fd);
 		
 		/*channels*/
 		void joincmd(Message*, int);
