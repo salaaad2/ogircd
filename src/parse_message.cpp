@@ -30,13 +30,21 @@ get_params(char buf[], Message *nm, int i) {
     std:: string tmp;
     while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
             || buf[i] == ':' || buf[i] == ',' || buf[i] == '#'))
+    {
         i++;
+    }
     while (buf[i] && buf[i] != '\r') {
         if (buf[i] == ':' || buf[i] == ' ' || buf[i] == ',' || buf[i] == '#')
         {
             nm->params.push_back(tmp);
             nm->params.push_back(&buf[i]);
             tmp.clear();
+            if (buf[i] && buf[i] != ' ')
+            {
+                tmp += buf[i];
+                nm->params.push_back(tmp);
+                tmp.clear();
+            }
         }
         else
             tmp += buf[i];
@@ -52,6 +60,12 @@ Message *parse_message(char buf[])
 
     i = get_command(buf, nm);
     get_params(buf, nm, i);
-    std::cout << "CMD " << nm->command <<  " PARAM " << nm->params[0] << "\n";
+
+    std::cout << "CMD " << nm->command <<  "\n";
+    i = 0;
+    while (i < nm->params.size()) {
+        std::cout << "[" << nm->params[i] << "] ";
+        i++;
+    }
     return nm;
 }

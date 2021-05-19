@@ -36,14 +36,14 @@ void Server::usercmd(Message *msg, int fd)
 {
     if (_fd_clients[fd].is_register == true)
         send_reply(fd, ERR_ALREADYREGISTERED);
-    else if (msg->params.size() == 4)
+    else if (msg->params.size() == 8)
     {
         send_reply(fd, ERR_NEEDMOREPARAMS);
     }
     else
     {
         strcpy(_fd_clients[fd].username, msg->params[0].c_str());
-        strcpy(_fd_clients[fd].realname, msg->params[3].c_str());
+        strcpy(_fd_clients[fd].realname, msg->params[msg->params.size() - 1].c_str());
         do_registration(fd);
     }
 }
