@@ -11,6 +11,10 @@ void Server::joincmd(Message *msg, int fd)
     {
         _fd_clients[fd].current_chan = channels.back();
     }
+    else
+    {
+        send_reply("", fd, ERR_BADCHANMASK);
+    }
 }
 
 void Server::join2(std::string chan, int fd)
@@ -50,7 +54,6 @@ void Server::new_channel(std::string chan, int fd)
 
 std::vector<std::string> Server::parse_channels(std::vector<std::string> params)
 {
-    size_t count = 0;
     std::vector<std::string> channels;
 
     for (unsigned int i = 0 ; i < params.size() ; i++)
