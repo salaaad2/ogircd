@@ -7,7 +7,10 @@ void Server::joincmd(Message *msg, int fd)
 
     for (size_t i = 0 ; i < channels.size() ; i++)
         join2(channels[i], fd);
-    _fd_clients[fd].current_chan = channels.back();
+    if (channels.empty() == false)
+    {
+        _fd_clients[fd].current_chan = channels.back();
+    }
 }
 
 void Server::join2(std::string chan, int fd)
