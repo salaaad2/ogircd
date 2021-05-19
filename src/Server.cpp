@@ -132,7 +132,6 @@ int Server::addclient(Server &serv,  int listener)
 
     nc.is_server = false;
     nc.is_register = false;
-    memset(nc.nickname, '\0', 9);
     int addrlen = sizeof(nc.clientaddr);
     if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
     {
@@ -142,7 +141,7 @@ int Server::addclient(Server &serv,  int listener)
     else
         std::cout << "Server-accept() is OK...\n";
     std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
-    strcpy(nc.host, inet_ntoa(nc.clientaddr.sin_addr));
+    nc.host = inet_ntoa(nc.clientaddr.sin_addr);
     std::cout << " on socket " << nc.clfd << std::endl;
     serv.setFDClients(nc.clfd, nc);
     return (nc.clfd);
@@ -179,29 +178,26 @@ void Server::getIP()
 
 //==============================TREAT COMMANDS======================================
 
-void Server::send_reply(int fd, int code, std::string chan)
+void Server::send_reply(std::string s, int fd, int code)
 {
     std::string ccmd = ft_format_cmd(ft_utoa(code));
     std::string to_send;
 
-    to_send += (std::string(_prefix) + " " + ccmd + " " + msg_rpl(code, fd, chan) + "\r\n");
+    to_send += (std::string(_prefix) + " " + ccmd + " " + msg_rpl(s, code, fd) + "\r\n");
     send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
 void Server::chan_msg(Message * msg, int fd) {
     std::string s;
-    size_t i = 0;
+    size_t i = 1;
 
-    std::cout << "this should be sent to the channel" << std::endl;
-
-
-    s += ("[" + std::string(_fd_clients[fd].nickname) + "]");
-    while (msg->params[i][0] != 0) {
-        std::cout << "going over the sentence" << std::endl;
-        s += msg->params[i];
+    s += ("[" + std::string(_fd_clients[fd].nickname) + "] : " += msg->command);
+    while (i < msg->params.size())
+    {
+        s += (msg->params[i] + " ");
         i++;
     }
-    s += ":";
+    s += "\r\n";
     send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], -1, s.c_str());
 }
 
@@ -215,16 +211,16 @@ void Server::do_command(Message *msg, int fd)
     }
     else if (tmp == "NICK")
     {
-        if (strncmp(_fd_clients[fd].password, _password, strlen(_password)))
-            send_reply(fd, ERR_PASSWDMISMATCH);
+        if (_fd_clients[fd].password != _password)
+            send_reply("", fd, ERR_PASSWDMISMATCH);
         else
             nickcmd(msg, fd);
     }
     else if (tmp == "USER" ) {
-        if (strncmp(_fd_clients[fd].password, _password, strlen(_password)))
-            send_reply(fd, ERR_PASSWDMISMATCH);
+        if (_fd_clients[fd].password != _password)
+            send_reply("", fd, ERR_PASSWDMISMATCH);
         else if (_fd_clients[fd].nickname[0] == 0)
-            send_reply(fd, ERR_NONICKNAMEGIVEN);
+            send_reply("", fd, ERR_NONICKNAMEGIVEN);
         else
             usercmd(msg, fd);
     }
@@ -234,11 +230,11 @@ void Server::do_command(Message *msg, int fd)
             joincmd(msg, fd);
         else if (tmp == "PRIVMSG")
             privmsgcmd(msg, fd);
-        else
+        else if (tmp[0] < 65 && tmp[0] > 90)
             chan_msg(msg, fd);
     }
     else
-        send_reply(fd, ERR_NOTREGISTERED);
+        send_reply("", fd, ERR_NOTREGISTERED);
     delete msg;
 }
 
@@ -249,7 +245,7 @@ void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code,
         if (cl[i].clfd != sender.clfd)
         {
             if (code != -1)
-                send_reply(cl[i].clfd, code);
+                send_reply("", cl[i].clfd, code);
             else
                 send(cl[i].clfd, s, strlen(s), 0);
         }
@@ -258,8 +254,50 @@ void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code,
 
 void Server::privmsgcmd(Message *msg, int fd)
 {
+    // ERR_NORECIPIENT --NO                ERR_NOTEXTTOSEND -- Yes
+    // ERR_CANNOTSENDTOCHAN --No            ERR_NOTOPLEVEL -- No
+    // ERR_WILDTOPLEVEL --No                ERR_TOOMANYTARGETS --No
+    // ERR_NOSUCHNICK --Yes
+    //  RPL_AWAY --No
     size_t i = 0;
+    std::list<Client> list;
     std::vector<Client> vec;
+    std::string s;
+    while (i < msg->params.size() && msg->params[i][0] != ':')
+    {
+        if (msg->params[i] !=  "," && msg->params[i] != " ")
+        {
+            if (_nick_clients.count(msg->params[i]) == 0)
+            {
+                if (_channels.count(msg->params[i]) == 0)
+                {
+                    std::cout << "Error username : " << msg->params[i] << "\n";
+                    send_reply(msg->params[i], fd, ERR_NOSUCHNICK);
+                    return;
+                }
+                else
+                    list.insert(list.end(), _channels[msg->params[i]].begin(), _channels[msg->params[i]].end());
+            }
+            else
+               list.push_back(_nick_clients[msg->params[i]]);
+        }
+        i++;
+    }
+    i++;
+    while (i < msg->params.size())
+    {
+        s += msg->params[i];
+        i++;
+    }
+    if (s.size() == 0)
+    {
+        send_reply("", fd, ERR_NOTEXTTOSEND);
+        return;
+    }
+    list.sort();
+    list.unique();
+    vec.assign(list.begin(), list.end());
+    send_reply_broad(_fd_clients[fd], vec, -1, s.c_str());
 }
 
 //===============================================================================

@@ -12,7 +12,6 @@ struct Message
     Message() : command(), params() {}
 };
 
-const char    *msg_rpl(int code);
 Message *parse_message(char buf[]);
 
 #endif // __MESSAGE_H_
