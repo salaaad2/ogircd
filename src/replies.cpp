@@ -57,7 +57,9 @@ std::string Server::msg_rpl(std::string s = "", int code = -1, int fd = -1)
             return std::string (s + ":There is no text to send");
         case ERR_NOTOCHANNEL :
             return std::string (":To join a channel, type : JOIN #" + s);
+        case ERR_BADCHANMASK :
+            return std::string (":Invalid JOIN parameter" + s);
         default :
-            return std::string("");
+            return s;
     }
 }

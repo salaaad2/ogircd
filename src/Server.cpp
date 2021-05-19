@@ -106,7 +106,6 @@ void Server::connect_serv(Params *pm)
 void Server::do_connect(Params *pm)
 {
     int net_socket = socket(AF_INET, SOCK_STREAM, 0);
-    char message[1024];
 
     struct sockaddr_in server_address;
 
@@ -131,7 +130,6 @@ int Server::addclient(Server &serv,  int listener)
 
     nc.is_server = false;
     nc.is_register = false;
-    int addrlen = sizeof(nc.clientaddr);
     if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
     {
 		std::cout << "Server-accept() error\n";
@@ -161,7 +159,6 @@ void Server::getIP()
     struct sockaddr_in name;
     socklen_t namelen = sizeof(name);
     err = getsockname(sock, (struct sockaddr*) &name, &namelen);
-    char buffer[100];
     const char* p = inet_ntoa(name.sin_addr);
     if(p != NULL)
     {
@@ -179,7 +176,9 @@ void Server::getIP()
 
 void Server::send_reply(std::string s, int fd, int code)
 {
-    std::string ccmd = ft_format_cmd(ft_utoa(code));
+    std::string ccmd;
+    if (code)
+        ccmd = ft_format_cmd(ft_utoa(code));
     std::string to_send;
 
     to_send += (std::string(_prefix) + " " + ccmd + " " + msg_rpl(s, code, fd) + "\r\n");
@@ -190,14 +189,14 @@ void Server::chan_msg(Message * msg, int fd) {
     std::string s;
     size_t i = 1;
 
-    s += ("<" + std::string(_fd_clients[fd].nickname) + ">@[" + _fd_clients[fd].current_chan + "] : " += msg->command);
+    s += ("<" + _fd_clients[fd].nickname + ">@[" + _fd_clients[fd].current_chan + "] : " += msg->command);
     while (i < msg->params.size())
     {
         s += (msg->params[i] + " ");
         i++;
     }
     s += "\r\n";
-    send_reply_broad(_fd_clients[fd], _channels[_fd_clients[fd].current_chan], -1, s.c_str());
+    send_reply_broad(_fd_clients[fd], _channels[_fd_clients[fd].current_chan], -1, s);
 }
 
 void Server::do_command(Message *msg, int fd)
@@ -229,6 +228,8 @@ void Server::do_command(Message *msg, int fd)
             joincmd(msg, fd);
         else if (tmp == "PRIVMSG")
             privmsgcmd(msg, fd);
+        else if (tmp == "NOTICE")
+            noticecmd(msg, fd);
         else if (_fd_clients[fd].current_chan.empty() == false)
             chan_msg(msg, fd);
         else
@@ -239,7 +240,7 @@ void Server::do_command(Message *msg, int fd)
     delete msg;
 }
 
-void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code, const char *s)
+void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code, std::string s)
 {
     for (size_t i = 0; i < cl.size(); i++)
     {
@@ -248,10 +249,7 @@ void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code,
             if (code != -1)
                 send_reply("", cl[i].clfd, code);
             else
-            {
-                std::cout << "broacast : " << s << std::endl;
-                send(cl[i].clfd, s, strlen(s), 0);
-            }
+                send_reply(s, cl[i].clfd, 0);
         }
     }
 }
@@ -267,30 +265,15 @@ void Server::privmsgcmd(Message *msg, int fd)
     std::list<Client> list;
     std::vector<Client> vec;
     std::string s;
-    while (i < msg->params.size() && msg->params[i][0] != ':')
-    {
-        if (msg->params[i] !=  "," && msg->params[i] != " ")
-        {
-            if (_nick_clients.count(msg->params[i]) == 0)
-            {
-                if (_channels.count(msg->params[i]) == 0)
-                {
-                    std::cout << "Error username : " << msg->params[i] << "\n";
-                    send_reply(msg->params[i], fd, ERR_NOSUCHNICK);
-                    return;
-                }
-                else
-                    list.insert(list.end(), _channels[msg->params[i]].begin(), _channels[msg->params[i]].end());
-            }
-            else
-               list.push_back(_nick_clients[msg->params[i]]);
-        }
+    std::string tmp_current_chan;
+    Message text;
+    while (i < msg->params.size() && msg->params[i] != ":")
         i++;
-    }
     i++;
     while (i < msg->params.size())
     {
         s += msg->params[i];
+        text.params.push_back(msg->params[i]);
         i++;
     }
     if (s.size() == 0)
@@ -298,10 +281,67 @@ void Server::privmsgcmd(Message *msg, int fd)
         send_reply("", fd, ERR_NOTEXTTOSEND);
         return;
     }
+    i = 0;
+    while (i < msg->params.size() && msg->params[i][0] != ':')
+    {
+        if (msg->params[i] !=  "," && msg->params[i] != " ")
+        {
+            if (_nick_clients.count(msg->params[i]) == 0)
+            {
+                if (_channels.count(msg->params[i]) == 0)
+                    send_reply(msg->params[i], fd, ERR_NOSUCHNICK);
+                else
+                {
+                    tmp_current_chan = _fd_clients[fd].current_chan;
+                    _fd_clients[fd].current_chan = msg->params[i];
+                    chan_msg(&text, fd);
+                    _fd_clients[fd].current_chan = tmp_current_chan;
+                }
+            }
+            else
+               list.push_back(_nick_clients[msg->params[i]]);
+        }
+        i++;
+    }
     list.sort();
     list.unique();
     vec.assign(list.begin(), list.end());
-    send_reply_broad(_fd_clients[fd], vec, -1, s.c_str());
+    s.insert(0, std::string("<" + _fd_clients[fd].nickname + ">"));
+    send_reply_broad(_fd_clients[fd], vec, -1, s);
+}
+
+void Server::noticecmd(Message *msg, int fd)
+{
+    size_t i = 0;
+    std::list<Client> list;
+    std::vector<Client> vec;
+    std::string s;
+    std::string tmp_current_chan;
+    while (i < msg->params.size() && msg->params[i] != ":")
+        i++;
+    i++;
+    while (i < msg->params.size())
+    {
+        s += msg->params[i];
+        i++;
+    }
+    if (s.size() == 0)
+        return;
+    i = 0;
+    while (i < msg->params.size() && msg->params[i][0] != ':')
+    {
+        if (msg->params[i] !=  "," && msg->params[i] != " ")
+        {
+            if (_nick_clients.count(msg->params[i]) != 0)
+               list.push_back(_nick_clients[msg->params[i]]);
+        }
+        i++;
+    }
+    list.sort();
+    list.unique();
+    vec.assign(list.begin(), list.end());
+    s.insert(0, std::string("<" + _fd_clients[fd].nickname + ">"));
+    send_reply_broad(_fd_clients[fd], vec, -1, s);
 }
 
 //===============================================================================

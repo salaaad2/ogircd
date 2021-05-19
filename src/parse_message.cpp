@@ -62,7 +62,7 @@ get_params(char buf[], Message *nm, int i) {
 Message *parse_message(char buf[])
 {
     Message *nm = new Message;
-    int i = 0;
+    unsigned long i = 0;
 
     i = get_command(buf, nm);
     get_params(buf, nm, i);
