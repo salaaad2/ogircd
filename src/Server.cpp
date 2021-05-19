@@ -281,7 +281,7 @@ void Server::privmsgcmd(Message *msg, int fd)
     std::string s;
     while (i < msg->params.size() && msg->params[i][0] != ':')
     {
-        if (msg->params[i].compare(",") || msg->params[i].compare(" "))
+        if (msg->params[i] !=  "," && msg->params[i] != " ")
         {
             if (_nick_clients.count(msg->params[i]) == 0)
             {
