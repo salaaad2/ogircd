@@ -107,7 +107,6 @@ void Server::connect_serv(Params *pm)
 void Server::do_connect(Params *pm)
 {
     int net_socket = socket(AF_INET, SOCK_STREAM, 0);
-    char message[1024];
 
     struct sockaddr_in server_address;
 
@@ -132,7 +131,6 @@ int Server::addclient(Server &serv,  int listener)
 
     nc.is_server = false;
     nc.is_register = false;
-    int addrlen = sizeof(nc.clientaddr);
     if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
     {
 		std::cout << "Server-accept() error\n";
@@ -162,7 +160,6 @@ void Server::getIP()
     struct sockaddr_in name;
     socklen_t namelen = sizeof(name);
     err = getsockname(sock, (struct sockaddr*) &name, &namelen);
-    char buffer[100];
     const char* p = inet_ntoa(name.sin_addr);
     if(p != NULL)
     {

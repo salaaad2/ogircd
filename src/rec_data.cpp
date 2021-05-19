@@ -18,7 +18,6 @@ void rec_data(Server &serv, int i, Fds *fds)
 {
     int nbytes;
     char buf[512];
-    struct sockaddr_in n;
 
     ft_bzero(buf, 512);
     if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
