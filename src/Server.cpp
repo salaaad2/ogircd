@@ -132,7 +132,6 @@ int Server::addclient(Server &serv,  int listener)
 
     nc.is_server = false;
     nc.is_register = false;
-    memset(nc.nickname, '\0', 9);
     int addrlen = sizeof(nc.clientaddr);
     if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
     {
@@ -142,7 +141,7 @@ int Server::addclient(Server &serv,  int listener)
     else
         std::cout << "Server-accept() is OK...\n";
     std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
-    strcpy(nc.host, inet_ntoa(nc.clientaddr.sin_addr));
+    nc.host = inet_ntoa(nc.clientaddr.sin_addr);
     std::cout << " on socket " << nc.clfd << std::endl;
     serv.setFDClients(nc.clfd, nc);
     return (nc.clfd);
@@ -212,13 +211,13 @@ void Server::do_command(Message *msg, int fd)
     }
     else if (tmp == "NICK")
     {
-        if (strncmp(_fd_clients[fd].password, _password, strlen(_password)))
+        if (_fd_clients[fd].password != _password)
             send_reply(fd, ERR_PASSWDMISMATCH);
         else
             nickcmd(msg, fd);
     }
     else if (tmp == "USER" ) {
-        if (strncmp(_fd_clients[fd].password, _password, strlen(_password)))
+        if (_fd_clients[fd].password != _password)
             send_reply(fd, ERR_PASSWDMISMATCH);
         else if (_fd_clients[fd].nickname[0] == 0)
             send_reply(fd, ERR_NONICKNAMEGIVEN);
@@ -285,12 +284,17 @@ void Server::privmsgcmd(Message *msg, int fd)
         {
             if (_nick_clients.count(msg->params[i]) == 0)
             {
-                std::cout << "Error username : " << msg->params[i] << "\n";
-                send_reply(fd, ERR_USERSDONTMATCH);
-                return;
+                if (_channels.count(msg->params[i]) == 0)
+                {
+                    std::cout << "Error username : " << msg->params[i] << "\n";
+                    send_reply(fd, ERR_USERSDONTMATCH);
+                    return;
+                }
+                else
+                    vec.insert(vec.end(), _channels[msg->params[i]].begin(), _channels[msg->params[i]].end());
             }
             else
-                vec.push_back(_nick_clients[msg->params[i]]);
+               vec.push_back(_nick_clients[msg->params[i]]);
         }
         i++;
     }
@@ -300,7 +304,6 @@ void Server::privmsgcmd(Message *msg, int fd)
         s += msg->params[i];
         i++;
     }
-    std::cout << "Receiver " << vec[0].nickname << "\nMessage :" << s << std::endl;
     send_reply_broad(_fd_clients[fd], vec, -1, s.c_str());
 }
 

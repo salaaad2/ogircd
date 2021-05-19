@@ -37,13 +37,13 @@ get_params(char buf[], Message *nm, int i) {
     while (buf[i] && buf[i] != '\r') {
         if (buf[i] == ':' || buf[i] == ' ' || buf[i] == ',' || buf[i] == '#')
         {
-            sep_char += buf[i];
-            nm->params.push_back(sep_char);
             if (tmp != "")
             {
                 nm->params.push_back(tmp);
                 tmp.clear();
             }
+            sep_char += buf[i];
+            nm->params.push_back(sep_char);
             sep_char.clear();
             // if (buf[i] && buf[i] != ' ')
             // {
