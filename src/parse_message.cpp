@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 13:41:20 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/18 17:13:01 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/19 13:18:43 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ get_params(char buf[], Message *nm, int i) {
     std:: string tmp;
     std::string sep_char;
     while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
-            || buf[i] == ':' || buf[i] == ',' || buf[i] == '#'))
+            || buf[i] == ':'))
     {
         i++;
     }

@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/18 17:19:08 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/19 13:28:58 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int     addclient(Server &serv, int i);
 		/*channels*/
 		void joincmd(Message*, int);
 		void join2(std::string chan, int fd);
-		std::vector<std::string> parse_channels(const char params[]);
+		std::vector<std::string> parse_channels(std::vector<std::string> params);
 		void new_channel(std::string chan, int fd);
 
 

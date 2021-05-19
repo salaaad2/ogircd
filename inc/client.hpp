@@ -7,6 +7,7 @@
 struct Client
 {
     std::vector<std::string> chans;
+    std::string              current_chan;
     sockaddr_in  clientaddr;
     unsigned int addrlen;
     int          clfd;
