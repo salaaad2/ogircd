@@ -191,21 +191,21 @@ void Server::chan_msg(Message * msg, int fd) {
     std::string s;
     size_t i = 1;
 
-    s += ("[" + std::string(_fd_clients[fd].nickname) + "] : " += msg->command);
+    s += ("<" + std::string(_fd_clients[fd].nickname) + ">@[" + _fd_clients[fd].current_chan + "] : " += msg->command);
     while (i < msg->params.size())
     {
         s += (msg->params[i] + " ");
         i++;
     }
     s += "\r\n";
-    send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], -1, s.c_str());
+    send_reply_broad(_fd_clients[fd], _channels[_fd_clients[fd].current_chan], -1, s.c_str());
 }
 
 void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
-    std::cout << "{" << _fd_clients[fd].nickname << "} says : " << msg->command << std::endl;
-    //std::cout << msg->params[0];
+    // std::cout << "{" << _fd_clients[fd].nickname << "} says : " << msg->command << std::endl;
+
     if (tmp == "PASS") {
         passcmd(msg, fd);
     }
@@ -230,8 +230,10 @@ void Server::do_command(Message *msg, int fd)
             joincmd(msg, fd);
         else if (tmp == "PRIVMSG")
             privmsgcmd(msg, fd);
-        else if (tmp[0] < 65 && tmp[0] > 90)
+        else if (_fd_clients[fd].current_chan.empty() == false)
             chan_msg(msg, fd);
+        else
+            send_reply(msg->command, fd, ERR_NOTOCHANNEL);
     }
     else
         send_reply("", fd, ERR_NOTREGISTERED);
@@ -247,7 +249,10 @@ void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code,
             if (code != -1)
                 send_reply("", cl[i].clfd, code);
             else
+            {
+                std::cout << "broacast : " << s << std::endl;
                 send(cl[i].clfd, s, strlen(s), 0);
+            }
         }
     }
 }
