@@ -68,7 +68,7 @@ int     addclient(Server &serv, int i);
 		void do_registration(int fd);
 		void create_client_prefix(int fd);
 		void getIP();
-		void send_reply(int fd, int code);
+		void send_reply(std::string s, int fd, int code);
 		void send_reply_broad(Client &sender, std::vector<Client> &cl, int code, const char *s);
 
 /* MESSAGE TREATMENT */
@@ -81,8 +81,7 @@ int     addclient(Server &serv, int i);
 		void usercmd(Message *msg, int fd);
 		void joincmd(Message*, int);
 		void privmsgcmd(Message*, int);
-
-		std::string msg_rpl(int code, int fd);
+		std::string msg_rpl(std::string s, int code, int fd);
 		void chan_msg(Message * msg, int fd);
 
 };

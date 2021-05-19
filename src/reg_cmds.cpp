@@ -4,11 +4,11 @@
 void Server::passcmd(Message *msg, int fd)
 {
     if (_fd_clients[fd].is_register == true)
-        send_reply(fd, ERR_ALREADYREGISTERED);
+        send_reply("", fd, ERR_ALREADYREGISTERED);
     else if (!msg->params[0][0])
-        send_reply(fd, ERR_NEEDMOREPARAMS);
+        send_reply("", fd, ERR_NEEDMOREPARAMS);
     else if (strncmp(msg->params[0].c_str(), _password, strlen(_password)))
-        send_reply(fd, ERR_PASSWDMISMATCH);
+        send_reply("", fd, ERR_PASSWDMISMATCH);
     else
         _fd_clients[fd].password =  msg->params[0];
 }
@@ -28,17 +28,17 @@ void Server::nickcmd(Message *msg, int fd)
             _fd_clients[fd].nickname.resize(9);
     }
     else {
-        send_reply(fd, ERR_NICKNAMEINUSE);
+        send_reply("", fd, ERR_NICKNAMEINUSE);
     }
 }
 
 void Server::usercmd(Message *msg, int fd)
 {
     if (_fd_clients[fd].is_register == true)
-        send_reply(fd, ERR_ALREADYREGISTERED);
+        send_reply("", fd, ERR_ALREADYREGISTERED);
     else if (msg->params.size() == 8)
     {
-        send_reply(fd, ERR_NEEDMOREPARAMS);
+        send_reply("", fd, ERR_NEEDMOREPARAMS);
     }
     else
     {
@@ -54,7 +54,7 @@ void Server::do_registration(int fd)
     {
         _fd_clients[fd].is_register = true;
         create_client_prefix(fd);
-        send_reply(fd, RPL_WELCOME);
+        send_reply("", fd, RPL_WELCOME);
     }
 }
 
