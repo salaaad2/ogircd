@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/19 13:28:58 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/19 15:44:18 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,16 @@ class Server
 		char						_ip[INET_ADDRSTRLEN];
 		char						_prefix[17];
 		char						_password[32];
-		std::map<char[9], char[32]> _register;
 		Fds							*_fds;
-		std::map<int, Client> _fd_clients;
+		std::map<int, Client>		 _fd_clients;
 		std::map<std::string, Client> _nick_clients;
+
 		std::map<std::string, std::vector<Client> > _channels;
-		std::map<std::string, std::string> _topics;
+		std::map<std::string, std::string> 			_topics;
+		std::map<std::string, std::string> _passwords;
+		std::map<std::string, std::string> _modes;
+		std::map<std::string, std::map<Client, std::string> > _u_modes;
+
 
 	public:
 

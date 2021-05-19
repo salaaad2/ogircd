@@ -27,6 +27,7 @@ void Server::join2(std::string chan, int fd)
     {
         _channels[chan].push_back(_fd_clients[fd]);
         _fd_clients[fd].chans.push_back(chan);
+        _u_modes[chan][_fd_clients[fd]] = "----";
     }
     send_reply(chan, fd, RPL_TOPIC);
     send_reply(chan, fd, RPL_NAMREPLY);
@@ -38,11 +39,18 @@ void Server::join2(std::string chan, int fd)
     send_reply_broad(_fd_clients[fd], _channels[chan], -1, s.c_str());
 }
 
+
+	/* CHANNELS INFOS */
+	/* CHANNEL MODE : [opsitnbv] */
+	/* USER MODE : [iwso] */
+
 void Server::new_channel(std::string chan, int fd)
 {
     _channels[chan].push_back(_fd_clients[fd]);
     _fd_clients[fd].chans.push_back(chan);
     _topics[chan] = "Welcome to the channel you chose";
+    _modes[chan] = "o-------";
+    _u_modes[chan][_fd_clients[fd]] = "---o";
 }
 
 std::vector<std::string> Server::parse_channels(std::vector<std::string> params)

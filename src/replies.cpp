@@ -21,7 +21,7 @@ std::string Server::msg_rpl(std::string s = "", int code = -1, int fd = -1)
         {
             for (size_t i = 0 ; i < _channels[s].size() ; i++)
             {
-                response += "+";
+                response += _u_modes[s][_channels[s][i]][3] == 'o' ? "@" : "+";
                 response += _channels[s][i].nickname;
                 response += " ";
             }
