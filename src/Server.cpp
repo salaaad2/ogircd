@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/18 13:05:13 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/18 17:19:37 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,7 @@ void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
     std::cout << "{" << _fd_clients[fd].nickname << "} says : " << msg->command << std::endl;
-    std::cout << msg->params[0];
+    //std::cout << msg->params[0];
     if (tmp == "PASS") {
         passcmd(msg, fd);
     }
@@ -250,27 +250,6 @@ void Server::send_reply_broad(Client &sender, std::vector<Client> &cl, int code,
                 send(cl[i].clfd, s, strlen(s), 0);
         }
     }
-}
-
-void Server::joincmd(Message *msg, int fd)
-{
-    std::string s;
-    for (size_t i = 0; i < _fd_clients[fd].chans.size(); i++) {
-      if (msg->params[0] == _fd_clients[fd].chans[i]) {
-        send_reply("", fd, ERR_USERONCHANNEL);
-        return;
-      }
-    }
-    _channels[msg->params[0]].push_back(_fd_clients[fd]);
-    _fd_clients[fd].chans.push_back(msg->params[0]);
-    send_reply("", fd, RPL_TOPIC);
-    send_reply("", fd, RPL_NAMREPLY);
-    send_reply("" ,fd, RPL_ENDOFNAMES);
-    s += _fd_clients[fd].nickname;
-    s += " joined channel ";
-    s += msg->params[0];
-    s += "\r\n";
-    send_reply_broad(_fd_clients[fd], _channels[msg->params[0]], -1, s.c_str());
 }
 
 void Server::privmsgcmd(Message *msg, int fd)

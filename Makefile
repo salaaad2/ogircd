@@ -24,6 +24,7 @@ SRCS_NAME		  += Utils
 SRCS_NAME		  += Server
 SRCS_NAME		  += replies
 SRCS_NAME		  += reg_cmds
+SRCS_NAME		  += parse_channels
 #------------------------------------------------------------------------------#
 CLIENTSRC		 = client/tcp_chat_client
 #------------------------------------------------------------------------------#

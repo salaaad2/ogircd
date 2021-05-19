@@ -16,11 +16,19 @@ std::string Server::msg_rpl(std::string s = "", int code = -1, int fd = -1)
             return response;
         }
         case RPL_TOPIC :
-            return(s + "Welcome to the channel you chose");
+            return(s + " :" + _topics[s]);
         case RPL_NAMREPLY :
-            return(s + "Namerply");
+        {
+            for (size_t i = 0 ; i < _channels[s].size() ; i++)
+            {
+                response += "+";
+                response += _channels[s][i].nickname;
+                response += " ";
+            }
+            return response;
+        }
         case RPL_ENDOFNAMES :
-            return(s + "Endofnames");
+            return(s + ":End of /NAMES list");
         case RPL_SUMMONING :
             return (s + "You have been summoned");
 
@@ -47,7 +55,6 @@ std::string Server::msg_rpl(std::string s = "", int code = -1, int fd = -1)
             return std::string(s + ":There is no such user on server");
         case ERR_NOTEXTTOSEND :
             return std::string (s + ":There is no text to send");
-
         default :
             return std::string("");
     }
