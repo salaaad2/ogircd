@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../inc/ftirc.hpp"
+#include "../inc/message.hpp"
 #include "../inc/Server.hpp"
 
 void rec_data(Server &serv, int i, Fds *fds)
@@ -32,7 +33,7 @@ void rec_data(Server &serv, int i, Fds *fds)
     else
     {
         std::cout << buf;
-        serv.do_command(parse_message(serv, buf), i);
+        serv.do_command(parse_message(buf), i);
     //     for(int j = 0; j <= fds->fdmax; j++)
     //     {
     //         if(FD_ISSET(j, &fds->master))

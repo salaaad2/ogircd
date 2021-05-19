@@ -1,13 +1,17 @@
 #ifndef __MESSAGE_H_
 #define __MESSAGE_H_
 
+#include <vector>
+#include <string>
+
 struct Message
 {
-    char    command[64];
-    char    params[32][32];
+    std::string command;
+    std::vector<std::string> params;
+
+    Message() : command(), params() {}
 };
 
+Message *parse_message(char buf[]);
 
-const char    *msg_error(int code);
-const char    *msg_rpl(int code);
 #endif // __MESSAGE_H_

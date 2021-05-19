@@ -10,14 +10,34 @@ struct Client
     sockaddr_in  clientaddr;
     unsigned int addrlen;
     int          clfd;
-    char         password[16];
-    char         nickname[9];
-    char         username[32];
-    char         realname[32];
-    char         host[16];
-    char         prefix[57];
+    std::string         password;
+    std::string         nickname;
+    std::string         username;
+    std::string         realname;
+    std::string         host;
+    std::string         prefix;
     bool         is_server;
     bool         is_register;
+
+    public:
+        bool operator==(const Client &rhs) const {
+            return (clfd == rhs.clfd);
+        }
+        bool operator>(const Client &rhs) const {
+            return (clfd > rhs.clfd);
+        }
+        bool operator<(const Client &rhs) const {
+            return (clfd < rhs.clfd);
+        }
+        bool operator>=(const Client &rhs) const {
+            return (clfd >= rhs.clfd);
+        }
+        bool operator<=(const Client &rhs) const {
+            return (clfd <= rhs.clfd);
+        }
+        bool operator!=(const Client &rhs) const {
+            return (clfd != rhs.clfd);
+        }
 };
 
 #endif // __CLIENT_H_

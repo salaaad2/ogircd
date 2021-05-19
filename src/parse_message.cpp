@@ -13,92 +13,65 @@
 #include "../inc/ftirc.hpp"
 #include "../inc/Server.hpp"
 
-int add_prefix(char pr[], char buf[])
+int
+get_command(char buf[], Message *nm)
 {
-    int i = 1;
-    int j = 0;
-    
-    while (buf[i] != ' ')
-    {
-        pr[j] = buf[i];
+    int i = 0;
+
+    while (buf[i] && buf[i] != ' ' && buf[i] != '\r') {
+        nm->command += buf[i];
         i++;
-        j++;
     }
-    while (buf[i] == ' ')
-        i++;
-    return i;
+    return (i);
 }
 
-int add_cmd(char cmd[], char buf[], int i)
-{
-    int j = 0;
-
-    if (ft_isnum(buf[i]))
+void
+get_params(char buf[], Message *nm, int i) {
+    std:: string tmp;
+    std::string sep_char;
+    while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
+            || buf[i] == ':' || buf[i] == ',' || buf[i] == '#'))
     {
-        cmd[0] = buf[i];
-        cmd[1] = buf[i + 1];
-        cmd[2] = buf[i + 2];
-        i += 3;
-    }
-    else
-    {
-        while (ft_isalpha(buf[i]))
-        {
-            cmd[j] = buf[i];
-            i++;
-            j++;
-        }
-    }
-    while (buf[i] == ' ')
         i++;
-    return i;
-}
-
-void add_params(char params[32][32], char buf[], int i)
-{
-    int j = 0;
-    int k = 0;
-
-    while (buf[i] && buf[i] != '\r')
-    {
-        if (buf[i] != ':')
+    }
+    while (buf[i] && buf[i] != '\r') {
+        if (buf[i] == ':' || buf[i] == ' ' || buf[i] == ',' || buf[i] == '#')
         {
-            while (buf[i] && buf[i] != ' ' && buf[i] != '\r')
+            if (tmp != "")
             {
-                params[j][k] = buf[i];
-                i++;
-                k++;
+                nm->params.push_back(tmp);
+                tmp.clear();
             }
-            j++;
-            k = 0;
-            while (buf[i] == ' ')
-                i++;
+            sep_char += buf[i];
+            nm->params.push_back(sep_char);
+            sep_char.clear();
+            // if (buf[i] && buf[i] != ' ')
+            // {
+            //     tmp += buf[i];
+            //     nm->params.push_back(tmp);
+            //     tmp.clear();
+            // }
         }
         else
-        {
-            i++;
-            while (buf[i] && buf[i] != '\r')
-            {
-                params[j][k] = buf[i];
-                i++;
-                k++;
-            }
-        }
+            tmp += buf[i];
+        i++;
     }
-    j++;
-    params[j][0] = 0;
+    nm->params.push_back(tmp);
 }
 
-Message *parse_message(Server &serv, char buf[])
+Message *parse_message(char buf[])
 {
     Message *nm = new Message;
     int i = 0;
-    int j = 0;
 
-    ft_bzero(nm, 1088);
-    i = add_cmd(nm->command, buf, i);
-    add_params(nm->params, buf, i);
+    i = get_command(buf, nm);
+    get_params(buf, nm, i);
+
+    std::cout << "CMD " << nm->command <<  "\n";
     i = 0;
-    std::cout << "CMD " << nm->command <<  " PARAM " << nm->params[0] << "\n";
+    while (i < nm->params.size()) {
+        std::cout << "[" << nm->params[i] << "] ";
+        i++;
+    }
     return nm;
 }
