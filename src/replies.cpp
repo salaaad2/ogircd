@@ -43,6 +43,10 @@ std::string Server::msg_rpl(int code, int fd)
             return std::string(":Insufficient parameter count");
         case ERR_USERSDONTMATCH :
             return std::string(":Usernames don't match");
+        case ERR_NOSUCHNICK :
+            return std::string(":There is no such user on server");
+        case ERR_NOTEXTTOSEND :
+            return std::string (":There is no text to send");
 
         default :
             return std::string("");

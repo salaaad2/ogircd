@@ -275,7 +275,13 @@ void Server::joincmd(Message *msg, int fd)
 
 void Server::privmsgcmd(Message *msg, int fd)
 {
+    // ERR_NORECIPIENT --NO                ERR_NOTEXTTOSEND -- Yes
+    // ERR_CANNOTSENDTOCHAN --No            ERR_NOTOPLEVEL -- No
+    // ERR_WILDTOPLEVEL --No                ERR_TOOMANYTARGETS --No
+    // ERR_NOSUCHNICK --Yes
+    //  RPL_AWAY --No
     size_t i = 0;
+    std::list<Client> list;
     std::vector<Client> vec;
     std::string s;
     while (i < msg->params.size() && msg->params[i][0] != ':')
@@ -287,14 +293,14 @@ void Server::privmsgcmd(Message *msg, int fd)
                 if (_channels.count(msg->params[i]) == 0)
                 {
                     std::cout << "Error username : " << msg->params[i] << "\n";
-                    send_reply(fd, ERR_USERSDONTMATCH);
+                    send_reply(fd, ERR_NOSUCHNICK);
                     return;
                 }
                 else
-                    vec.insert(vec.end(), _channels[msg->params[i]].begin(), _channels[msg->params[i]].end());
+                    list.insert(list.end(), _channels[msg->params[i]].begin(), _channels[msg->params[i]].end());
             }
             else
-               vec.push_back(_nick_clients[msg->params[i]]);
+               list.push_back(_nick_clients[msg->params[i]]);
         }
         i++;
     }
@@ -304,6 +310,14 @@ void Server::privmsgcmd(Message *msg, int fd)
         s += msg->params[i];
         i++;
     }
+    if (s.size() == 0)
+    {
+        send_reply(fd, ERR_NOTEXTTOSEND);
+        return;
+    }
+    list.sort();
+    list.unique();
+    vec.assign(list.begin(), list.end());
     send_reply_broad(_fd_clients[fd], vec, -1, s.c_str());
 }
 

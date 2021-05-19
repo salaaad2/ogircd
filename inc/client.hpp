@@ -18,6 +18,26 @@ struct Client
     std::string         prefix;
     bool         is_server;
     bool         is_register;
+
+    public:
+        bool operator==(const Client &rhs) const {
+            return (clfd == rhs.clfd);
+        }
+        bool operator>(const Client &rhs) const {
+            return (clfd > rhs.clfd);
+        }
+        bool operator<(const Client &rhs) const {
+            return (clfd < rhs.clfd);
+        }
+        bool operator>=(const Client &rhs) const {
+            return (clfd >= rhs.clfd);
+        }
+        bool operator<=(const Client &rhs) const {
+            return (clfd <= rhs.clfd);
+        }
+        bool operator!=(const Client &rhs) const {
+            return (clfd != rhs.clfd);
+        }
 };
 
 #endif // __CLIENT_H_
