@@ -1,25 +1,26 @@
 #include "../inc/Server.hpp"
 #include "../inc/ftirc.hpp"
 
-void Server::joincmd(Message *msg, int fd)
+void Server::joincmd(Message *msg, std::string prefix)
 {
     std::vector<std::string> channels = parse_channels(msg->params);
 
     for (size_t i = 0 ; i < channels.size() ; i++)
-        join2(channels[i], fd);
+        join2(channels[i], prefix);
     if (channels.empty() == false)
     {
-        _fd_clients[fd].current_chan = channels.back();
+        _prefix_clients[prefix].current_chan = channels.back();
     }
     else
     {
-        send_reply("", fd, ERR_BADCHANMASK);
+        send_reply("", _prefix_clients[prefix].clfd, ERR_BADCHANMASK);
     }
 }
 
-void Server::join2(std::string chan, int fd)
+void Server::join2(std::string chan, std::string prefix)
 {
     std::string s;
+    int fd = _prefix_clients[prefix].clfd;
 
     for (size_t i = 0; i < _fd_clients[fd].chans.size(); i++) {
         if (chan == _fd_clients[fd].chans[i])
@@ -29,21 +30,22 @@ void Server::join2(std::string chan, int fd)
         }
     }
     if (_channels.find(chan) == _channels.end())
-        new_channel(chan, fd);
+        new_channel(chan, prefix);
     else
     {
-        _channels[chan].push_back(_fd_clients[fd]);
-        _fd_clients[fd].chans.push_back(chan);
-        _u_modes[chan][_fd_clients[fd]] = "----";
+        _channels[chan].push_back(_prefix_clients[prefix]);
+        _prefix_clients[prefix].chans.push_back(chan);
+        if (_u_modes[chan].find(_prefix_clients[prefix]) == _u_modes[chan].end())
+            _u_modes[chan][_prefix_clients[prefix]] = "----";
     }
     send_reply(chan, fd, RPL_TOPIC);
     send_reply(chan, fd, RPL_NAMREPLY);
     send_reply(chan, fd, RPL_ENDOFNAMES);
-    s += _fd_clients[fd].nickname;
+    s += _prefix_clients[prefix].nickname;
     s += " joined channel ";
     s += chan;
     s += "\r\n";
-    send_reply_broad(_fd_clients[fd], _channels[chan], -1, s.c_str());
+    send_reply_broad(_prefix_clients[prefix], _channels[chan], -1, s.c_str());
 }
 
 
@@ -51,13 +53,13 @@ void Server::join2(std::string chan, int fd)
 	/* CHANNEL MODE : [opsitnbv] */
 	/* USER MODE : [iwso] */
 
-void Server::new_channel(std::string chan, int fd)
+void Server::new_channel(std::string chan, std::string prefix)
 {
-    _channels[chan].push_back(_fd_clients[fd]);
-    _fd_clients[fd].chans.push_back(chan);
+    _channels[chan].push_back(_prefix_clients[prefix]);
+   _prefix_clients[prefix].chans.push_back(chan);
     _topics[chan] = "Welcome to the channel you chose";
     _modes[chan] = "o-------";
-    _u_modes[chan][_fd_clients[fd]] = "---o";
+    _u_modes[chan][_prefix_clients[prefix]] = "---o";
 }
 
 std::vector<std::string> Server::parse_channels(std::vector<std::string> params)
