@@ -187,12 +187,14 @@ void Server::send_reply(std::string s, int fd, int code)
 
 void Server::chan_msg(Message * msg, int fd) {
     std::string s;
-    size_t i = 1;
+    size_t i = 0;
 
     s += ("<" + _fd_clients[fd].nickname + ">@[" + _fd_clients[fd].current_chan + "] : " += msg->command);
     while (i < msg->params.size())
     {
-        s += (msg->params[i] + " ");
+        if (msg->params[i] != " ")
+            s.append(" ");
+        s.append(msg->params[i]);
         i++;
     }
     s += "\r\n";
@@ -225,13 +227,13 @@ void Server::do_command(Message *msg, int fd)
     else if (_fd_clients[fd].is_register == true)
     {
         if (tmp == "JOIN")
-            joincmd(msg, fd);
+            joincmd(msg, _fd_clients[fd].prefix);
         else if (tmp == "PRIVMSG")
-            privmsgcmd(msg, fd);
+            privmsgcmd(msg, _fd_clients[fd].prefix);
         else if (tmp == "NOTICE")
-            noticecmd(msg, fd);
+            noticecmd(msg, _fd_clients[fd].prefix);
         else if (_fd_clients[fd].current_chan.empty() == false)
-            chan_msg(msg, fd);
+            chan_msg(msg, _fd_clients[fd].prefix);
         else
             send_reply(msg->command, fd, ERR_NOTOCHANNEL);
     }

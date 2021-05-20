@@ -14,6 +14,7 @@
 
 #include <map>
 #include <vector>
+#include <stack>
 #include <list>
 #include <cstring>
 #include <cstdlib>
@@ -41,16 +42,14 @@ class Server
 		char						_password[32];
 		Fds							*_fds;
 
-		std::map<int, Client>		 _fd_clients;
-		std::map<std::string, Client> _nick_clients;
-
-		std::map<std::string, std::vector<Client> > _channels;
+		std::map<int, Client>		 			_fd_clients;
+		std::map<std::string, Client>           	 	_prefix_clients;
+		std::map<std::string, std::stack<Client > > 		_nick_database;
+		std::map<std::string, std::vector<Client> > 		_channels;
 		std::map<std::string, std::string> 			_topics;
-		std::map<std::string, std::string> _passwords;
-		std::map<std::string, std::string> _modes;
-		std::map<std::string, std::map<Client, std::string> > _u_modes;
-
-
+		std::map<std::string, std::string>			 _passwords;
+		std::map<std::string, std::string>			 _modes;
+		std::map<std::string, std::map<Client, std::string> >	 _u_modes;
 	public:
 
 		int							listener;
@@ -76,6 +75,7 @@ int     addclient(Server &serv, int i);
 		void getIP();
 		void send_reply(std::string s, int fd, int code);
 		void send_reply_broad(Client &sender, std::vector<Client> &cl, int code, std::string s);
+		std::string msg_rpl(std::string s, int code, int fd);
 
 /* MESSAGE TREATMENT */
 
@@ -85,18 +85,16 @@ int     addclient(Server &serv, int i);
 		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
-		void noticecmd(Message *msg, int fd);
-		
+
 		/*channels*/
-		void joincmd(Message*, int);
-		void join2(std::string chan, int fd);
+		void joincmd(Message *msg, std::string prefix);
+		void join2(std::string chan, std::string prefix);
 		std::vector<std::string> parse_channels(std::vector<std::string> params);
-		void new_channel(std::string chan, int fd);
+		void new_channel(std::string chan, std::string prefix);
 
 
-		std::string msg_rpl(int code, int fd, std::string chan = std::string());
-		void privmsgcmd(Message*, int);
-		std::string msg_rpl(std::string s, int code, int fd);
-		void chan_msg(Message * msg, int fd);
+		void privmsgcmd(Message *msg, std::string prefix);
+		void noticecmd(Message *msg, std::string prefix);
+		void chan_msg(Message * msg, std::string prefix);
 
 };
