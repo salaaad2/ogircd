@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/19 16:34:10 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 14:07:09 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,9 @@ void Server::setFds(Fds *fds) {_fds = fds;}
 std::map<int, Client> Server::getFDClients(void) const {
     return (_fd_clients);
 }
-std::map<std::string, Client> Server::getNickClients(void) const {
-    return (_nick_clients);
-}
 
 void Server::setFDClients(int i, Client cl) {
     _fd_clients[i] = cl;
-}
-
-void Server::setNickClients(std::string s, Client cl) {
-    _nick_clients[s] = cl;
 }
 
 Server::Server(Params *pm)
