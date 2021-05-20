@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/20 15:17:33 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 15:55:07 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,14 @@ class Server
 		char						_password[32];
 		Fds							*_fds;
 
-		std::map<int, Client>		 			_fd_clients;
-		std::map<std::string, Client>           	 	_prefix_clients;
-		std::map<std::string, std::stack<Client > > 		_nick_database;
-		std::map<std::string, std::vector<Client> > 			_channels;
-		std::map<std::string, std::string> 			_topics;
-		std::map<std::string, std::string>			 _passwords;
-		std::map<std::string, std::string>			 _modes;
-		std::map<std::string, std::map<Client, std::string> >	 _u_modes;
+		std::map<int, Client>		 			_m_fdclients;
+		std::map<std::string, Client>           	 	_m_pclients;
+		std::map<std::string, std::stack<Client > > 		_m_nickdb;
+		std::map<std::string, std::vector<Client> > 			_m_chans;
+		std::map<std::string, std::string> 			_m_topics;
+		std::map<std::string, std::string>			 _m_passwords;
+		std::map<std::string, std::string>			 _m_flags;
+		std::map<std::string, std::map<Client, std::string> >	 _m_uflags;
 	public:
 
 		int							listener;
@@ -85,7 +85,7 @@ class Server
 		/*channels*/
 		void joincmd(Message *msg, std::string prefix);
 		void join2(std::string chan, std::string prefix);
-		std::vector<std::string> parse_channels(std::vector<std::string> params);
+		std::vector<std::string> parse_m_chans(std::vector<std::string> params);
 		void new_channel(std::string chan, std::string prefix);
 		void partcmd(Message *msg, std::string prefix);
 

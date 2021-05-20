@@ -12,17 +12,17 @@ std::string Server::msg_rpl(std::string s = "", int code = -1, int fd = -1)
         case RPL_WELCOME :
         {
             response += "Welcome to the Internet Relay Network ";
-            response += _fd_clients[fd].prefix;
+            response += _m_fdclients[fd].prefix;
             return response;
         }
         case RPL_TOPIC :
-            return(s + " :" + _topics[s]);
+            return(s + " :" + _m_topics[s]);
         case RPL_NAMREPLY :
         {
-            for (size_t i = 0 ; i < _channels[s].size() ; i++)
+            for (size_t i = 0 ; i < _m_chans[s].size() ; i++)
             {
-                response += _u_modes[s][_channels[s][i]][3] == 'o' ? "@" : "+";
-                response += _channels[s][i].nickname;
+                response += _m_uflags[s][_m_chans[s][i]][3] == 'o' ? "@" : "+";
+                response += _m_chans[s][i].nickname;
                 response += " ";
             }
             return response;

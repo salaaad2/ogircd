@@ -3,52 +3,52 @@
 
 void Server::joincmd(Message *msg, std::string prefix)
 {
-    std::vector<std::string> channels = parse_channels(msg->params);
+    std::vector<std::string> channels = parse_m_chans(msg->params);
 
     std::cout << "joincmd\n";
     for (size_t i = 0 ; i < channels.size() ; i++)
         join2(channels[i], prefix);
     if (channels.empty() == false)
     {
-        _prefix_clients[prefix].current_chan = channels.back();
+        _m_pclients[prefix].current_chan = channels.back();
     }
     else
     {
-        send_reply("", _prefix_clients[prefix].clfd, ERR_BADCHANMASK);
+        send_reply("", _m_pclients[prefix].clfd, ERR_BADCHANMASK);
     }
 }
 
 void Server::join2(std::string chan, std::string prefix)
 {
     Message s;
-    int fd = _prefix_clients[prefix].clfd;
+    int fd = _m_pclients[prefix].clfd;
 
-    for (size_t i = 0; i < _fd_clients[fd].chans.size(); i++) {
-        if (chan == _fd_clients[fd].chans[i])
+    for (size_t i = 0; i < _m_fdclients[fd].chans.size(); i++) {
+        if (chan == _m_fdclients[fd].chans[i])
         {
             send_reply("", fd, ERR_USERONCHANNEL);
             return;
         }
     }
-    if (_channels.find(chan) == _channels.end())
+    if (_m_chans.find(chan) == _m_chans.end())
         new_channel(chan, prefix);
     else
     {
-        _channels[chan].push_back(_prefix_clients[prefix]);
-        _prefix_clients[prefix].chans.push_back(chan);
-        if (_u_modes[chan].find(_prefix_clients[prefix]) == _u_modes[chan].end())
-            _u_modes[chan][_prefix_clients[prefix]] = "----";
+        _m_chans[chan].push_back(_m_pclients[prefix]);
+        _m_pclients[prefix].chans.push_back(chan);
+        if (_m_uflags[chan].find(_m_pclients[prefix]) == _m_uflags[chan].end())
+            _m_uflags[chan][_m_pclients[prefix]] = "----";
     }
     std::cout << "joined\n";
-    std::cout << "nickname : " << _prefix_clients[prefix].username << "\n";
+    std::cout << "nickname : " << _m_pclients[prefix].username << "\n";
     send_reply(chan, fd, RPL_TOPIC);
     send_reply(chan, fd, RPL_NAMREPLY);
     send_reply(chan, fd, RPL_ENDOFNAMES);
-    s.params.push_back(_prefix_clients[prefix].nickname);
+    s.params.push_back(_m_pclients[prefix].nickname);
     s.params.push_back (" joined channel ");
     s.params.push_back(chan);
     s.params.push_back("\r\n");
-    send_reply_broad(prefix, _channels[chan], -1, &s);
+    send_reply_broad(prefix, _m_chans[chan], -1, &s);
 }
 
 
@@ -58,14 +58,14 @@ void Server::join2(std::string chan, std::string prefix)
 
 void Server::new_channel(std::string chan, std::string prefix)
 {
-    _channels[chan].push_back(_prefix_clients[prefix]);
-   _prefix_clients[prefix].chans.push_back(chan);
-    _topics[chan] = "Welcome to the channel you chose";
-    _modes[chan] = "o-------";
-    _u_modes[chan][_prefix_clients[prefix]] = "---o";
+    _m_chans[chan].push_back(_m_pclients[prefix]);
+   _m_pclients[prefix].chans.push_back(chan);
+    _m_topics[chan] = "Welcome to the channel you chose";
+    _m_flags[chan] = "o-------";
+    _m_uflags[chan][_m_pclients[prefix]] = "---o";
 }
 
-std::vector<std::string> Server::parse_channels(std::vector<std::string> params)
+std::vector<std::string> Server::parse_m_chans(std::vector<std::string> params)
 {
     std::vector<std::string> channels;
 

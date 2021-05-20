@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/20 14:39:16 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 15:52:36 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int Server::addclient(int listener)
     std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
     nc.host = inet_ntoa(nc.clientaddr.sin_addr);
     std::cout << " on socket " << nc.clfd << std::endl;
-    _fd_clients[nc.clfd] = nc;
+    _m_fdclients[nc.clfd] = nc;
     return (nc.clfd);
 }
 
@@ -175,7 +175,7 @@ void Server::chan_msg(Message * msg, std::string prefix) {
     std::string s;
     size_t i = 0;
 
-    s += ("<" + _nick_database[prefix].top().nickname + ">@[" + _prefix_clients[prefix].current_chan + "] : " += msg->command);
+    s += ("<" + _m_nickdb[prefix].top().nickname + ">@[" + _m_pclients[prefix].current_chan + "] : " += msg->command);
     while (i < msg->params.size())
     {
         if (msg->params[i] != " ")
@@ -184,42 +184,42 @@ void Server::chan_msg(Message * msg, std::string prefix) {
         i++;
     }
     s += "\r\n";
-    send_reply_broad(prefix, _channels[_prefix_clients[prefix].current_chan], -1, msg);
+    send_reply_broad(prefix, _m_chans[_m_pclients[prefix].current_chan], -1, msg);
 }
 
 void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
-    std::cout << "{" << _prefix_clients[_fd_clients[fd].prefix].prefix << "} says : " << msg->command << std::endl;
+    std::cout << "{" << _m_pclients[_m_fdclients[fd].prefix].prefix << "} says : " << msg->command << std::endl;
 
     if (tmp == "PASS") {
         passcmd(msg, fd);
     }
     else if (tmp == "NICK")
     {
-        if (_fd_clients[fd].password != _password)
+        if (_m_fdclients[fd].password != _password)
             send_reply("", fd, ERR_PASSWDMISMATCH);
         else
             nickcmd(msg, fd);
     }
     else if (tmp == "USER" ) {
-        if (_fd_clients[fd].password != _password)
+        if (_m_fdclients[fd].password != _password)
             send_reply("", fd, ERR_PASSWDMISMATCH);
-        else if (_fd_clients[fd].nickname[0] == 0)
+        else if (_m_fdclients[fd].nickname[0] == 0)
             send_reply("", fd, ERR_NONICKNAMEGIVEN);
         else
             usercmd(msg, fd);
     }
-    else if (_fd_clients[fd].is_register == true)
+    else if (_m_fdclients[fd].is_register == true)
     {
         if (tmp == "JOIN")
-            joincmd(msg, _fd_clients[fd].prefix);
+            joincmd(msg, _m_fdclients[fd].prefix);
         else if (tmp == "PRIVMSG")
-            privmsgcmd(msg, _fd_clients[fd].prefix);
+            privmsgcmd(msg, _m_fdclients[fd].prefix);
         else if (tmp == "NOTICE")
-            noticecmd(msg, _fd_clients[fd].prefix);
-        else if (_fd_clients[fd].current_chan.empty() == false)
-            chan_msg(msg, _fd_clients[fd].prefix);
+            noticecmd(msg, _m_fdclients[fd].prefix);
+        else if (_m_fdclients[fd].current_chan.empty() == false)
+            chan_msg(msg, _m_fdclients[fd].prefix);
         else
             send_reply(msg->command, fd, ERR_NOTOCHANNEL);
     }
@@ -233,7 +233,7 @@ void Server::send_reply_broad(std::string prefix, std::vector<Client> &cl, int c
     std::string s;
     for (size_t i = 0; i < cl.size(); i++)
     {
-        if (cl[i].clfd != _prefix_clients[prefix].clfd)
+        if (cl[i].clfd != _m_pclients[prefix].clfd)
         {
             if (code != -1)
                 send_reply("", cl[i].clfd, code);
@@ -262,18 +262,18 @@ void Server::privmsgcmd(Message *msg, std::string prefix)
     std::list<std::string> chans;
     while (i < msg->params.size() && msg->params[i] != ":")
     {
-        if (_nick_database.count(msg->params[i]) == 1)
+        if (_m_nickdb.count(msg->params[i]) == 1)
         {
-            cl_tmp = _nick_database[msg->params[i]].top();
+            cl_tmp = _m_nickdb[msg->params[i]].top();
             if (cl_tmp.is_logged == true)
                 nicknames.push_back(cl_tmp);
             else
-                send_reply(msg->params[i], _prefix_clients[prefix].clfd, ERR_NOSUCHNICK);
+                send_reply(msg->params[i], _m_pclients[prefix].clfd, ERR_NOSUCHNICK);
         }
-        else if (_channels.count(msg->params[i]) == 1)
+        else if (_m_chans.count(msg->params[i]) == 1)
             chans.push_back(msg->params[i]);
         else
-            send_reply(msg->params[i], _prefix_clients[prefix].clfd, ERR_NOSUCHNICK);
+            send_reply(msg->params[i], _m_pclients[prefix].clfd, ERR_NOSUCHNICK);
         i++;
     }
     while (i < msg->params.size())
@@ -282,19 +282,19 @@ void Server::privmsgcmd(Message *msg, std::string prefix)
         i++;
     }
     if (text.params.empty() == true)
-        send_reply("", _prefix_clients[prefix].clfd, ERR_NOTEXTTOSEND);
+        send_reply("", _m_pclients[prefix].clfd, ERR_NOTEXTTOSEND);
     nicknames.sort();
     nicknames.unique();
     chans.sort();
     chans.unique();
     i = 0;
-    curr_chan_tmp = _prefix_clients[prefix].current_chan;
+    curr_chan_tmp = _m_pclients[prefix].current_chan;
     for (std::list<std::string>::iterator it = chans.begin(); it != chans.end(); it++)
     {
-        _prefix_clients[prefix].current_chan = *it;
+        _m_pclients[prefix].current_chan = *it;
         chan_msg(&text, prefix);
     }
-    _prefix_clients[prefix].current_chan = curr_chan_tmp;
+    _m_pclients[prefix].current_chan = curr_chan_tmp;
     std::vector<Client> vec(nicknames.begin(), nicknames.end());
     send_reply_broad(prefix, vec, -1, &text);
 }
@@ -309,13 +309,13 @@ void Server::noticecmd(Message *msg, std::string prefix)
     std::list<std::string> chans;
     while (i < msg->params.size() && msg->params[i] != ":")
     {
-        if (_nick_database.count(msg->params[i]) == 1)
+        if (_m_nickdb.count(msg->params[i]) == 1)
         {
-            cl_tmp = _nick_database[msg->params[i]].top();
+            cl_tmp = _m_nickdb[msg->params[i]].top();
             if (cl_tmp.is_logged == true)
                 nicknames.push_back(cl_tmp);
         }
-        else if (_channels.count(msg->params[i]) == 1)
+        else if (_m_chans.count(msg->params[i]) == 1)
             chans.push_back(msg->params[i]);
         i++;
     }
@@ -331,13 +331,13 @@ void Server::noticecmd(Message *msg, std::string prefix)
     chans.sort();
     chans.unique();
     i = 0;
-    curr_chan_tmp = _prefix_clients[prefix].current_chan;
+    curr_chan_tmp = _m_pclients[prefix].current_chan;
     for (std::list<std::string>::iterator it = chans.begin(); it != chans.end(); it++)
     {
-        _prefix_clients[prefix].current_chan = *it;
+        _m_pclients[prefix].current_chan = *it;
         chan_msg(&text, prefix);
     }
-    _prefix_clients[prefix].current_chan = curr_chan_tmp;
+    _m_pclients[prefix].current_chan = curr_chan_tmp;
     std::vector<Client> vec(nicknames.begin(), nicknames.end());
     send_reply_broad(prefix, vec, -1, &text);
 }
