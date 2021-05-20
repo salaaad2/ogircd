@@ -3,8 +3,8 @@
 
 void Server::joincmd(Message *msg, std::string prefix)
 {
+    std::cout << "CLIENT JOIN FD :" << _m_pclients[prefix].clfd << "\n";
     std::vector<std::string> channels = parse_m_chans(msg->params);
-
     std::cout << "joincmd\n";
     for (size_t i = 0 ; i < channels.size() ; i++)
         join2(channels[i], prefix);
@@ -14,19 +14,18 @@ void Server::joincmd(Message *msg, std::string prefix)
     }
     else
     {
-        send_reply("", _m_pclients[prefix].clfd, ERR_BADCHANMASK);
+        send_reply("", prefix, ERR_BADCHANMASK);
     }
 }
 
 void Server::join2(std::string chan, std::string prefix)
 {
     Message s;
-    int fd = _m_pclients[prefix].clfd;
 
-    for (size_t i = 0; i < _m_fdclients[fd].chans.size(); i++) {
-        if (chan == _m_fdclients[fd].chans[i])
+    for (size_t i = 0; i < _m_pclients[prefix].chans.size(); i++) {
+        if (chan == _m_pclients[prefix].chans[i])
         {
-            send_reply("", fd, ERR_USERONCHANNEL);
+            send_reply("", prefix, ERR_USERONCHANNEL);
             return;
         }
     }
@@ -41,9 +40,9 @@ void Server::join2(std::string chan, std::string prefix)
     }
     std::cout << "joined\n";
     std::cout << "nickname : " << _m_pclients[prefix].username << "\n";
-    send_reply(chan, fd, RPL_TOPIC);
-    send_reply(chan, fd, RPL_NAMREPLY);
-    send_reply(chan, fd, RPL_ENDOFNAMES);
+    send_reply(chan, prefix, RPL_TOPIC);
+    send_reply(chan, prefix, RPL_NAMREPLY);
+    send_reply(chan, prefix, RPL_ENDOFNAMES);
     s.params.push_back(_m_pclients[prefix].nickname);
     s.params.push_back (" joined channel ");
     s.params.push_back(chan);

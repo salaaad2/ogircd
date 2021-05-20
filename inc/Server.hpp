@@ -41,8 +41,7 @@ class Server
 		char						_prefix[17];
 		char						_password[32];
 		Fds							*_fds;
-
-		std::map<int, Client>		 			_m_fdclients;
+		std::map<int, std::string>                              _m_fdprefix;
 		std::map<std::string, Client>           	 	_m_pclients;
 		std::map<std::string, std::stack<Client > > 		_m_nickdb;
 		std::map<std::string, std::vector<Client> > 			_m_chans;
@@ -69,9 +68,9 @@ class Server
 		void do_registration(int fd);
 		void create_client_prefix(int fd);
 		void getIP();
-		void send_reply(std::string s, int fd, int code);
+		void send_reply(std::string s, std::string prefix, int code);
 		void send_reply_broad(std::string prefix, std::vector<Client> &cl, int code, Message *msg);
-		std::string msg_rpl(std::string s, int code, int fd);
+		std::string msg_rpl(std::string s, int code, std::string prefix);
 
 /* MESSAGE TREATMENT */
 

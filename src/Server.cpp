@@ -113,7 +113,7 @@ void Server::do_connect(Params *pm)
 int Server::addclient(int listener)
 {
     Client nc;
-
+    std::string s;
     nc.is_server = false;
     nc.is_register = false;
     if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
@@ -126,7 +126,9 @@ int Server::addclient(int listener)
     std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
     nc.host = inet_ntoa(nc.clientaddr.sin_addr);
     std::cout << " on socket " << nc.clfd << std::endl;
-    _m_fdclients[nc.clfd] = nc;
+    s = "temp_prefix@";
+    _m_pclients[s] = nc  ;
+    _m_fdprefix[nc.clfd] = "temp_prefix@";
     return (nc.clfd);
 }
 
@@ -160,15 +162,34 @@ void Server::getIP()
 
 //==============================TREAT COMMANDS======================================
 
-void Server::send_reply(std::string s, int fd, int code)
+void Server::send_reply(std::string s, std::string prefix, int code)
 {
     std::string ccmd;
     if (code)
         ccmd = ft_format_cmd(ft_utoa(code));
     std::string to_send;
 
-    to_send += (std::string(_prefix) + " " + ccmd + " " + msg_rpl(s, code, fd) + "\r\n");
-    send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
+    to_send += (std::string(_prefix) + " " + ccmd + " " + msg_rpl(s, code, prefix) + "\r\n");
+    send(_m_pclients[prefix].clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
+}
+
+void Server::send_reply_broad(std::string prefix, std::vector<Client> &cl, int code, Message *msg)
+{
+    std::string s;
+    for (size_t i = 0; i < cl.size(); i++)
+    {
+        if (cl[i].clfd != _m_pclients[prefix].clfd)
+        {
+            if (code != -1)
+                send_reply("", cl[i].prefix, code);
+            else
+            {
+                for(size_t i = 0; i < msg->params.size(); i++)
+                    s += msg->params[i];
+                send_reply(s, cl[i].prefix, 0);
+            }
+        }
+    }
 }
 
 void Server::chan_msg(Message * msg, std::string prefix) {
@@ -183,63 +204,42 @@ void Server::chan_msg(Message * msg, std::string prefix) {
 void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
-    std::cout << "{" << _m_pclients[_m_fdclients[fd].prefix].prefix << "} says : " << msg->command << std::endl;
-
     if (tmp == "PASS") {
         passcmd(msg, fd);
     }
     else if (tmp == "NICK")
     {
-        if (_m_fdclients[fd].password != _password)
-            send_reply("", fd, ERR_PASSWDMISMATCH);
+        if (_m_pclients[_m_fdprefix[fd]].password != _password)
+            send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
         else
             nickcmd(msg, fd);
     }
     else if (tmp == "USER" ) {
-        if (_m_fdclients[fd].password != _password)
-            send_reply("", fd, ERR_PASSWDMISMATCH);
-        else if (_m_fdclients[fd].nickname[0] == 0)
-            send_reply("", fd, ERR_NONICKNAMEGIVEN);
+        if (_m_pclients[_m_fdprefix[fd]].password != _password)
+            send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
+        else if (_m_pclients[_m_fdprefix[fd]].nickname[0] == 0)
+            send_reply("", _m_fdprefix[fd], ERR_NONICKNAMEGIVEN);
         else
             usercmd(msg, fd);
     }
-    else if (_m_fdclients[fd].is_register == true)
+    else if (_m_pclients[_m_fdprefix[fd]].is_register == true)
     {
         if (tmp == "JOIN")
-            joincmd(msg, _m_fdclients[fd].prefix);
+            joincmd(msg, _m_pclients[_m_fdprefix[fd]].prefix);
         else if (tmp == "PRIVMSG")
-            privmsgcmd(msg, _m_fdclients[fd].prefix);
+            privmsgcmd(msg, _m_pclients[_m_fdprefix[fd]].prefix);
         else if (tmp == "NOTICE")
-            noticecmd(msg, _m_fdclients[fd].prefix);
-        else if (_m_pclients[_m_fdclients[fd].prefix].current_chan.empty() == false)
-            chan_msg(msg, _m_fdclients[fd].prefix);
+            noticecmd(msg, _m_pclients[_m_fdprefix[fd]].prefix);
+        else if (_m_pclients[_m_pclients[_m_fdprefix[fd]].prefix].current_chan.empty() == false)
+            chan_msg(msg, _m_pclients[_m_fdprefix[fd]].prefix);
         else
-            send_reply(msg->command, fd, ERR_NOTOCHANNEL);
+            send_reply(msg->command, _m_fdprefix[fd], ERR_NOTOCHANNEL);
     }
     else
-        send_reply("", fd, ERR_NOTREGISTERED);
+        send_reply("", _m_fdprefix[fd], ERR_NOTREGISTERED);
     delete msg;
 }
 
-void Server::send_reply_broad(std::string prefix, std::vector<Client> &cl, int code, Message *msg)
-{
-    std::string s;
-    for (size_t i = 0; i < cl.size(); i++)
-    {
-        if (cl[i].clfd != _m_pclients[prefix].clfd)
-        {
-            if (code != -1)
-                send_reply("", cl[i].clfd, code);
-            else
-            {
-                for(size_t i = 0; i < msg->params.size(); i++)
-                    s += msg->params[i];
-                std::cout << s << "["<< cl[i].clfd << "]" << "\n";
-                send_reply(s, cl[i].clfd, 0);
-            }
-        }
-    }
-}
 
 void Server::privmsgcmd(Message *msg, std::string prefix)
 {
@@ -262,12 +262,12 @@ void Server::privmsgcmd(Message *msg, std::string prefix)
             if (cl_tmp.is_logged == true)
                 nicknames.push_back(cl_tmp);
             else
-                send_reply(msg->params[i], _m_pclients[prefix].clfd, ERR_NOSUCHNICK);
+                send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
         }
         else if (_m_chans.count(msg->params[i]) == 1)
             chans.push_back(msg->params[i]);
         else
-            send_reply(msg->params[i], _m_pclients[prefix].clfd, ERR_NOSUCHNICK);
+            send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
         i++;
     }
     while (i < msg->params.size())
@@ -276,7 +276,7 @@ void Server::privmsgcmd(Message *msg, std::string prefix)
         i++;
     }
     if (text.params.empty() == true)
-        send_reply("", _m_pclients[prefix].clfd, ERR_NOTEXTTOSEND);
+        send_reply("", prefix, ERR_NOTEXTTOSEND);
     nicknames.sort();
     nicknames.unique();
     chans.sort();

@@ -38,6 +38,7 @@ struct Client
         is_server = cl.is_server;
         is_register = cl.is_register;
         is_logged = cl.is_logged;
+        clfd = cl.clfd;
         return (*this);
     }
 

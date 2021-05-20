@@ -1,7 +1,7 @@
 #include "../inc/replies.hpp"
 #include "../inc/Server.hpp"
 
-std::string Server::msg_rpl(std::string s = "", int code = -1, int fd = -1)
+std::string Server::msg_rpl(std::string s, int code, std::string prefix)
 {
     std::string response;
 
@@ -12,7 +12,7 @@ std::string Server::msg_rpl(std::string s = "", int code = -1, int fd = -1)
         case RPL_WELCOME :
         {
             response += "Welcome to the Internet Relay Network ";
-            response += _m_fdclients[fd].prefix;
+            response += _m_pclients[prefix].prefix;
             return response;
         }
         case RPL_TOPIC :
