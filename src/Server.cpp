@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/20 14:07:09 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 14:39:16 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,7 +190,7 @@ void Server::chan_msg(Message * msg, std::string prefix) {
 void Server::do_command(Message *msg, int fd)
 {
     std::string tmp(msg->command);
-    // std::cout << "{" << _fd_clients[fd].nickname << "} says : " << msg->command << std::endl;
+    std::cout << "{" << _prefix_clients[_fd_clients[fd].prefix].prefix << "} says : " << msg->command << std::endl;
 
     if (tmp == "PASS") {
         passcmd(msg, fd);

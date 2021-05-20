@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 13:41:20 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/19 13:18:43 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 14:37:36 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,6 @@ Message *parse_message(char buf[])
         std::cout << "[" << nm->params[i] << "] ";
         i++;
     }
+    std::cout << "\n";
     return nm;
 }

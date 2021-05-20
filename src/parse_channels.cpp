@@ -5,6 +5,7 @@ void Server::joincmd(Message *msg, std::string prefix)
 {
     std::vector<std::string> channels = parse_channels(msg->params);
 
+    std::cout << "joincmd\n";
     for (size_t i = 0 ; i < channels.size() ; i++)
         join2(channels[i], prefix);
     if (channels.empty() == false)
@@ -38,6 +39,8 @@ void Server::join2(std::string chan, std::string prefix)
         if (_u_modes[chan].find(_prefix_clients[prefix]) == _u_modes[chan].end())
             _u_modes[chan][_prefix_clients[prefix]] = "----";
     }
+    std::cout << "joined\n";
+    std::cout << "nickname : " << _prefix_clients[prefix].username << "\n";
     send_reply(chan, fd, RPL_TOPIC);
     send_reply(chan, fd, RPL_NAMREPLY);
     send_reply(chan, fd, RPL_ENDOFNAMES);

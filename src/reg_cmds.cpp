@@ -28,8 +28,8 @@ void Server::nickcmd(Message *msg, int fd)
             return;
         }
     }
-        _nick_database[msg->params[0]].push(_fd_clients[fd]);
         _fd_clients[fd].nickname = msg->params[0];
+        _nick_database[msg->params[0]].push(_fd_clients[fd]);
 }
 
 void Server::usercmd(Message *msg, int fd)
@@ -70,4 +70,5 @@ void Server::create_client_prefix(int fd)
         _prefix_clients[_fd_clients[fd].prefix] = _fd_clients[fd];
     else
         _fd_clients[fd] = _prefix_clients[_fd_clients[fd].prefix];
+    _prefix_clients[_fd_clients[fd].prefix].clfd = fd;
 }
