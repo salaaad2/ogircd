@@ -78,5 +78,6 @@ void Server::create_client_prefix(int fd)
         _m_pclients[s].is_logged = true;
        _m_pclients[s].clfd = _m_pclients["temp_prefix@"].clfd;
     }
+    _m_pclients[s].prefix = s;
     _m_fdprefix[fd] = s;
 }
