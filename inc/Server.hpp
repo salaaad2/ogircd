@@ -56,13 +56,9 @@ class Server
 		std::vector<sockaddr_in> 	*_network;
 
 		Server(Params *pm);
-int     addclient(Server &serv, int i);
+		int     addclient(int listener);
 
 		void setFds(Fds *fds);
-		std::map<int, Client> getFDClients(void) const;
-		void setFDClients(int, Client);
-		std::map<std::string, Client> getNickClients(void) const;
-		void setNickClients(std:: string, Client);
 
 
 	private:
@@ -74,7 +70,7 @@ int     addclient(Server &serv, int i);
 		void create_client_prefix(int fd);
 		void getIP();
 		void send_reply(std::string s, int fd, int code);
-		void send_reply_broad(Client &sender, std::vector<Client> &cl, int code, std::string s);
+		void send_reply_broad(std::string prefix, std::vector<Client> &cl, int code, Message *msg);
 		std::string msg_rpl(std::string s, int code, int fd);
 
 /* MESSAGE TREATMENT */

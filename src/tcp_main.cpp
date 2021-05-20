@@ -24,7 +24,7 @@ int main_loop(Server &serv, Fds *fds)
 		{
 			if (i == serv.listener)
 			{
-				if ((newfd = serv.addclient(serv, serv.listener)) != -1)
+				if ((newfd = serv.addclient(serv.listener)) != -1)
 				{
 					if(newfd > fds->fdmax)
 						fds->fdmax = newfd;
