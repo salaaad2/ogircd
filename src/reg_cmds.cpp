@@ -27,9 +27,9 @@ void Server::nickcmd(Message *msg, int fd)
             send_reply(msg->params[0], fd, ERR_NICKNAMEINUSE);
             return;
         }
+    }
         _nick_database[msg->params[0]].push(_fd_clients[fd]);
         _fd_clients[fd].nickname = msg->params[0];
-    }
 }
 
 void Server::usercmd(Message *msg, int fd)
