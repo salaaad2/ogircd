@@ -185,11 +185,11 @@ void Server::send_reply(std::string s, int fd, int code)
     send(fd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
-void Server::chan_msg(Message * msg, int fd) {
+void Server::chan_msg(Message * msg, std::string prefix) {
     std::string s;
     size_t i = 0;
 
-    s += ("<" + _fd_clients[fd].nickname + ">@[" + _fd_clients[fd].current_chan + "] : " += msg->command);
+    s += ("<" + _nick_database[prefix].top().nickname + ">@[" + _prefix_clients[prefix].current_chan + "] : " += msg->command);
     while (i < msg->params.size())
     {
         if (msg->params[i] != " ")
@@ -198,7 +198,7 @@ void Server::chan_msg(Message * msg, int fd) {
         i++;
     }
     s += "\r\n";
-    send_reply_broad(_fd_clients[fd], _channels[_fd_clients[fd].current_chan], -1, s);
+    send_reply_broad(_prefix_clients[prefix], _channels[_prefix_clients[prefix].current_chan], -1, s);
 }
 
 void Server::do_command(Message *msg, int fd)
