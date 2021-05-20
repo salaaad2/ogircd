@@ -28,8 +28,9 @@ void Server::nickcmd(Message *msg, int fd)
             return;
         }
     }
-        _m_fdclients[fd].nickname = msg->params[0];
-        _m_nickdb[msg->params[0]].push(_m_fdclients[fd]);
+    _m_fdclients[fd].nickname = msg->params[0];
+    _m_nickdb[msg->params[0]].push(_m_fdclients[fd]);
+    _m_nickdb[msg->params[0]].top().is_logged = true;
 }
 
 void Server::usercmd(Message *msg, int fd)

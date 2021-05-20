@@ -172,18 +172,11 @@ void Server::send_reply(std::string s, int fd, int code)
 }
 
 void Server::chan_msg(Message * msg, std::string prefix) {
+    std::string nick = _m_pclients[prefix].nickname;
     std::string s;
-    size_t i = 0;
 
-    s += ("<" + _m_nickdb[prefix].top().nickname + ">@[" + _m_pclients[prefix].current_chan + "] : " += msg->command);
-    while (i < msg->params.size())
-    {
-        if (msg->params[i] != " ")
-            s.append(" ");
-        s.append(msg->params[i]);
-        i++;
-    }
-    s += "\r\n";
+    s += ("<" + _m_nickdb[nick].top().nickname + ">@["+ _m_pclients[prefix].current_chan + "] : " += msg->command + " ");
+    msg->params.insert(msg->params.begin(), s);
     send_reply_broad(prefix, _m_chans[_m_pclients[prefix].current_chan], -1, msg);
 }
 
@@ -218,7 +211,7 @@ void Server::do_command(Message *msg, int fd)
             privmsgcmd(msg, _m_fdclients[fd].prefix);
         else if (tmp == "NOTICE")
             noticecmd(msg, _m_fdclients[fd].prefix);
-        else if (_m_fdclients[fd].current_chan.empty() == false)
+        else if (_m_pclients[_m_fdclients[fd].prefix].current_chan.empty() == false)
             chan_msg(msg, _m_fdclients[fd].prefix);
         else
             send_reply(msg->command, fd, ERR_NOTOCHANNEL);
@@ -241,6 +234,7 @@ void Server::send_reply_broad(std::string prefix, std::vector<Client> &cl, int c
             {
                 for(size_t i = 0; i < msg->params.size(); i++)
                     s += msg->params[i];
+                std::cout << s << "["<< cl[i].clfd << "]" << "\n";
                 send_reply(s, cl[i].clfd, 0);
             }
         }
