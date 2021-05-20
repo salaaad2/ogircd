@@ -185,7 +185,7 @@ void Server::chan_msg(Message * msg, std::string prefix) {
         i++;
     }
     s += "\r\n";
-    send_reply_broad(_prefix_clients[prefix], _channels[_prefix_clients[prefix].current_chan], -1, s);
+    send_reply_broad(prefix, _channels[_prefix_clients[prefix].current_chan], -1, msg);
 }
 
 void Server::do_command(Message *msg, int fd)
