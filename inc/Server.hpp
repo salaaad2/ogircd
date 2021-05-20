@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/19 16:33:51 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 14:02:50 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ class Server
 		std::map<int, Client>		 			_fd_clients;
 		std::map<std::string, Client>           	 	_prefix_clients;
 		std::map<std::string, std::stack<Client > > 		_nick_database;
-		std::map<std::string, std::vector<Client> > 		_channels;
+		std::map<std::string, std::vector<Client> > 			_channels;
 		std::map<std::string, std::string> 			_topics;
 		std::map<std::string, std::string>			 _passwords;
 		std::map<std::string, std::string>			 _modes;

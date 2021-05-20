@@ -6,14 +6,13 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/19 16:34:10 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/20 14:07:09 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 
 void Server::setFds(Fds *fds) {_fds = fds;}
-
 
 
 Server::Server(Params *pm)
@@ -339,7 +338,8 @@ void Server::noticecmd(Message *msg, std::string prefix)
         chan_msg(&text, prefix);
     }
     _prefix_clients[prefix].current_chan = curr_chan_tmp;
-    send_reply_broad(prefix, nicknames, -1, &text);
+    std::vector<Client> vec(nicknames.begin(), nicknames.end());
+    send_reply_broad(prefix, vec, -1, &text);
 }
 
 //===============================================================================

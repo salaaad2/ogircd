@@ -28,6 +28,7 @@ void Server::nickcmd(Message *msg, int fd)
             return;
         }
         _nick_database[msg->params[0]].push(_fd_clients[fd]);
+        _fd_clients[fd].nickname = msg->params[0];
     }
 }
 
