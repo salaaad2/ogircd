@@ -35,10 +35,13 @@ get_command(char buf[], Message *nm)
 {
     int i = 0;
 
+    std::cout << "buf : " << buf;
     while (buf[i] && buf[i] != ' ' && buf[i] != '\r') {
         nm->command += buf[i];
         i++;
     }
+    std::cout << "got command : " << nm->command << "\n";
+    nm->len += i;
     return (i);
 }
 
@@ -56,6 +59,7 @@ get_params(char buf[], Message *nm, int i) {
         {
             if (tmp != "")
             {
+                nm->len += tmp.length();
                 nm->params.push_back(tmp);
                 tmp.clear();
             }
@@ -74,30 +78,36 @@ get_params(char buf[], Message *nm, int i) {
         i++;
     }
     nm->params.push_back(tmp);
+    nm->len += tmp.length();
 }
 
-Message **parse_message(char buf[])
+std::vector<Message*>
+parse_message(char buf[])
 {
+    std::vector<Message*> vm;
     Message *nm = new Message;
-    Message ** msgs;
     size_t i = 0;
     size_t nc = 0;
+    size_t n = 0;
 
-    nm->count = count_commands(buf);
+    n = count_commands(buf);
 
-    std::cout << "count : " << nm->count <<  "\n";
-    // std::cout << "CMD " << nm->command <<  "\n";
+    std::cout << "count : " << n <<  "\n";
 
-    while (nc != nm[0].count)
-    {
+    while (nc != n) {
       i = get_command(buf, nm);
       get_params(buf, nm, i);
+      vm.push_back(nm);
+      nc++;
+      nm = new Message;
+      std::cout << "nc : " << nc << "\n";
     }
-    i = 0;
-    while (i < nm->params.size()) {
-        std::cout << "[" << nm->params[i] << "] ";
-        i++;
-    }
-    std::cout << "\n";
-    return msgs;
+    // i = 0;
+    // std::cout << "CMD " << nm->command <<  "\n";
+    // while (i < nm->params.size()) {
+    //     std::cout << "[" << nm->params[i] << "] ";
+    //     i++;
+    // }
+    // std::cout << "\n";
+    return vm;
 }
