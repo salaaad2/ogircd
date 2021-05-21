@@ -76,22 +76,28 @@ get_params(char buf[], Message *nm, int i) {
     nm->params.push_back(tmp);
 }
 
-Message *parse_message(char buf[])
+Message **parse_message(char buf[])
 {
     Message *nm = new Message;
-    unsigned long i = 0;
+    Message ** msgs;
+    size_t i = 0;
+    size_t nc = 0;
 
     nm->count = count_commands(buf);
-    i = get_command(buf, nm);
-    get_params(buf, nm, i);
 
     std::cout << "count : " << nm->count <<  "\n";
-    std::cout << "CMD " << nm->command <<  "\n";
+    // std::cout << "CMD " << nm->command <<  "\n";
+
+    while (nc != nm[0].count)
+    {
+      i = get_command(buf, nm);
+      get_params(buf, nm, i);
+    }
     i = 0;
     while (i < nm->params.size()) {
         std::cout << "[" << nm->params[i] << "] ";
         i++;
     }
     std::cout << "\n";
-    return nm;
+    return msgs;
 }

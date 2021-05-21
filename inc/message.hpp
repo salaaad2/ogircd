@@ -13,6 +13,6 @@ struct Message
     Message() : command(), params() {}
 };
 
-Message *parse_message(char buf[]);
+Message **parse_message(char buf[]);
 
 #endif // __MESSAGE_H_

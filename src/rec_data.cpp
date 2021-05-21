@@ -18,6 +18,8 @@ void rec_data(Server &serv, int i, Fds *fds)
 {
     int nbytes;
     char buf[512];
+    Message ** unsp;
+    size_t n = 1;
 
     ft_bzero(buf, 512);
     if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
@@ -32,7 +34,11 @@ void rec_data(Server &serv, int i, Fds *fds)
     else
     {
         std::cout << "data received  : {" << buf << "}\n";
-        serv.do_command(parse_message(buf), i);
+        unsp = parse_message(buf);
+        while (n < unsp[0]->count) {
+            serv.do_command(unsp[n], i);
+        }
+
     //     for(int j = 0; j <= fds->fdmax; j++)
     //     {
     //         if(FD_ISSET(j, &fds->master))
