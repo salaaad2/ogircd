@@ -22,14 +22,14 @@ void Server::nickcmd(Message *msg, int fd)
         msg->params[0].resize(9);
     if (_m_nickdb.count(msg->params[0]) == 1)
     {
-        if (_m_nickdb[msg->params[0]].top().is_logged == true)
-        {
-            send_reply(msg->params[0], _m_fdprefix[fd], ERR_NICKNAMEINUSE);
-            return;
-        }
+        (void)fd;
+        // if (_m_nickdb[msg->params[0]].top()->is_logged == true)
+        // {
+        //     send_reply(msg->params[0], _m_fdprefix[fd], ERR_NICKNAMEINUSE);
+        //     return;
+        // }
     }
     _m_pclients["temp_prefix@"].nickname = msg->params[0];
-    _m_nickdb[msg->params[0]].push(_m_pclients["temp_prefix@"]);
 }
 
 void Server::usercmd(Message *msg, int fd)
@@ -53,12 +53,8 @@ void Server::do_registration(int fd)
     if (_m_pclients["temp_prefix@"].nickname[0] && !_m_pclients["temp_prefix@"].password.compare(_password))
     {
         create_client_prefix(fd);
-        std::cout << "PREFIX CREATED : " << _m_fdprefix[fd] << "\n";
-        std::cout << "PREFIX CREATED is_logged : " << _m_pclients[_m_fdprefix[fd]].is_logged << "\n";
         _m_pclients[_m_fdprefix[fd]].is_register = true;
         _m_pclients[_m_fdprefix[fd]].is_logged = true;
-        std::cout << "PREFIX CREATED is_logged : " << _m_pclients[_m_fdprefix[fd]].is_logged << "\n";
-        std::cout << "PREFIX CREATED is_register : " << _m_pclients[_m_fdprefix[fd]].is_register << "\n";
         send_reply("", _m_fdprefix[fd], RPL_WELCOME);
     }
 }
@@ -80,4 +76,5 @@ void Server::create_client_prefix(int fd)
     }
     _m_pclients[s].prefix = s;
     _m_fdprefix[fd] = s;
+    _m_nickdb[_m_pclients[s].nickname].push(&_m_pclients[s]);
 }

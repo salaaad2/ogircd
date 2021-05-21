@@ -42,13 +42,13 @@ class Server
 		char						_password[32];
 		Fds							*_fds;
 		std::map<int, std::string>                              _m_fdprefix;
-		std::map<std::string, Client>           	 	_m_pclients;
-		std::map<std::string, std::stack<Client > > 		_m_nickdb;
-		std::map<std::string, std::vector<Client> > 			_m_chans;
+		std::map<std::string, Client*>           	 	_m_pclients;
+		std::map<std::string, std::stack<Client*> > 		_m_nickdb;
+		std::map<std::string, std::vector<Client*> > 			_m_chans;
 		std::map<std::string, std::string> 			_m_topics;
 		std::map<std::string, std::string>			 _m_passwords;
 		std::map<std::string, std::string>			 _m_flags;
-		std::map<std::string, std::map<Client, std::string> >	 _m_uflags;
+		std::map<std::string, std::map<Client*, std::string> >	 _m_uflags;
 	public:
 
 		int							listener;

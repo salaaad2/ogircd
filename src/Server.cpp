@@ -196,7 +196,7 @@ void Server::chan_msg(Message * msg, std::string prefix) {
     std::string nick = _m_pclients[prefix].nickname;
     std::string s;
 
-    s += ("<" + _m_nickdb[nick].top().nickname + ">@["+ _m_pclients[prefix].current_chan + "] : " += msg->command + " ");
+    s += ("<" + _m_nickdb[nick].top()->nickname + ">@["+ _m_pclients[prefix].current_chan + "] : " += msg->command + " ");
     msg->params.insert(msg->params.begin(), s);
     send_reply_broad(prefix, _m_chans[_m_pclients[prefix].current_chan], -1, msg);
 }
@@ -250,7 +250,7 @@ void Server::privmsgcmd(Message *msg, std::string prefix)
     //  RPL_AWAY --No
     size_t i = 0;
     Message text;
-    Client cl_tmp;
+    Client *cl_tmp;
     std::string curr_chan_tmp;
     std:: list<Client> nicknames;
     std::list<std::string> chans;
@@ -259,8 +259,8 @@ void Server::privmsgcmd(Message *msg, std::string prefix)
         if (_m_nickdb.count(msg->params[i]) == 1)
         {
             cl_tmp = _m_nickdb[msg->params[i]].top();
-            if (cl_tmp.is_logged == true)
-                nicknames.push_back(cl_tmp);
+            if (cl_tmp->is_logged == true)
+                nicknames.push_back(*cl_tmp);
             else
                 send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
         }
@@ -297,7 +297,7 @@ void Server::noticecmd(Message *msg, std::string prefix)
 {
     size_t i = 0;
     Message text;
-    Client cl_tmp;
+    Client *cl_tmp;
     std::string curr_chan_tmp;
     std:: list<Client> nicknames;
     std::list<std::string> chans;
@@ -306,8 +306,8 @@ void Server::noticecmd(Message *msg, std::string prefix)
         if (_m_nickdb.count(msg->params[i]) == 1)
         {
             cl_tmp = _m_nickdb[msg->params[i]].top();
-            if (cl_tmp.is_logged == true)
-                nicknames.push_back(cl_tmp);
+            if (cl_tmp->is_logged == true)
+                nicknames.push_back(*cl_tmp);
         }
         else if (_m_chans.count(msg->params[i]) == 1)
             chans.push_back(msg->params[i]);
