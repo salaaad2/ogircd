@@ -114,3 +114,14 @@ std::string ft_format_cmd(std::string cmd)
 		cmd.insert(cmd.begin(), '0');
 	return (cmd);
 }
+
+std::string ft_current_time(void)
+{
+ time_t rawtime;
+  struct tm * timeinfo;
+
+  time (&rawtime);
+  timeinfo = localtime (&rawtime);
+  return(asctime(timeinfo));
+
+}

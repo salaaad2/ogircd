@@ -26,6 +26,7 @@
 #include "fds.hpp"
 #include "Params.hpp"
 #include "replies.hpp"
+#include "utils.hpp"
 
 #define SOCKET_ERROR "Error: creating socket"
 #define LISTEN_ERROR "Error: listening server"
@@ -39,7 +40,7 @@ class Server
 
 		struct sockaddr_in			_addr;
 		char						_ip[INET_ADDRSTRLEN];
-		char						_prefix[17];
+		std::string						_prefix;
 		char						_password[32];
 		Fds							*_fds;
 		std::map<int, std::string>                              _m_fdprefix;
@@ -85,6 +86,8 @@ class Server
 
 		/*server*/
 		void quitcmd(Message *msg, std::string prefix);
+		void versioncmd(Message *msg, std::string prefix);
+		void statscmd(Message *msg, std::string prefix);
 
 
 		/*channels*/

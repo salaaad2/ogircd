@@ -95,7 +95,6 @@ int main(int ac, char **av)
         {
             char all[512];
             bzero(all, 512);
-            printf("{->}");
             if (fgets(message, 512, stdin) == NULL)
             {
                 close(net_socket);
