@@ -124,9 +124,9 @@ int Server::addclient(int listener)
     std::cout << "New connection from " << inet_ntoa(nc->clientaddr.sin_addr);
     nc->host = inet_ntoa(nc->clientaddr.sin_addr);
     std::cout << " on socket " << nc->clfd << std::endl;
-    s = "temp_prefix@";
+    s = ft_utoa(nc->clfd);
     _m_pclients[s] = nc;
-    _m_fdprefix[nc->clfd] = "temp_prefix@";
+    _m_fdprefix[nc->clfd] = s;
     return (nc->clfd);
 }
 
