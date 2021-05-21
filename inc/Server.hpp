@@ -69,7 +69,7 @@ class Server
 		void create_client_prefix(int fd);
 		void getIP();
 		void send_reply(std::string s, std::string prefix, int code);
-		void send_reply_broad(std::string prefix, std::vector<Client> &cl, int code, Message *msg);
+		void send_reply_broad(std::string prefix, std::vector<Client*> cl, int code, Message *msg);
 		std::string msg_rpl(std::string s, int code, std::string prefix);
 
 /* MESSAGE TREATMENT */

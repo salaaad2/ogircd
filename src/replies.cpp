@@ -12,7 +12,7 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
         case RPL_WELCOME :
         {
             response += "Welcome to the Internet Relay Network ";
-            response += _m_pclients[prefix].prefix;
+            response += _m_pclients[prefix]->prefix;
             return response;
         }
         case RPL_TOPIC :
@@ -22,7 +22,7 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             for (size_t i = 0 ; i < _m_chans[s].size() ; i++)
             {
                 response += _m_uflags[s][_m_chans[s][i]][3] == 'o' ? "@" : "+";
-                response += _m_chans[s][i].nickname;
+                response += _m_chans[s][i]->nickname;
                 response += " ";
             }
             return response;
