@@ -19,6 +19,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <unistd.h>
 
 #include "message.hpp"
 #include "client.hpp"
@@ -81,6 +82,11 @@ class Server
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
 
+
+		/*server*/
+		void quitcmd(Message *msg, std::string prefix);
+
+
 		/*channels*/
 		void joincmd(Message *msg, std::string prefix);
 		void join2(std::string chan, std::string prefix);
@@ -88,6 +94,7 @@ class Server
 		void new_channel(std::string chan, std::string prefix);
 		void partcmd(Message *msg, std::string prefix);
 
+		/*messages*/
 		void privmsgcmd(Message *msg, std::string prefix);
 		void noticecmd(Message *msg, std::string prefix);
 		void chan_msg(Message * msg, std::string prefix);

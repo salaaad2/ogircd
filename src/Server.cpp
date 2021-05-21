@@ -228,7 +228,9 @@ void Server::do_command(Message *msg, int fd)
             privmsgcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (tmp == "NOTICE")
             noticecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (_m_pclients[_m_pclients[_m_fdprefix[fd]]->prefix]->current_chan.empty() == false)
+        else if (tmp == "QUIT")
+            quitcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (_m_pclients[_m_fdprefix[fd]]->current_chan.empty() == false)
             chan_msg(msg, _m_pclients[_m_fdprefix[fd]]->prefix); // TODO: cadegage
         else
             send_reply(msg->command, _m_fdprefix[fd], ERR_NOTOCHANNEL);
@@ -238,6 +240,12 @@ void Server::do_command(Message *msg, int fd)
     delete msg;
 }
 
+void Server::quitcmd(Message *msg, std::string prefix) // TODO: NOT WORKING SERVER_SELECT ERROR
+{
+    (void)msg;
+    _m_pclients[prefix]->is_logged = false;
+    close(_m_pclients[prefix]->clfd);
+}
 
 void Server::privmsgcmd(Message *msg, std::string prefix)
 {
