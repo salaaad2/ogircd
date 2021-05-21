@@ -112,24 +112,22 @@ void Server::do_connect(Params *pm)
 
 int Server::addclient(int listener)
 {
-    Client nc;
+    Client *nc = new Client();
     std::string s;
-    nc.is_server = false;
-    nc.is_register = false;
-    if((nc.clfd = accept(listener, (struct sockaddr *)&nc.clientaddr, &nc.addrlen)) == -1)
+    if((nc->clfd = accept(listener, (struct sockaddr *)&nc->clientaddr, &nc->addrlen)) == -1)
     {
         std::cout << "Server-accept() error\n";
         return (-1);
     }
     else
         std::cout << "Server-accept() is OK...\n";
-    std::cout << "New connection from " << inet_ntoa(nc.clientaddr.sin_addr);
-    nc.host = inet_ntoa(nc.clientaddr.sin_addr);
-    std::cout << " on socket " << nc.clfd << std::endl;
+    std::cout << "New connection from " << inet_ntoa(nc->clientaddr.sin_addr);
+    nc->host = inet_ntoa(nc->clientaddr.sin_addr);
+    std::cout << " on socket " << nc->clfd << std::endl;
     s = "temp_prefix@";
-    _m_pclients[s] = &nc  ;
-    _m_fdprefix[nc.clfd] = "temp_prefix@";
-    return (nc.clfd);
+    _m_pclients[s] = nc;
+    _m_fdprefix[nc->clfd] = "temp_prefix@";
+    return (nc->clfd);
 }
 
 void Server::getIP()
