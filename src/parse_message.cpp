@@ -13,6 +13,23 @@
 #include "../inc/ftirc.hpp"
 #include "../inc/Server.hpp"
 
+size_t
+count_commands(char buf[])
+{
+    std::string tmp(buf);
+    size_t a;
+    size_t c;
+
+    c = 0;
+    for (a = tmp.find("\r\n");
+         a != std::string::npos;
+         a = tmp.find("\r\n", a + 2))
+    {
+        c++;
+    }
+    return (c);
+}
+
 int
 get_command(char buf[], Message *nm)
 {
@@ -27,7 +44,7 @@ get_command(char buf[], Message *nm)
 
 void
 get_params(char buf[], Message *nm, int i) {
-    std:: string tmp;
+    std::string tmp;
     std::string sep_char;
     while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
             || buf[i] == ':'))
@@ -64,9 +81,11 @@ Message *parse_message(char buf[])
     Message *nm = new Message;
     unsigned long i = 0;
 
+    nm->count = count_commands(buf);
     i = get_command(buf, nm);
     get_params(buf, nm, i);
 
+    std::cout << "count : " << nm->count <<  "\n";
     std::cout << "CMD " << nm->command <<  "\n";
     i = 0;
     while (i < nm->params.size()) {

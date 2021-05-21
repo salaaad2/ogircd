@@ -8,6 +8,7 @@ struct Message
 {
     std::string command;
     std::vector<std::string> params;
+    size_t count;
 
     Message() : command(), params() {}
 };

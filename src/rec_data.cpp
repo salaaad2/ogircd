@@ -31,7 +31,7 @@ void rec_data(Server &serv, int i, Fds *fds)
     }
     else
     {
-        std::cout << buf;
+        std::cout << "data received  : {" << buf << "}\n";
         serv.do_command(parse_message(buf), i);
     //     for(int j = 0; j <= fds->fdmax; j++)
     //     {
