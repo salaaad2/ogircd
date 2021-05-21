@@ -131,18 +131,10 @@ std::string ft_current_time(void)
 std::string ft_uptime(time_t &launch_time)
 {
     time_t rawtime;
-    struct tm * c_time;
-    struct tm *l_time;
-
+    time_t uptime;
+    struct tm *s_uptime;
     time (&rawtime);
-    c_time = localtime (&rawtime);
-    l_time = localtime(&launch_time);
-    c_time->tm_hour -=  l_time->tm_hour;
-    c_time->tm_mday -=  l_time->tm_mday;
-    c_time->tm_min -=   l_time->tm_min;
-    c_time->tm_sec -=   l_time->tm_sec;
-
-std::cout << "tm_sec : " << l_time->tm_sec << "\n";
-    return(std::string(ft_utoa(c_time->tm_mday) + " days " +
-           ft_utoa(c_time->tm_hour) + ":" + ft_utoa(c_time->tm_min) + ":" + ft_utoa(c_time->tm_sec)));
+    uptime = rawtime - launch_time;
+    s_uptime = localtime(&uptime);
+    return(ft_utoa(s_uptime->tm_mday - 1) + " days " + ft_utoa(s_uptime->tm_hour - 1) + ":" + ft_utoa(s_uptime->tm_min) + ":" + ft_utoa(s_uptime->tm_sec));
 }
