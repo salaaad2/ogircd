@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
+#include <ctime>
 
 #include "message.hpp"
 #include "client.hpp"
@@ -51,6 +52,7 @@ class Server
 		std::map<std::string, std::string>			 _m_passwords;
 		std::map<std::string, std::string>			 _m_flags;
 		std::map<std::string, std::map<Client*, std::string> >	 _m_uflags;
+		time_t                                              _launch_time;
 	public:
 
 		int							listener;

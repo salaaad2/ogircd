@@ -37,7 +37,7 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
         case RPL_VERSION :
             return (BOLDCYAN + s + "Server version is 1.0.1" + RESET);
         case RPL_STATSUPTIME :
-            return (BOLDCYAN + s +  ":Server Up %d days %d:%02d:%02d" + RESET);
+            return (BOLDCYAN + s +  ":Server Up " + ft_uptime(_launch_time) + RESET);
         case RPL_ENDOFSTATS :
             return (BOLDCYAN + s + ":End of /STATS report" + RESET);
 

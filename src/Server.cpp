@@ -17,6 +17,7 @@ void Server::setFds(Fds *fds) {_fds = fds;}
 
 Server::Server(Params *pm)
 {
+    time(&_launch_time);
     _network = new std::vector<sockaddr_in>;
     if (pm->isnew())
         new_serv(pm);
