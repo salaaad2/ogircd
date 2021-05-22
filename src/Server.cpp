@@ -237,6 +237,12 @@ void Server::do_command(Message *msg, int fd)
             versioncmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (tmp == "STATS")
             statscmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (tmp == "TIME")
+            timecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (tmp == "INFO")
+            infocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (tmp == "WHO")
+            whocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (_m_pclients[_m_fdprefix[fd]]->current_chan.empty() == false)
             chan_msg(msg, _m_pclients[_m_fdprefix[fd]]->prefix); // TODO: cadegage
         else

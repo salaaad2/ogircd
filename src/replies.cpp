@@ -30,16 +30,27 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             }
             return response;
         }
+        case RPL_INFO :
+            return (BOLDCYAN"\n" +  s + msg_rpl(s, RPL_VERSION, prefix)
+            + "\n" + msg_rpl(s, RPL_STATSUPTIME, prefix));
+        case RPL_ENDOFINFO :
+            return (BOLDCYAN + s + ":End of /INFO list" + RESET);
         case RPL_ENDOFNAMES :
             return(BOLDWHITE + s + ":End of /NAMES list" + RESET);
         case RPL_SUMMONING :
             return (BOLDCYAN + s + "You have been summoned" + RESET);
         case RPL_VERSION :
-            return (BOLDCYAN + s + "Server version is 1.0.1" + RESET);
+            return (BOLDCYAN + s + ":Version is 1.0.1" + RESET);
         case RPL_STATSUPTIME :
-            return (BOLDCYAN + s +  ":Server Up " + ft_uptime(_launch_time) + RESET);
+            return (BOLDCYAN + s +  ":Up " + ft_uptime(_launch_time) + RESET);
+        case RPL_TIME :
+            return (BOLDCYAN + s + ft_current_time() + RESET);
         case RPL_ENDOFSTATS :
             return (BOLDCYAN + s + ":End of /STATS report" + RESET);
+        case RPL_WHOREPLY :
+            return (BOLDCYAN + s + RESET);
+        case RPL_ENDOFWHO :
+            return (BOLDCYAN + s + ":End of WHO list");
 
         /* ERRORS */
 

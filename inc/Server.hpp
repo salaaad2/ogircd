@@ -90,7 +90,10 @@ class Server
 		void quitcmd(Message *msg, std::string prefix);
 		void versioncmd(Message *msg, std::string prefix);
 		void statscmd(Message *msg, std::string prefix);
-
+	//	void linkscmd(Message *msg, std::string prefix);
+		void timecmd(Message *msg, std::string prefix);
+		void infocmd(Message *msg, std::string prefix);
+		void whocmd(Message *msg, std::string prefix);
 
 		/*channels*/
 		void joincmd(Message *msg, std::string prefix);
