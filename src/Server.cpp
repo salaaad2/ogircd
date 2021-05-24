@@ -115,15 +115,15 @@ int Server::addclient(int listener)
 {
     Client *nc = new Client();
     std::string s;
-    if((nc->clfd = accept(listener, (struct sockaddr *)&nc->clientaddr, &nc->addrlen)) == -1)
+    if((nc->clfd = accept(listener, nc->clientaddr, &nc->addrlen)) == -1)
     {
         std::cout << "Server-accept() error\n";
         return (-1);
     }
     else
         std::cout << "Server-accept() is OK...\n";
-    std::cout << "New connection from " << inet_ntoa(nc->clientaddr.sin_addr);
-    nc->host = inet_ntoa(nc->clientaddr.sin_addr);
+    std::cout << "New connection from " << inet_ntoa(((struct sockaddr_in*)nc->clientaddr)->sin_addr);
+    nc->host = inet_ntoa(((struct sockaddr_in*)nc->clientaddr)->sin_addr);
     std::cout << " on socket " << nc->clfd << std::endl;
     s = ft_utoa(nc->clfd);
     _m_pclients[s] = nc;
@@ -208,6 +208,15 @@ void Server::do_command(Message *msg, int fd)
     if (tmp == "PASS") {
         passcmd(msg, fd);
     }
+    else if (tmp == "SERVER")
+    {
+        if (_m_pclients[_m_fdprefix[fd]]->password != _password)
+            send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
+        else if (_m_pclients[_m_fdprefix[fd]]->is_register == true)
+            send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
+        else
+            servercmd(msg, fd);
+    }
     else if (tmp == "NICK")
     {
         if (_m_pclients[_m_fdprefix[fd]]->password != _password)
@@ -223,7 +232,7 @@ void Server::do_command(Message *msg, int fd)
         else
             usercmd(msg, fd);
     }
-    else if (_m_pclients[_m_fdprefix[fd]]->is_register == true)
+    else if (_m_pclients.count(_m_fdprefix[fd]) && _m_pclients[_m_fdprefix[fd]]->is_register == true)
     {
         if (tmp == "JOIN")
             joincmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
@@ -243,6 +252,8 @@ void Server::do_command(Message *msg, int fd)
             infocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (tmp == "WHO")
             whocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (tmp == "CONNECT")
+            connectcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (_m_pclients[_m_fdprefix[fd]]->current_chan.empty() == false)
             chan_msg(msg, _m_pclients[_m_fdprefix[fd]]->prefix); // TODO: cadegage
         else

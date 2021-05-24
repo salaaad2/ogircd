@@ -8,7 +8,7 @@ struct Client
 {
     std::vector<std::string> chans;
     std::string              current_chan;
-    sockaddr_in         clientaddr;
+    sockaddr         *clientaddr;
     unsigned int        addrlen;
     int                 clfd;
     std::string         password;
@@ -21,8 +21,11 @@ struct Client
     bool                is_register;
     bool                is_logged;
 
-    Client(void) : chans(), current_chan(), clientaddr(), addrlen(), clfd(), password(), nickname(), username(),
+    Client(void) : chans(), current_chan(), clientaddr(new sockaddr), addrlen(), clfd(), password(), nickname(), username(),
                    realname(), host(), prefix(), is_server(false), is_register(false), is_logged(false) {}
+    ~Client(void){
+        delete clientaddr;
+    }
     Client &operator=(const Client &cl)
     {
         chans = cl.chans;

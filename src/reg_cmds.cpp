@@ -14,6 +14,7 @@ void Server::passcmd(Message *msg, int fd)
         _m_pclients[s]->password =  msg->params[0];
 }
 
+
 void Server::nickcmd(Message *msg, int fd)
 {
     // check against other usernicks

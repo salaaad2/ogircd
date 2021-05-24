@@ -78,7 +78,8 @@ get_params(char buf[], Message *nm, int i) {
             tmp += buf[i];
         i++;
     }
-    nm->params.push_back(tmp);
+    if (tmp != "")
+        nm->params.push_back(tmp);
     nm->len += tmp.length();
 }
 

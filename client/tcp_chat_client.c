@@ -69,7 +69,7 @@ int main(int ac, char **av)
            (strcmp(ifa->ifa_name, ifname) == 0) &&  
            (ifa->ifa_addr->sa_family == AF_INET)) {
             printf("\tAddress: <%s>\n", inet_ntoa(((struct sockaddr_in *)ifa->ifa_addr)->sin_addr));
-            char *hostname = inet_ntoa(((struct sockaddr_in *)ifa->ifa_addr)->sin_addr);
+          //  char hostname = inet_ntoa(((struct sockaddr_in *)ifa->ifa_addr)->sin_addr);
             break;
         }
     }
@@ -95,6 +95,7 @@ int main(int ac, char **av)
         {
             char all[512];
             bzero(all, 512);
+            printf("{->}");
             if (fgets(message, 512, stdin) == NULL)
             {
                 close(net_socket);
