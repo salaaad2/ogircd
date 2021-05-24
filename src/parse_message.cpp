@@ -93,8 +93,6 @@ parse_message(char buf[])
     size_t n = 0;
 
     n = count_commands(buf);
-
-
     while (nc != n) {
       i = get_command(buf, nm);
       get_params(buf, nm, i);

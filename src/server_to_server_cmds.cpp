@@ -59,4 +59,9 @@ void Server::connectcmd(Message *msg, std::string prefix) //TODO : check priv
     connection_status = connect(net_socket, (struct sockaddr*)&server_address, sizeof(server_address));
     if (connection_status == -1)
         send_reply("", prefix, ERR_NOSUCHSERVER);
+    else
+    {
+        send(net_socket, "PASS :CC\r\n", strlen("PASS :CC\r\n"), 0);
+        send(net_socket, "SERVER\r\n", strlen("SERVER\r\n"), 0);
+    }
 }
