@@ -95,12 +95,15 @@ parse_message(char buf[])
 
 
     while (nc != n) {
-      i = get_command(buf, nm);
-      get_params(buf, nm, i);
-      vm.push_back(nm);
-      buf += (nm->len + 3);
-      nc++;
-      nm = new Message;
+        if ((i = get_command(buf, nm)) == 0) {
+            break;
+        }
+        else
+            get_params(buf, nm, i);
+        vm.push_back(nm);
+        buf += (nm->len + 3);
+        nc++;
+        nm = new Message;
     }
     return vm;
 }

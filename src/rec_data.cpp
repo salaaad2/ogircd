@@ -35,7 +35,10 @@ void rec_data(Server &serv, int i, Fds *fds)
         // std::cout << "data received  : {" << buf << "}\n";
         vm = parse_message(buf);
         for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
-            serv.do_command(*it, i);
+            if ((*it)->command.length() != 0 && (*it)->params[0].empty() == false)
+            {
+                serv.do_command(*it, i);
+            }
         }
 
     //     for(int j = 0; j <= fds->fdmax; j++)
