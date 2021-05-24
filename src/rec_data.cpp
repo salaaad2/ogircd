@@ -18,6 +18,7 @@ void rec_data(Server &serv, int i, Fds *fds)
 {
     int nbytes;
     char buf[512];
+    std::vector<Message *> vm;
 
     ft_bzero(buf, 512);
     if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
@@ -31,8 +32,12 @@ void rec_data(Server &serv, int i, Fds *fds)
     }
     else
     {
-        std::cout << buf;
-        serv.do_command(parse_message(buf), i);
+        // std::cout << "data received  : {" << buf << "}\n";
+        vm = parse_message(buf);
+        for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
+            serv.do_command(*it, i);
+        }
+
     //     for(int j = 0; j <= fds->fdmax; j++)
     //     {
     //         if(FD_ISSET(j, &fds->master))
