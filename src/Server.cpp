@@ -12,13 +12,14 @@
 
 #include "../inc/Server.hpp"
 
+#include <netdb.h>
+
 void Server::setFds(Fds *fds) {_fds = fds;}
 
 
 Server::Server(Params *pm)
 {
     time(&_launch_time);
-    _network = new std::vector<sockaddr_in>;
     if (pm->isnew())
         new_serv(pm);
     else
@@ -90,21 +91,44 @@ void Server::connect_serv(Params *pm)
     do_connect(pm);
 }
 
+// TODO : while res; res = res->ai_next
+// inet_ntop (res->ai_family, ptr, addrstr, 100);
 void Server::do_connect(Params *pm)
 {
-    int net_socket = socket(AF_INET, SOCK_STREAM, 0);
+    struct addrinfo hints, *res, *result;
+    int errcode, status, net_socket;
+    char addrstr[100];
+    void *ptr;
 
-    struct sockaddr_in server_address;
+    memset(&hints, 0, sizeof (hints));
+    hints.ai_family = PF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags |= AI_CANONNAME;
 
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(pm->getPortNetwork());
-    server_address.sin_addr.s_addr = INADDR_ANY;
-    this->_network->push_back(server_address);
-
-    int connection_status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
-    if (connection_status == -1)
-        std::cout << "Error making connection to the remote socket\n\n";
-    send(net_socket, "SERVER", 6, 0);
+    errcode = getaddrinfo(pm->getHost(), NULL, &hints, &result);
+    if (errcode != 0)
+    {
+        std::cerr << "Error: getaddrinfo on \'" << pm->getHost() << "\' failed\n\n";
+        return ;
+    }
+    res = result;
+    inet_ntop(res->ai_family, res->ai_addr->sa_data, addrstr, 100);
+    if (res->ai_family == AF_INET) {
+        ptr = &((struct sockaddr_in *) res->ai_addr)->sin_addr;
+        net_socket = socket(AF_INET, SOCK_STREAM, 0);
+    } else if (res->ai_family == AF_INET6) {
+        ptr = &((struct sockaddr_in6 *) res->ai_addr)->sin6_addr;
+        net_socket = socket(AF_INET6, SOCK_STREAM, 0);
+    } else {
+        std::cerr << "Error: wrong hostname\n\n";
+        return ;
+    }
+    status = connect(net_socket, (struct sockaddr *)ptr, sizeof(struct sockaddr_in));
+    if (status != 0)
+    {
+        std::cerr << "Error: connection to the remote socket failed\n\n";
+    }
+    send(net_socket, "SERVER\r\n", 6, 0);
 }
 
 //========================================================================================
