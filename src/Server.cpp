@@ -204,11 +204,10 @@ void Server::chan_msg(Message * msg, std::string prefix) {
 
 void Server::do_command(Message *msg, int fd)
 {
-    std::string tmp(msg->command);
-    if (tmp == "PASS") {
+    if (msg->command == "PASS") {
         passcmd(msg, fd);
     }
-    else if (tmp == "SERVER")
+    else if (msg->command == "SERVER")
     {
         if (_m_pclients[_m_fdprefix[fd]]->password != _password)
             send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
@@ -217,14 +216,14 @@ void Server::do_command(Message *msg, int fd)
         else
             servercmd(msg, fd);
     }
-    else if (tmp == "NICK")
+    else if (msg->command == "NICK")
     {
         if (_m_pclients[_m_fdprefix[fd]]->password != _password)
             send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
         else
             nickcmd(msg, fd);
     }
-    else if (tmp == "USER" ) {
+    else if (msg->command == "USER" ) {
         if (_m_pclients[_m_fdprefix[fd]]->password != _password)
             send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
         else if (_m_pclients[_m_fdprefix[fd]]->nickname[0] == 0)
@@ -234,25 +233,25 @@ void Server::do_command(Message *msg, int fd)
     }
     else if (_m_pclients.count(_m_fdprefix[fd]) && _m_pclients[_m_fdprefix[fd]]->is_register == true)
     {
-        if (tmp == "JOIN")
+        if (msg->command == "JOIN")
             joincmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "PRIVMSG")
+        else if (msg->command == "PRIVMSG")
             privmsgcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "NOTICE")
+        else if (msg->command == "NOTICE")
             noticecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "QUIT")
+        else if (msg->command == "QUIT")
             quitcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "VERSION")
+        else if (msg->command == "VERSION")
             versioncmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "STATS")
+        else if (msg->command == "STATS")
             statscmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "TIME")
+        else if (msg->command == "TIME")
             timecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "INFO")
+        else if (msg->command == "INFO")
             infocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "WHO")
+        else if (msg->command == "WHO")
             whocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "CONNECT")
+        else if (msg->command == "CONNECT")
             connectcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (_m_pclients[_m_fdprefix[fd]]->current_chan.empty() == false)
             chan_msg(msg, _m_pclients[_m_fdprefix[fd]]->prefix); // TODO: cadegage
