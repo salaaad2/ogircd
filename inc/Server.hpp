@@ -46,6 +46,7 @@ class Server
 		Fds							*_fds;
 		std::map<int, std::string>                              _m_fdprefix;
 		std::map<std::string, Client*>           	 	_m_pclients;
+		std::map<int, std::string>                              _m_fdserver;
 		std::map<std::string, std::stack<Client*> > 		_m_nickdb;
 		std::map<std::string, std::vector<Client*> > 			_m_chans;
 		std::map<std::string, std::string> 			_m_topics;
@@ -94,6 +95,10 @@ class Server
 		void timecmd(Message *msg, std::string prefix);
 		void infocmd(Message *msg, std::string prefix);
 		void whocmd(Message *msg, std::string prefix);
+
+		/*server to server*/
+		void servercmd(Message *msg, int fd);
+		void connectcmd(Message *msg, std::string prefix);
 
 		/*channels*/
 		void joincmd(Message *msg, std::string prefix);

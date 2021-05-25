@@ -28,6 +28,7 @@ SRCS_NAME		  += parse_channels
 SRCS_NAME		  += channels
 SRCS_NAME		  += sending_messages_cmds
 SRCS_NAME		  += server_cmds
+SRCS_NAME		  += server_to_server_cmds
 #------------------------------------------------------------------------------#
 CLIENTSRC		 = client/tcp_chat_client
 #------------------------------------------------------------------------------#
