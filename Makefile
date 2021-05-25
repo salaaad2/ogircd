@@ -25,6 +25,7 @@ SRCS_NAME		  += Server
 SRCS_NAME		  += replies
 SRCS_NAME		  += reg_cmds
 SRCS_NAME		  += parse_channels
+SRCS_NAME		  += channels
 SRCS_NAME		  += sending_messages_cmds
 SRCS_NAME		  += server_cmds
 #------------------------------------------------------------------------------#

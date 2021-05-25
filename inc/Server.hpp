@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/20 15:55:07 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/25 11:58:46 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ class Server
 		std::vector<std::string> parse_m_chans(std::vector<std::string> params);
 		void new_channel(std::string chan, std::string prefix);
 		void partcmd(Message *msg, std::string prefix);
+		void namescmd(Message *msg, std::string prefix);
 
 		/*messages*/
 		void privmsgcmd(Message *msg, std::string prefix);
