@@ -82,6 +82,7 @@ int main(int ac, char **av)
     char message[512];
     bzero(message, 512);
     p_send(pseudo, passwd, net_socket, user, realname);
+
     char response[256];
     bzero(response, 256);
 
