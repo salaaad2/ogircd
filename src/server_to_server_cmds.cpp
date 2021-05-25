@@ -13,19 +13,6 @@ void Server::servercmd(Message *msg, int fd)
 
 void Server::connectcmd(Message *msg, std::string prefix) //TODO : check priv
 {
-   //     Command: CONNECT
-   // Parameters: <target server> [<port> [<remote server>]]
-
-   // The CONNECT command can be used to force a server to try to establish
-   // a new connection to another server immediately.  CONNECT is a
-   // privileged command and is to be available only to IRC Operators.  If
-   // a remote server is given then the CONNECT attempt is made by that
-   // server to <target server> and <port>.
-
-   // Numeric Replies:
-
-   //         ERR_NOSUCHSERVER                ERR_NOPRIVILEGES
-   //         ERR_NEEDMOREPARAMS
     size_t i = 0;
     std::string target;
     std::string port;

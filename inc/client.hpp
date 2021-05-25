@@ -21,7 +21,7 @@ struct Client
     bool                is_register;
     bool                is_logged;
 
-    Client(void) : chans(), current_chan(), clientaddr(new sockaddr), addrlen(), clfd(), password(), nickname(), username(),
+    Client(void) : chans(), current_chan(), clientaddr(new sockaddr), addrlen(sizeof(clientaddr)), clfd(), password(), nickname(), username(),
                    realname(), host(), prefix(), is_server(false), is_register(false), is_logged(false) {}
     ~Client(void){
         delete clientaddr;
