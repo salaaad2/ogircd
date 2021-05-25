@@ -58,6 +58,8 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return (s + " :" + _m_topics[s] + RESET);
         case RPL_LISTEND :
             return(std::string() + ":End of /LIST" + RESET);
+        case RPL_CHANNELMODEIS :
+            return (s);
 
         /* ERRORS */
 

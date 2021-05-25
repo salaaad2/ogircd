@@ -55,7 +55,7 @@ void Server::new_channel(std::string chan, std::string prefix)
     _m_chans[chan].push_back(_m_pclients[prefix]);
    _m_pclients[prefix]->chans.push_back(chan);
     _m_topics[chan] = "Welcome to the channel you chose";
-    _m_flags[chan] = "o----------";
+    _m_flags[chan] = "--------";
     _m_uflags[chan][_m_pclients[prefix]] = "---o";
 }
 

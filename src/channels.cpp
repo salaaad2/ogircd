@@ -62,41 +62,39 @@ void Server::chanMode(std::vector<std::string> params, std::string prefix)
 {
     if (_m_chans.find(params[1]) == _m_chans.end())
         send_reply(params[1], prefix, ERR_NOSUCHCHANNEL);
-    else if (params[3][0] == '+')
+    else
         setChanMode(params, prefix);
 }
 
 void Server::setChanMode(std::vector<std::string> params, std::string prefix)
 {
-    std::string modes = "opsitnbvmlk";
+    size_t i = 0;
+    size_t j = 3;
+    std::vector<size_t> par;
+    std::vector<std::vector<std::string> > cmds;
+    std::string to_add;
+    std::string to_remove;
+    bool        ar = true;
 
-    for (size_t i = 1 ; params[3][i] ; i++)
+    std::string modes = "aimnqpsrt";
+    std::string pmodes = "OovklbeI";
+
+    while (j < params.size())
     {
-        if (modes.find(params[3][i]) == std::string::npos)
-            send_reply(std::string(params[3], i, 1), prefix, ERR_UNKNOWNMODE);
-    }
-    for (size_t i = 1 ; params[3][i] ; i++)
-    {
-        if (params[3][i] == 'o')
-            _m_flags[params[1]][0] = 'o';
-        if (params[3][i] == 'p')
-            _m_flags[params[1]][1] = 'p';
-        if (params[3][i] == 's')
-            _m_flags[params[1]][2] = 's';
-        if (params[3][i] == 'i')
-            _m_flags[params[1]][3] = 'i';
-        if (params[3][i] == 't')
-            _m_flags[params[1]][4] = 't';
-        if (params[3][i] == 'n')
-            _m_flags[params[1]][5] = 'n';
-        if (params[3][i] == 'b')
-            _m_flags[params[1]][6] = 'b';
-        if (params[3][i] == 'v')
-            _m_flags[params[1]][7] = 'v';
-    }
-    if (params[3].size() == 2)
-    {
-        if (params[3][1] == 'l' && params.size() > 4)
-            _m_limits[params[1]] = ft_atoi(params[4].c_str());
+        while (params[j][i])
+        {
+            if (params[j][i] == '+')
+                ar = true;
+            else if (params[j][i] == '-')
+                ar = false;
+            else if (ar && (modes.find(params[j][i]) != std::string::npos && to_add.find(params[j][i]) != std::string::npos))
+                to_add += params[j][i];
+            else if (ar && (pmodes.find(params[j][i]) != std::string::npos))
+                to_add += params[j][i];
+            else if (ar && (modes.find(params[j][i]) != std::string::npos && to_remove.find(params[j][i]) != std::string::npos))
+                to_remove += params[j][i];
+            else if (modes.find(params[j][i]) == std::string::npos || pmodes.find(params[j][i]) == std::string::npos)
+                send_reply("", prefix, ERR_UNKNOWNMODE);
+        }
     }
 }
