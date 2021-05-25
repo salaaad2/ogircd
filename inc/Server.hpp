@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/25 11:58:46 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/25 15:48:35 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,17 @@ class Server
 		std::map<std::string, Client*>           	 	_m_pclients;
 		std::map<int, std::string>                              _m_fdserver;
 		std::map<std::string, std::stack<Client*> > 		_m_nickdb;
+
+		/*channels maps */
+
 		std::map<std::string, std::vector<Client*> > 			_m_chans;
 		std::map<std::string, std::string> 			_m_topics;
 		std::map<std::string, std::string>			 _m_passwords;
 		std::map<std::string, std::string>			 _m_flags;
 		std::map<std::string, std::map<Client*, std::string> >	 _m_uflags;
+		std::map<std::string, size_t>				_m_limits;
+
+
 		time_t                                              _launch_time;
 	public:
 
@@ -107,10 +113,15 @@ class Server
 		void new_channel(std::string chan, std::string prefix);
 		void partcmd(Message *msg, std::string prefix);
 		void namescmd(Message *msg, std::string prefix);
+		void listcmd(Message *msg, std::string prefix);
+		void modecmd(Message *msg, std::string prefix);
+			void chanMode(std::vector<std::string> params, std::string prefix);
+			void setChanMode(std::vector<std::string> params, std::string prefix);
+			
 
 		/*messages*/
 		void privmsgcmd(Message *msg, std::string prefix);
 		void noticecmd(Message *msg, std::string prefix);
 		void chan_msg(Message * msg, std::string prefix);
-
+		
 };

@@ -18,9 +18,10 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return response;
         }
         case RPL_TOPIC :
-            return(s + " :" + _m_topics[s]);
+            return(s + ":" + _m_topics[s] + RESET);
         case RPL_NAMREPLY :
         {
+            response += s + ":";
             for (size_t i = 0 ; i < _m_chans[s].size() ; i++)
             {
                 response += _m_uflags[s][_m_chans[s][i]][3] == 'o' ? "@" : "+";
@@ -51,6 +52,12 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return (BOLDCYAN + s + RESET);
         case RPL_ENDOFWHO :
             return (BOLDCYAN + s + ":End of WHO list");
+        case RPL_LISTSTART :
+            return (std::string() + "Channel :Users  Name" + RESET);
+        case RPL_LIST :
+            return (s + " :" + _m_topics[s] + RESET);
+        case RPL_LISTEND :
+            return(std::string() + ":End of /LIST" + RESET);
 
         /* ERRORS */
 
@@ -78,6 +85,10 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return std::string (BOLDRED":To join a channel, type : JOIN #" + s + RESET);
         case ERR_BADCHANMASK :
             return std::string (BOLDRED":Invalid JOIN parameter" + s + RESET);
+        case ERR_UNKNOWNMODE :
+            return std::string(BOLDRED + s + ":is unknown mode char to me" + RESET);
+        case ERR_NOSUCHCHANNEL :
+            return std::string(BOLDRED + s + ":No such channel");
         default :
             return s;
     }

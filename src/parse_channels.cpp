@@ -50,17 +50,12 @@ void Server::join2(std::string chan, std::string prefix)
     send_reply_broad(prefix, _m_chans[chan], -1, &s);
 }
 
-
-	/* CHANNELS INFOS */
-	/* CHANNEL MODE : [opsitnbv] */
-	/* USER MODE : [iwso] */
-
 void Server::new_channel(std::string chan, std::string prefix)
 {
     _m_chans[chan].push_back(_m_pclients[prefix]);
    _m_pclients[prefix]->chans.push_back(chan);
     _m_topics[chan] = "Welcome to the channel you chose";
-    _m_flags[chan] = "o-------";
+    _m_flags[chan] = "o----------";
     _m_uflags[chan][_m_pclients[prefix]] = "---o";
 }
 
