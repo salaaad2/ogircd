@@ -49,7 +49,7 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
     }
 }
 
-void Server::connectcmd(Message *msg, std::string prefix) //TODO : check priv
+void Server::connectcmd(Message *msg, std::string & prefix) //TODO : check priv
 {
     std::vector<std::string> vec;
     int net_socket;

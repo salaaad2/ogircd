@@ -1,7 +1,7 @@
 #include "../inc/replies.hpp"
 #include "../inc/Server.hpp"
 
-std::string Server::msg_rpl(std::string s, int code, std::string prefix)
+std::string Server::msg_rpl(std::string s, int code, std::string & prefix)
 {
     std::string response;
 

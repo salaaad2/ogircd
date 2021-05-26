@@ -1,7 +1,7 @@
 #include "../inc/Server.hpp"
 #include "../inc/ftirc.hpp"
 
-void Server::joincmd(Message *msg, std::string prefix)
+void Server::joincmd(Message *msg, std::string & prefix)
 {
     std::cout << "CLIENT JOIN FD :" << _m_pclients[prefix]->clfd << "\n";
     std::vector<std::string> channels = parse_m_chans(msg->params);
@@ -18,7 +18,7 @@ void Server::joincmd(Message *msg, std::string prefix)
     }
 }
 
-void Server::join2(std::string chan, std::string prefix)
+void Server::join2(std::string chan, std::string & prefix)
 {
     Message s;
 
@@ -55,7 +55,7 @@ void Server::join2(std::string chan, std::string prefix)
 	/* CHANNEL MODE : [opsitnbv] */
 	/* USER MODE : [iwso] */
 
-void Server::new_channel(std::string chan, std::string prefix)
+void Server::new_channel(std::string chan, std::string & prefix)
 {
     _m_chans[chan].push_back(_m_pclients[prefix]);
    _m_pclients[prefix]->chans.push_back(chan);
@@ -64,7 +64,7 @@ void Server::new_channel(std::string chan, std::string prefix)
     _m_uflags[chan][_m_pclients[prefix]] = "---o";
 }
 
-std::vector<std::string> Server::parse_m_chans(std::vector<std::string> params)
+std::vector<std::string> Server::parse_m_chans(std::vector<std::string> & params)
 {
     std::vector<std::string> channels;
 

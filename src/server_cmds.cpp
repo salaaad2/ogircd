@@ -1,19 +1,19 @@
 #include "../inc/Server.hpp"
 
-void Server::quitcmd(Message *msg, std::string prefix) // TODO: NOT WORKING SERVER_SELECT ERROR
+void Server::quitcmd(Message *msg, std::string & prefix) // TODO: NOT WORKING SERVER_SELECT ERROR
 {
     (void)msg;
     _m_pclients[prefix]->is_logged = false;
     close(_m_pclients[prefix]->clfd);
 }
 
-void Server::versioncmd(Message *msg, std::string prefix) // TODO :parameter: server
+void Server::versioncmd(Message *msg, std::string & prefix) // TODO :parameter: server
 {
     (void)msg;
     send_reply("",  prefix, RPL_VERSION);
 }
 
-void Server::statscmd(Message *msg, std::string prefix) // TODO :parameters: c - h - i - k - l - m - o - y - server
+void Server::statscmd(Message *msg, std::string & prefix) // TODO :parameters: c - h - i - k - l - m - o - y - server
 {
     if (msg->params[0] == "u")
     {
@@ -25,13 +25,13 @@ void Server::statscmd(Message *msg, std::string prefix) // TODO :parameters: c -
 //void Server::linkscmd(Message *msg, std::string prefix) TODO
 
 
-void Server::timecmd(Message *msg, std::string prefix) //TODO :parameter server
+void Server::timecmd(Message *msg, std::string & prefix) //TODO :parameter server
 {
     (void)msg;
     send_reply("", prefix, RPL_TIME);
 }
 
-void Server::infocmd(Message *msg, std::string prefix) //TODO :parameter server
+void Server::infocmd(Message *msg, std::string & prefix) //TODO :parameter server
 {
     (void)msg;
     send_reply("", prefix, RPL_INFO);
@@ -39,7 +39,7 @@ void Server::infocmd(Message *msg, std::string prefix) //TODO :parameter server
 }
 
 
-void Server::whocmd(Message *msg, std::string prefix) //TODO :wildcard, server
+void Server::whocmd(Message *msg, std::string & prefix) //TODO :wildcard, server
 {
     std::string s;
     Client *cl;
