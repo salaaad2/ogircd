@@ -20,15 +20,16 @@ void Server::setFds(Fds *fds) {_fds = fds;}
 Server::Server(Params *pm)
 {
     time(&_launch_time);
+    _pm = pm;
     if (pm->isnew())
-        new_serv(pm);
+        new_serv();
     else
-        connect_serv(pm);
+        connect_serv();
 }
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================
 
-void Server::new_serv(Params *pm)
+void Server::new_serv()
 {
     int yes = 1;
     getIP();
@@ -45,8 +46,8 @@ void Server::new_serv(Params *pm)
     }
     _addr.sin_family = AF_INET;
     _addr.sin_addr.s_addr = INADDR_ANY;
-    _addr.sin_port = htons(pm->getPort());
-    strcpy(_password, pm->getPwd());
+    _addr.sin_port = htons(_pm->getPort());
+    _password = _pm->getPwd();
     ft_bzero(&(_addr.sin_zero), 8);
     if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
     {
@@ -58,9 +59,13 @@ void Server::new_serv(Params *pm)
         perror(LISTEN_ERROR);
         exit(1);
     }
+    if (!_pm->getHost().empty() && _pm->getPortNetwork() && !_pm->getPwdNetwork().empty())
+        connect_serv();
+    else
+        delete _pm;
 }
 
-void Server::connect_serv(Params *pm)
+void Server::connect_serv()
 {
     int yes = 1;
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -75,8 +80,8 @@ void Server::connect_serv(Params *pm)
     }
     _addr.sin_family = AF_INET;
     _addr.sin_addr.s_addr = INADDR_ANY;
-    _addr.sin_port = htons(pm->getPort());
-    strcpy(_password, pm->getPwd());
+    _addr.sin_port = htons(_pm->getPort());
+    _password = _pm->getPwd();
     ft_bzero(&(_addr.sin_zero), 8);
     if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
     {
@@ -88,12 +93,12 @@ void Server::connect_serv(Params *pm)
         perror(LISTEN_ERROR);
         exit(1);
     }
-    do_connect(pm);
+    do_connect();
 }
 
 // TODO : while res; res = res->ai_next
 // inet_ntop (res->ai_family, ptr, addrstr, 100);
-void Server::do_connect(Params *pm)
+void Server::do_connect()
 {
     struct addrinfo hints, *res, *result;
     int errcode, status, net_socket;
@@ -105,10 +110,10 @@ void Server::do_connect(Params *pm)
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags |= AI_CANONNAME;
 
-    errcode = getaddrinfo(pm->getHost(), NULL, &hints, &result);
+    errcode = getaddrinfo(_pm->getHost().c_str(), NULL, &hints, &result);
     if (errcode != 0)
     {
-        std::cerr << "Error: getaddrinfo on \'" << pm->getHost() << "\' failed\n\n";
+        std::cerr << "Error: getaddrinfo on \'" << _pm->getHost() << "\' failed\n\n";
         return ;
     }
     res = result;
@@ -127,8 +132,10 @@ void Server::do_connect(Params *pm)
     if (status != 0)
     {
         std::cerr << "Error: connection to the remote socket failed\n\n";
+        return;
     }
     send(net_socket, "SERVER\r\n", 6, 0);
+    delete _pm;
 }
 
 //========================================================================================

@@ -14,57 +14,64 @@
 
 #include "utils.hpp"
 #include <iostream>
+#include <vector>
 class Params
 {
 private:
 
-	char    *_host;
-	char    *_port_network;
-	char    *_password_network;
-	char    *_port;
-	char    *_password;
+	std::string _host;
+	int _port_network;
+	std::string _password_network;
+	int _port;
+	std::string _password;
 	bool    _isnew;
 
 public:
 
-	Params(int ac, char **av) : _host(new char[128]), _port_network(new char[128]), _password_network(new char[128]),
-								_port(new char[128]), _password(new char[128]), _isnew(true)
+	Params(int ac, std::vector<std::string> av)
+
 	{
 		if (ac != 3 && ac != 4)
 		{
 			std::cout << "wrong parameters\n";
 			return ;
 		}
-		std::string av1(av[1]);
 
 		if (ac == 4)
 		{
-			size_t fst = av1.find(':');
-			size_t scd = av1.find(':', fst + 1);
-			size_t no = av1.find(':', scd + 1);
+			size_t fst = av[1].find(':');
+			size_t scd = av[1].find(':', fst + 1);
+			size_t no = av[1].find(':', scd + 1);
 
 			if (fst == std::string::npos || scd == std::string::npos || no != std::string::npos)
 				return ;
 
-			strcpy(_host, (av1.substr(0, fst).c_str()));
-			strcpy(_port_network, av1.substr(fst + 1, scd - fst - 1).c_str());
-			strcpy(_password_network, av1.substr(scd + 1, av1.length() - scd).c_str());
-			strcpy(_port, av[2]);
-			strcpy(_password, av[3]);
+			_host =  av[1].substr(0, fst);
+			_port_network =  ft_atoi(av[1].substr(fst + 1, scd - fst - 1).c_str());
+			_password_network = av[1].substr(scd + 1, av[1].length() - scd);
+			_port = ft_atoi(av[2].c_str());
+			_password = av[3];
 			_isnew = false;
 		}
 		else
 		{
-			strcpy(_port, av[1]);
-			strcpy(_password, av[2]);
+			_port = ft_atoi(av[1].c_str());
+			_password = av[2];
+			_isnew = true;
 		}
 	}
 
-	char	*getHost() const {return _host;}
-	char	*getPwdNetwork() const {return _password_network;}
-	char	*getPwd() const {return _password;}
+		std::string getHost() const {return _host;}
+		void setHost(std::string new_host) { _host = new_host;}
+		std::string getPwdNetwork() const {return _password_network;}
+		void setPwdNetwork(std::string new_pwd) { _password_network = ft_atoi(new_pwd.c_str());}
+		std::string getPwd() const {return _password;}
+		void setPwd(std::string new_pwd) { _password = ft_atoi(new_pwd.c_str());}
 
-	int		getPortNetwork() const {return ft_atoi(_port_network);}
-	int		getPort() const {return ft_atoi(_port);}
-	bool	isnew() const {return _isnew;}
+		int		getPortNetwork() const {return _port_network;}
+		void setPortNetwork(std::string new_port) { _port_network = ft_atoi(new_port.c_str());}
+		int		getPort() const {return _port;}
+		void setPort(std::string new_port) { _port = ft_atoi(new_port.c_str());}
+		bool	isnew() const {return _isnew;}
+		void setIsNew(bool is_new) { _isnew = is_new;}
 };
