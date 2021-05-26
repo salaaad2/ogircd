@@ -72,14 +72,9 @@ void Server::new_serv()
     }
 }
 
-void Server::connect_serv()
-{
-    do_connect();
-}
-
 // TODO : while res; res = res->ai_next
 // inet_ntop (res->ai_family, ptr, addrstr, 100);
-void Server::do_connect()
+int Server::connect_serv()
 {
     struct addrinfo hints, *res, *result;
     int errcode, status, net_socket;
@@ -93,7 +88,7 @@ void Server::do_connect()
     if (errcode != 0)
     {
         std::cerr << "Error: getaddrinfo on \'" << _pm->getHost() << "\' failed\n\n";
-        return ;
+        return(-1) ;
     }
     res = result;
     server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
@@ -103,7 +98,7 @@ void Server::do_connect()
         net_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     else {
         std::cerr << "Error: wrong hostname\n\n";
-        return ;
+        return(-1) ;
     }
     server_address.sin_family = res->ai_family;
     if (net_socket != -1)
@@ -113,15 +108,15 @@ void Server::do_connect()
         if (status != 0)
         {
             std::cerr << "Error: connection to the remote socket failed: " << strerror(errno) << "\n";
-            return;
+            return(-1);
         }
-        send(net_socket, "SERVER\r\n", 6, 0);
     }
     else {
         std::cout << "Error: socket failed to open" << std::endl;
+        return (-1);
     }
     freeaddrinfo(res);
-    delete _pm;
+    return (net_socket);
 }
 
 //========================================================================================
@@ -231,7 +226,7 @@ void Server::do_command(Message *msg, int fd)
         else if (_m_pclients[_m_fdprefix[fd]]->is_register == true)
             send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
         else
-            servercmd(msg, fd);
+            servercmd(msg, "", fd);
     }
     else if (msg->command == "NICK")
     {

@@ -35,6 +35,13 @@
 #define SETSOCK_ERROR "Error: setting socket options"
 
 
+struct network
+{
+	std::string servername;
+	int hopcount;
+	int token;
+};
+
 class Server
 {
 	private:
@@ -47,7 +54,7 @@ class Server
 		Fds							*_fds;
 		std::map<int, std::string>                              _m_fdprefix;
 		std::map<std::string, Client*>           	 	_m_pclients;
-		std::map<int, std::string>                              _m_fdserver;
+		std::map<int, network*>                              _m_fdserver;
 		std::map<std::string, std::stack<Client*> > 		_m_nickdb;
 		std::map<std::string, std::vector<Client*> > 			_m_chans;
 		std::map<std::string, std::string> 			_m_topics;
@@ -70,8 +77,7 @@ class Server
 	private:
 
 		void new_serv();
-		void connect_serv();
-		void do_connect();
+		int connect_serv();
 		void do_registration(int fd);
 		void create_client_prefix(int fd);
 		void getIP();
@@ -99,7 +105,7 @@ class Server
 		void whocmd(Message *msg, std::string prefix);
 
 		/*server to server*/
-		void servercmd(Message *msg, int fd);
+		void servercmd(Message *msg, std::string prefix, int fd);
 		void connectcmd(Message *msg, std::string prefix);
 
 		/*channels*/
