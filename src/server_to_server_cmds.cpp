@@ -13,7 +13,11 @@ void Server::servercmd(Message *msg, int fd)
 
 void Server::connectcmd(Message *msg, std::string prefix) //TODO : check priv
 {
-    Params *pm = new Params( msg->params.size(), msg->params);
+    std::vector<std::string> vec;
+    vec.push_back(msg->params[0] + ":" + msg->params[2] + ":" + _password);
+    vec.push_back(ft_utoa(_port));
+    vec.push_back(_password);
+    Params *pm = new Params(vec.size() + 1, vec);
     (void)prefix;
     _pm = pm;
     connect_serv();

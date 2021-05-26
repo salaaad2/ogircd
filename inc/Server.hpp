@@ -43,6 +43,7 @@ class Server
 		char						_ip[INET_ADDRSTRLEN];
 		std::string						_prefix;
 		std::string						_password;
+		int                                                     _port;
 		Fds							*_fds;
 		std::map<int, std::string>                              _m_fdprefix;
 		std::map<std::string, Client*>           	 	_m_pclients;

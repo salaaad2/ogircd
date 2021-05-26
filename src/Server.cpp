@@ -47,6 +47,7 @@ void Server::new_serv()
     _addr.sin_family = AF_INET;
     _addr.sin_addr.s_addr = INADDR_ANY;
     _addr.sin_port = htons(_pm->getPort());
+    _port = _pm->getPort();
     _password = _pm->getPwd();
     ft_bzero(&(_addr.sin_zero), 8);
     if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
@@ -73,32 +74,6 @@ void Server::new_serv()
 
 void Server::connect_serv()
 {
-    int yes = 1;
-    if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-    {
-        std::cout << SOCKET_ERROR << std::endl;
-        exit(1);
-    }
-    if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-    {
-        std::cout << SETSOCK_ERROR << std::endl;
-        exit(1);
-    }
-    _addr.sin_family = AF_INET;
-    _addr.sin_addr.s_addr = INADDR_ANY;
-    _addr.sin_port = htons(_pm->getPort());
-    _password = _pm->getPwd();
-    ft_bzero(&(_addr.sin_zero), 8);
-    if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
-    {
-        perror(BIND_ERROR);
-        exit(1);
-    }
-    if(listen(listener, 10) == -1)
-    {
-        perror(LISTEN_ERROR);
-        exit(1);
-    }
     do_connect();
 }
 
@@ -134,13 +109,21 @@ void Server::do_connect()
         std::cerr << "Error: wrong hostname\n\n";
         return ;
     }
-    status = connect(net_socket, (struct sockaddr *)ptr, sizeof(struct sockaddr_in));
-    if (status != 0)
+    if (net_socket != -1)
     {
-        std::cerr << "Error: connection to the remote socket failed\n\n";
-        return;
+
+        inet_ntop (res->ai_family, ptr, addrstr, 100);
+        status = connect(net_socket, (struct sockaddr *)res, sizeof(struct sockaddr_in));
+        if (status != 0)
+        {
+            std::cerr << "Error: connection to the remote socket failed: " << strerror(errno) << "\n";
+            return;
+        }
+        send(net_socket, "SERVER\r\n", 6, 0);
     }
-    send(net_socket, "SERVER\r\n", 6, 0);
+    else {
+        std::cout << "Error: socket failed to open" << std::endl;
+    }
     delete _pm;
 }
 
