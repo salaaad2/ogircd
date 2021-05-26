@@ -83,14 +83,12 @@ void Server::do_connect()
 {
     struct addrinfo hints, *res, *result;
     int errcode, status, net_socket;
-    char addrstr[100];
-    void *ptr;
+    sockaddr_in server_address;
 
     memset(&hints, 0, sizeof (hints));
     hints.ai_family = PF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags |= AI_CANONNAME;
-
     errcode = getaddrinfo(_pm->getHost().c_str(), NULL, &hints, &result);
     if (errcode != 0)
     {
@@ -98,22 +96,20 @@ void Server::do_connect()
         return ;
     }
     res = result;
-    inet_ntop(res->ai_family, res->ai_addr->sa_data, addrstr, 100);
-    if (res->ai_family == AF_INET) {
-        ptr = &((struct sockaddr_in *) res->ai_addr)->sin_addr;
-        net_socket = socket(AF_INET, SOCK_STREAM, 0);
-    } else if (res->ai_family == AF_INET6) {
-        ptr = &((struct sockaddr_in6 *) res->ai_addr)->sin6_addr;
-        net_socket = socket(AF_INET6, SOCK_STREAM, 0);
-    } else {
+    server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
+    server_address.sin_port = htons(_pm->getPortNetwork());
+    if (res->ai_family == AF_INET ||
+        res->ai_family==AF_INET6)
+        net_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    else {
         std::cerr << "Error: wrong hostname\n\n";
         return ;
     }
+    server_address.sin_family = res->ai_family;
     if (net_socket != -1)
     {
 
-        inet_ntop (res->ai_family, ptr, addrstr, 100);
-        status = connect(net_socket, (struct sockaddr *)res, sizeof(struct sockaddr_in));
+        status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
         if (status != 0)
         {
             std::cerr << "Error: connection to the remote socket failed: " << strerror(errno) << "\n";
@@ -124,6 +120,7 @@ void Server::do_connect()
     else {
         std::cout << "Error: socket failed to open" << std::endl;
     }
+    freeaddrinfo(res);
     delete _pm;
 }
 
