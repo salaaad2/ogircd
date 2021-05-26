@@ -36,7 +36,7 @@ void Server::new_serv()
 
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        std::cout << SOCKET_ERROR << std::endl;
+        std::cerr << SOCKET_ERROR << std::endl;
         exit(1);
     }
     if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
@@ -60,9 +60,15 @@ void Server::new_serv()
         exit(1);
     }
     if (!_pm->getHost().empty() && _pm->getPortNetwork() && !_pm->getPwdNetwork().empty())
+    {
+        std::cout << "conn_serv()" << std::endl;
         connect_serv();
+    }
     else
+    {
+        std::cout << "delete params" << std::endl;
         delete _pm;
+    }
 }
 
 void Server::connect_serv()
