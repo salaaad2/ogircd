@@ -29,6 +29,7 @@ SRCS_NAME		  += channels
 SRCS_NAME		  += sending_messages_cmds
 SRCS_NAME		  += server_cmds
 SRCS_NAME		  += server_to_server_cmds
+SRCS_NAME		  += modes
 #------------------------------------------------------------------------------#
 CLIENTSRC		 = client/tcp_chat_client
 #------------------------------------------------------------------------------#

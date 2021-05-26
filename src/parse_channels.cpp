@@ -36,7 +36,7 @@ void Server::join2(std::string chan, std::string prefix)
         _m_chans[chan].push_back(_m_pclients[prefix]);
         _m_pclients[prefix]->chans.push_back(chan);
         if (_m_uflags[chan].find(_m_pclients[prefix]) == _m_uflags[chan].end())
-            _m_uflags[chan][_m_pclients[prefix]] = "----";
+            _m_uflags[chan][_m_pclients[prefix]] = "";
     }
     std::cout << "joined\n";
     std::cout << "nickname : " << _m_pclients[prefix]->username << "\n";
@@ -55,8 +55,8 @@ void Server::new_channel(std::string chan, std::string prefix)
     _m_chans[chan].push_back(_m_pclients[prefix]);
    _m_pclients[prefix]->chans.push_back(chan);
     _m_topics[chan] = "Welcome to the channel you chose";
-    _m_flags[chan] = "--------";
-    _m_uflags[chan][_m_pclients[prefix]] = "---o";
+    _m_flags[chan] = "";
+    _m_uflags[chan][_m_pclients[prefix]] = "o";
 }
 
 std::vector<std::string> Server::parse_m_chans(std::vector<std::string> params)

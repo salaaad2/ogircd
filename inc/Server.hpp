@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/25 15:48:35 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/26 18:48:53 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,10 @@ class Server
 		std::map<std::string, std::string> 			_m_topics;
 		std::map<std::string, std::string>			 _m_passwords;
 		std::map<std::string, std::string>			 _m_flags;
+		std::map<std::string, std::vector<std::string> >		_m_banmask;
+		std::map<std::string, std::string>			_m_whoban;
+		std::map<std::string, uint64_t>			_m_banid;
+		std::map<std::string, std::string>			_m_chankey;
 		std::map<std::string, std::map<Client*, std::string> >	 _m_uflags;
 		std::map<std::string, size_t>				_m_limits;
 
@@ -117,6 +121,9 @@ class Server
 		void modecmd(Message *msg, std::string prefix);
 			void chanMode(std::vector<std::string> params, std::string prefix);
 			void setChanMode(std::vector<std::string> params, std::string prefix);
+			void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, std::string prefix);
+			void treat_args(std::string chan, std::string cmd, std::string prefix);
+
 			
 
 		/*messages*/

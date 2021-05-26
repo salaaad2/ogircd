@@ -24,7 +24,7 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             response += s + ":";
             for (size_t i = 0 ; i < _m_chans[s].size() ; i++)
             {
-                response += _m_uflags[s][_m_chans[s][i]][3] == 'o' ? "@" : "+";
+                response += _m_uflags[s][_m_chans[s][i]].find('o') != std::string::npos ? "@" : "+";
                 response += _m_chans[s][i]->nickname;
                 response += " ";
                 response += RESET;
@@ -60,6 +60,15 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return(std::string() + ":End of /LIST" + RESET);
         case RPL_CHANNELMODEIS :
             return (s);
+        case RPL_BANLIST :
+        {
+            std::cout << "bob\n";
+            for (std::vector<std::string>::iterator it = _m_banmask[s].begin() ; it != _m_banmask[s].end() ; it++)
+                response += s + " " + *it + RESET;// + " " + _m_whoban[*it] + " " + ft_utoa(_m_banid[*it]) + RESET;
+            return response;
+        }
+        case RPL_ENDOFBANLIST :
+            return (s + " :End of channel ban list" + RESET);
 
         /* ERRORS */
 
