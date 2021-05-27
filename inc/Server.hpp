@@ -46,23 +46,28 @@ class Server
 {
 	private:
 
-		struct sockaddr_in			_addr;
-		char						_ip[INET_ADDRSTRLEN];
+		//server
+		std::string                                             _servername;
+		struct sockaddr_in			                _addr;
+		char						        _ip[INET_ADDRSTRLEN];
 		std::string						_prefix;
 		std::string						_password;
+		std::string                                             _peer_password;
 		int                                                     _port;
 		Fds							*_fds;
+		std::map<int, network*>                                  _m_fdserver;
+		Params                                                  *_pm;
+		time_t                                              _launch_time;
+		//client
 		std::map<int, std::string>                              _m_fdprefix;
 		std::map<std::string, Client*>           	 	_m_pclients;
-		std::map<int, network*>                              _m_fdserver;
 		std::map<std::string, std::stack<Client*> > 		_m_nickdb;
-		std::map<std::string, std::vector<Client*> > 			_m_chans;
+		//channels
+		std::map<std::string, std::vector<Client*> > 	        _m_chans;
 		std::map<std::string, std::string> 			_m_topics;
-		std::map<std::string, std::string>			 _m_passwords;
-		std::map<std::string, std::string>			 _m_flags;
-		std::map<std::string, std::map<Client*, std::string> >	 _m_uflags;
-		Params                                                     *_pm;
-		time_t                                              _launch_time;
+		std::map<std::string, std::string>		        _m_passwords;
+		std::map<std::string, std::string>			_m_flags;
+		std::map<std::string, std::map<Client*, std::string> >	_m_uflags;
 	public:
 
 		int							listener;
@@ -107,6 +112,8 @@ class Server
 		/*server to server*/
 		void servercmd(Message *msg, std::string prefix, int fd);
 		void connectcmd(Message *msg, std::string prefix);
+		void broadcast_known_servers(int fd);
+		void broadcast_known_users(int fd);
 
 		/*channels*/
 		void joincmd(Message *msg, std::string prefix);

@@ -1,54 +1,99 @@
 #include "../inc/Server.hpp"
 
-void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername> <hopcount> <token> <info>
+void Server::broadcast_known_servers(int fd)
 {
-    network *net;
-    std::cout << "msg->params.size() " << msg->params.size() << "\n";
-    if (msg->params.size() == 3)
-    {
-        if (_m_fdserver.count(fd) == 1)
-            send_reply("", prefix, ERR_ALREADYREGISTERED);
-        else
+    typedef std::map<int, network*>::iterator iterator;
+    std::string req;
+    std::cout << "BROADCAST KNOWN SERVERS TO SOCKET " << fd << "\n";
+    for (iterator it = _m_fdserver.begin(); it != _m_fdserver.end(); it++) {
+        if ((*it).second->token != fd)
         {
-            std::cout << "PAIRING IN PROGRESS\n";
-            std::string req;
-            net = new network;
-            net->servername = msg->params[0];
-            net->hopcount = ft_atoi(msg->params[1].c_str());
-            net->token = ft_atoi(msg->params[2].c_str());
-            _m_fdserver[fd] = net;
-            req = "PASS :abc\r\n";
-            send(fd, req.c_str(), req.size(), 0);
-            req = "SERVER 42@irc 1 1\r\n";
-            send(fd, req.c_str(), req.size(), 0);
+            req = "SERVER " + (*it).second->servername + " " + ft_utoa((*it).second->hopcount) + " " + ft_utoa((*it).second->token) + "\r\n";
+            send(fd, req.c_str(), strlen(req.c_str()), 0);
         }
-    }
-    else if (msg->params.size() == 5)
-    {
-
-        if (_m_fdserver.count(fd) == 1)
-            send_reply("", prefix, ERR_ALREADYREGISTERED);
-        else
-        {
-            std::cout << "PAIRING IN PROGRESS\n";
-            std::string req;
-            net = new network;
-            net->servername = msg->params[0];
-            net->hopcount = ft_atoi(msg->params[2].c_str());
-            net->token = ft_atoi(msg->params[4].c_str());
-            _m_fdserver[fd] = net;
-            req = "PASS :abc\r\n";
-            send(fd, req.c_str(), req.size(), 0);
-            req = "SERVER 42@irc 1 1\r\n";
-            send(fd, req.c_str(), req.size(), 0);
-        }
-    }
-    else
-    {
-        std::cout << "PAIRING DONE\n";
     }
 }
 
+void Server::broadcast_known_users(int fd)
+{
+    typedef std::map<std::string, Client*>::iterator iterator;
+    std::string req;
+    std::cout << "BROADCAST KNOWN USERS TO SOCKET " << fd << "\n";
+    for (iterator it = _m_pclients.begin(); it != _m_pclients.end(); it++) {
+        req = "PASS :" + _password + "\r\n";
+        send(fd, req.c_str(), strlen(req.c_str()), 0);
+        req = "NICK :" + (*it).second->nickname + "\r\n";
+        send(fd, req.c_str(), strlen(req.c_str()), 0);
+        req = "USER " + (*it).second->username + " " + (*it).second->host + " " +
+            (*it).second->servername + ":" + (*it).second->realname + "\r\n";
+        send(fd, req.c_str(), strlen(req.c_str()), 0);
+    }
+}
+
+// void Server::broadcast_known_channels(int fd)
+// {
+//     typedef std::map<std::string, std::vector<Client*>>::iterator m_iterator;
+//     typedef std::vector<Client*>::iterator v_iterator;
+//     std::string req;
+//     for (m_iterator m_it = _m_chans.begin(); m_it != _m_chans.end(); m_it++)
+//     {
+//         for (v_iterator v_it = (*m_it).second.begin(); v_it != (*m_it).second.end(); v_it++)
+//         {
+//             req = 0
+//         }
+//     }
+// }
+
+void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername> <hopcount> <token> <info>
+{
+    (void)prefix;
+    network *net;
+    std::string servername;
+    std::string hopcount;
+    std::string token;
+    std::string req;
+    if (msg->params.size() == 3) {
+        servername = msg->params[0];
+        hopcount = msg->params[1];
+        token = msg->params[2];
+    }
+    else if (msg->params.size() == 5){
+        servername = msg->params[0];
+        hopcount = msg->params[2];
+        token = msg->params[4];
+    }
+    else
+    {
+        req = msg_rpl("", ERR_NEEDMOREPARAMS, "");
+        send(fd, req.c_str(), strlen(req.c_str()), 0);
+        return;
+    }
+    if (_m_fdserver.count(fd) == 1)
+    {
+        req = msg_rpl(servername, ERR_ALREADYREGISTERED, "");
+        send(fd, req.c_str(), strlen(req.c_str()), 0);
+        return;
+    }
+    else {
+        net = new network;
+        net->servername = servername;
+        net->hopcount = ft_atoi(hopcount.c_str()) + 1;
+        net->token = fd;
+        _m_fdserver[fd] = net;
+        req = "PASS :" + _peer_password + "\r\n";
+        send(fd, req.c_str(), req.size(), 0);
+        req = "SERVER " + _servername + " 0 1\r\n";
+        send(fd, req.c_str(), req.size(), 0);
+        broadcast_known_servers(fd);
+        broadcast_known_users(fd);
+        req = "INFO\r\n";
+        send(fd, req.c_str(), req.size(), 0);
+ //       broadcast_known_channels(fd);
+        std::cout << "net->servername " << net->servername << "\n";
+        std::cout << "net->hopcount " << net->hopcount << "\n";
+        std::cout << "net->token " << net->token << "\n";
+    }
+}
 void Server::connectcmd(Message *msg, std::string prefix) //TODO : check priv
 {
     std::vector<std::string> vec;
@@ -65,7 +110,7 @@ void Server::connectcmd(Message *msg, std::string prefix) //TODO : check priv
         {
             Message msg;
             msg.params.push_back(_pm->getHost());
-            msg.params.push_back(ft_utoa(1));
+            msg.params.push_back(ft_utoa(0));
             msg.params.push_back(ft_utoa(net_socket));
             servercmd(&msg, prefix, net_socket);
         }

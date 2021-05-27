@@ -21,6 +21,8 @@ Server::Server(Params *pm)
 {
     time(&_launch_time);
     _pm = pm;
+    _peer_password = "PeerSecret";
+    _servername = "42lyon.irc.fr";
     if (pm->isnew())
         new_serv();
     else
@@ -216,15 +218,22 @@ void Server::chan_msg(Message * msg, std::string prefix) {
 
 void Server::do_command(Message *msg, int fd)
 {
+    std::string req;
     if (msg->command == "PASS") {
         passcmd(msg, fd);
     }
     else if (msg->command == "SERVER")
     {
-        if (_m_pclients[_m_fdprefix[fd]]->password != _password)
-            send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
-        else if (_m_pclients[_m_fdprefix[fd]]->is_register == true)
-            send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
+        if (_m_pclients[_m_fdprefix[fd]]->password != _peer_password)
+        {
+            req = msg_rpl("", ERR_PASSWDMISMATCH, "");
+            send(fd, req.c_str(), strlen(req.c_str()), 0);
+        }
+        else if (_m_fdserver.count(fd) == 1)
+        {
+            req = msg_rpl("", ERR_ALREADYREGISTERED, "");
+            send(fd, req.c_str(), strlen(req.c_str()), 0);
+        }
         else
             servercmd(msg, "", fd);
     }

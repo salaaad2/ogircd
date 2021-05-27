@@ -8,7 +8,7 @@ void Server::passcmd(Message *msg, int fd)
         send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
     else if (!msg->params[0][0])
         send_reply("", _m_fdprefix[fd], ERR_NEEDMOREPARAMS);
-    else if (msg->params[0] != _password)
+    else if (msg->params[0] != _password && msg->params[0] != _peer_password)
         send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
     else
         _m_pclients[s]->password =  msg->params[0];
@@ -47,6 +47,7 @@ void Server::usercmd(Message *msg, int fd)
     {
         _m_pclients[s]->username =  msg->params[0].c_str();
         _m_pclients[s]->realname =  msg->params[msg->params.size() - 1];
+        _m_pclients[s]->servername =  msg->params[msg->params.size() - 2];
         do_registration(fd);
     }
 }

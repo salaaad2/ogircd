@@ -17,6 +17,7 @@ struct Client
     std::string         realname;
     std::string         host;
     std::string         prefix;
+    std::string         servername;
     bool                is_server;
     bool                is_register;
     bool                is_logged;
@@ -37,6 +38,7 @@ struct Client
         username = cl.username;
         realname = cl.realname;
         host = cl.host;
+        servername = cl.servername;
         prefix = cl.prefix;
         is_server = cl.is_server;
         is_register = cl.is_register;
