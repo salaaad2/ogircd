@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/26 19:26:41 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/27 15:13:46 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,6 @@ void Server::send_reply(std::string s, std::string prefix, int code)
     _prefix.erase(_prefix.size() - 1, 1);
     _prefix += + "]:";
 
-    std::cout << "bob\n";
     to_send += (_prefix +  " " + ccmd + " " + msg_rpl(s, code, prefix) + RESET + "\r\n");
     send(_m_pclients[prefix]->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }

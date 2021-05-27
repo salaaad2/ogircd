@@ -21,10 +21,13 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return(s + ":" + _m_topics[s] + RESET);
         case RPL_NAMREPLY :
         {
-            response += s + ":";
+            response += "= " + s + " :";
             for (size_t i = 0 ; i < _m_chans[s].size() ; i++)
             {
-                response += _m_uflags[s][_m_chans[s][i]].find('o') != std::string::npos ? "@" : "+";
+                if (_m_uflags[s][_m_chans[s][i]].find('o') != std::string::npos)
+                    response += "@";
+                else if (_m_uflags[s][_m_chans[s][i]].find('v') != std::string::npos)
+                    response += "+";
                 response += _m_chans[s][i]->nickname;
                 response += " ";
                 response += RESET;
@@ -37,7 +40,7 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
         case RPL_ENDOFINFO :
             return (BOLDCYAN + s + ":End of /INFO list" + RESET);
         case RPL_ENDOFNAMES :
-            return(BOLDWHITE + s + ":End of /NAMES list" + RESET);
+            return(BOLDWHITE"= " + s + ":End of /NAMES list" + RESET);
         case RPL_SUMMONING :
             return (BOLDCYAN + s + "You have been summoned" + RESET);
         case RPL_VERSION :
@@ -59,16 +62,15 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
         case RPL_LISTEND :
             return(std::string() + ":End of /LIST" + RESET);
         case RPL_CHANNELMODEIS :
-            return (s);
+            return (s + RESET);
         case RPL_BANLIST :
-        {
-            std::cout << "bob\n";
-            for (std::vector<std::string>::iterator it = _m_banmask[s].begin() ; it != _m_banmask[s].end() ; it++)
-                response += s + " " + *it + RESET;// + " " + _m_whoban[*it] + " " + ft_utoa(_m_banid[*it]) + RESET;
-            return response;
-        }
+            return (s + RESET);
         case RPL_ENDOFBANLIST :
             return (s + " :End of channel ban list" + RESET);
+        case RPL_EXCEPTLIST :
+            return (s + RESET);
+        case RPL_ENDOFEXCEPTLIST :
+            return (s + " :End of channel exception list" + RESET);
 
         /* ERRORS */
 
@@ -100,6 +102,12 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return std::string(BOLDRED + s + ":is unknown mode char to me" + RESET);
         case ERR_NOSUCHCHANNEL :
             return std::string(BOLDRED + s + ":No such channel");
+        case ERR_CHANOPRIVSNEEDED :
+            return std::string(BOLDRED":You are not channel operator");
+        case ERR_BADCHANNELKEY :
+            return std::string(BOLDRED + s + ":Cannot join channel (+k) -- Wrong channel key");
+        case ERR_BANNEDFROMCHAN :
+            return std::string(BOLDRED + s + ":Cannot join channel (+b) -- You are banned");
         default :
             return s;
     }

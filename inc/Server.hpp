@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/26 18:48:53 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/27 18:21:41 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,21 @@ class Server
 		std::map<std::string, std::string> 			_m_topics;
 		std::map<std::string, std::string>			 _m_passwords;
 		std::map<std::string, std::string>			 _m_flags;
+
+			/* bans */
 		std::map<std::string, std::vector<std::string> >		_m_banmask;
-		std::map<std::string, std::string>			_m_whoban;
-		std::map<std::string, uint64_t>			_m_banid;
-		std::map<std::string, std::string>			_m_chankey;
-		std::map<std::string, std::map<Client*, std::string> >	 _m_uflags;
-		std::map<std::string, size_t>				_m_limits;
+		std::map<std::string, std::string>						_m_whoban;
+		std::map<std::string, uint64_t>							_m_banid;
+
+			/* exceptions */
+		
+		std::map<std::string, std::vector<std::string> >		_m_exceptmask;
+		std::map<std::string, std::string>						_m_whoexcept;
+		std::map<std::string, uint64_t>							_m_exceptid;
+
+		std::map<std::string, std::string>						_m_chankey;
+		std::map<std::string, std::map<Client*, std::string> >	_m_uflags;
+		std::map<std::string, size_t>							_m_limits;
 
 
 		time_t                                              _launch_time;
@@ -95,7 +104,7 @@ class Server
 		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
-
+		void send_to_channel(std::string send, std::string chan);
 
 		/*server*/
 		void quitcmd(Message *msg, std::string prefix);
@@ -112,8 +121,10 @@ class Server
 
 		/*channels*/
 		void joincmd(Message *msg, std::string prefix);
-		void join2(std::string chan, std::string prefix);
+		void join2(std::string chan, std::string key, std::string prefix);
 		std::vector<std::string> parse_m_chans(std::vector<std::string> params);
+		std::vector<std::string> parse_keys(std::vector<std::string> params, std::vector<std::string> channels);
+		bool isbanned(std::string prefix, std::string chan);
 		void new_channel(std::string chan, std::string prefix);
 		void partcmd(Message *msg, std::string prefix);
 		void namescmd(Message *msg, std::string prefix);
