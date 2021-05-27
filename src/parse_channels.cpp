@@ -31,7 +31,6 @@ void Server::join2(std::string chan, std::string key, std::string prefix)
         new_channel(chan, prefix);
     else
     {
-        std::cout << "flags : " << _m_flags[chan] << " pass : " << _m_chankey[chan] << "\n";
         if (_m_flags[chan].find('k') != std::string::npos && key != _m_chankey[chan])
         {
             send_reply(chan, prefix, ERR_BADCHANNELKEY);
@@ -40,6 +39,11 @@ void Server::join2(std::string chan, std::string key, std::string prefix)
         else if (isbanned(prefix, chan))
         {
             send_reply(chan, prefix, ERR_BANNEDFROMCHAN);
+            return ;
+        }
+        else if (_m_flags[chan].find('l') != std::string::npos && (_m_chans.size() >= _m_limits[chan]))
+        {
+            send_reply(chan, prefix, ERR_CHANNELISFULL);
             return ;
         }
         else
@@ -113,9 +117,15 @@ bool Server::isbanned(std::string prefix, std::string chan)
 {
     for (std::vector<std::string>::iterator it = _m_banmask[chan].begin() ; it != _m_banmask[chan].end() ; it++)
     {
-        std::cout << "prefix : " << prefix << " mask : " << *it << "\n";
         if (strmatch(prefix, *it))
+        {
+            for (std::vector<std::string>::iterator it2 = _m_exceptmask[chan].begin() ; it2 != _m_exceptmask[chan].end() ; it2++)
+            {
+                if (strmatch(prefix, *it2))
+                    return false;
+            }
             return true;
+        }
     }
     return false;
 }

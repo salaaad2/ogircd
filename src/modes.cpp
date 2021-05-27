@@ -230,28 +230,56 @@ void Server::treat_args(std::string chan, std::string cmd, std::string prefix)
         {
             if ((*it)->nickname == arg)
             {
-                if (_m_uflags[chan][_m_pclients[prefix]].find('v') == std::string::npos)
-                    _m_uflags[chan][_m_pclients[prefix]].push_back('v');
-                return ;
+                if (cmd[0] == '+')
+                {
+                    if (_m_uflags[chan][_m_pclients[prefix]].find('v') == std::string::npos)
+                    {
+                        _m_uflags[chan][_m_pclients[prefix]].push_back('v');
+                        send_to_channel(prefix + " MODE " + chan + " +v " + arg + "\r\n", chan);
+                    }
+                    return ;
+                }
+                else if (cmd[0] == '-')
+                {
+                    if (_m_uflags[chan][_m_pclients[prefix]].find('v') != std::string::npos)
+                    {
+                        _m_uflags[chan][_m_pclients[prefix]].erase(_m_uflags[chan][_m_pclients[prefix]].find('v'), 1);
+                        send_to_channel(prefix + " MODE " + chan + " -v " + arg + "\r\n", chan);
+                    }
+                    return ;
+                }
             }
         }
         send_reply("", prefix, ERR_NOSUCHNICK);
     }
     else if (cmd[1] == 'k')
     {
-        std::cout << cmd[0] << cmd[1] << "\n";
         if (cmd[0] == '+' && arg.size())
         {
-            std::cout << "pass set\n";
             _m_chankey[chan] = arg;
             if (_m_flags[chan].find('k') == std::string::npos)
                 _m_flags[chan].push_back('k');
+            send_to_channel(prefix + " MODE " + chan + " +k " + arg + "\r\n", chan);
         }
-        else if (cmd[0] == '-')
+        else if (cmd[0] == '-' && _m_flags[chan].find('k') != std::string::npos)
         {
-            std::cout << "pass unset\n";
             _m_flags[chan].erase(_m_flags[chan].find('k'), 1);
             _m_chankey[chan] = "";
+            send_to_channel(prefix + " MODE " + chan + " -k *" + "\r\n", chan);
+        }
+    }
+    else if (cmd[1] == 'l')
+    {
+        if (cmd[0] == '+' && arg.size())
+        {
+            _m_flags[chan].push_back('l');
+            _m_limits[chan] = ft_atoi(arg.c_str());
+            send_to_channel(prefix + " MODE " + chan + " +l " + arg + "\r\n", chan);
+        }
+        else if (cmd[0] == '-' && _m_flags[chan].find('l') != std::string::npos)
+        {
+            _m_flags[chan].erase(_m_flags[chan].find('l'), 1);
+            send_to_channel(prefix + " MODE " + chan + " -l" + "\r\n", chan);
         }
     }
 }

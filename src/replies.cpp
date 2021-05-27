@@ -108,6 +108,8 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return std::string(BOLDRED + s + ":Cannot join channel (+k) -- Wrong channel key");
         case ERR_BANNEDFROMCHAN :
             return std::string(BOLDRED + s + ":Cannot join channel (+b) -- You are banned");
+        case ERR_CHANNELISFULL :
+            return std::string(BOLDRED + s + ":Cannot join channel (+l) -- Channel is full, try later");
         default :
             return s;
     }
