@@ -87,7 +87,7 @@ class Server
 		void create_client_prefix(int fd);
 		void getIP();
 		void send_reply(std::string s, std::string prefix, int code);
-		void send_reply_broad(std::string prefix, std::vector<Client*> cl, int code, Message *msg);
+		void send_reply_broad(std::string prefix, std::vector<Client*> & cl, int code, Message *msg);
 		std::string msg_rpl(std::string s, int code, std::string prefix);
 
 /* MESSAGE TREATMENT */
@@ -101,30 +101,30 @@ class Server
 
 
 		/*server*/
-		void quitcmd(Message *msg, std::string prefix);
-		void versioncmd(Message *msg, std::string prefix);
-		void statscmd(Message *msg, std::string prefix);
+		void quitcmd(Message *msg, std::string & prefix);
+		void versioncmd(Message *msg, std::string & prefix);
+		void statscmd(Message *msg, std::string & prefix);
 	//	void linkscmd(Message *msg, std::string prefix);
-		void timecmd(Message *msg, std::string prefix);
-		void infocmd(Message *msg, std::string prefix);
-		void whocmd(Message *msg, std::string prefix);
+		void timecmd(Message *msg, std::string & prefix);
+		void infocmd(Message *msg, std::string & prefix);
+		void whocmd(Message *msg, std::string & prefix);
 
 		/*server to server*/
 		void servercmd(Message *msg, std::string prefix, int fd);
-		void connectcmd(Message *msg, std::string prefix);
+		void connectcmd(Message *msg, std::string &prefix);
 		void broadcast_known_servers(int fd);
 		void broadcast_known_users(int fd);
 
 		/*channels*/
-		void joincmd(Message *msg, std::string prefix);
-		void join2(std::string chan, std::string prefix);
-		std::vector<std::string> parse_m_chans(std::vector<std::string> params);
-		void new_channel(std::string chan, std::string prefix);
+		void joincmd(Message *msg, std::string & prefix);
+		void join2(std::string chan, std::string & prefix);
+		std::vector<std::string> parse_m_chans(std::vector<std::string> & params);
+		void new_channel(std::string chan, std::string & prefix);
 		void partcmd(Message *msg, std::string prefix);
 
 		/*messages*/
-		void privmsgcmd(Message *msg, std::string prefix);
-		void noticecmd(Message *msg, std::string prefix);
+		void privmsgcmd(Message *msg, std::string & prefix);
+		void noticecmd(Message *msg, std::string & prefix);
 		void chan_msg(Message * msg, std::string prefix);
 
 };

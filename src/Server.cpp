@@ -188,7 +188,7 @@ void Server::send_reply(std::string s, std::string prefix, int code)
     send(_m_pclients[prefix]->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
-void Server::send_reply_broad(std::string prefix, std::vector<Client*> cl, int code, Message *msg)
+void Server::send_reply_broad(std::string prefix, std::vector<Client*> & cl, int code, Message *msg)
 {
     std::string s;
     for (size_t i = 0; i < cl.size(); i++)

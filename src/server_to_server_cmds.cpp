@@ -94,7 +94,8 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
         std::cout << "net->token " << net->token << "\n";
     }
 }
-void Server::connectcmd(Message *msg, std::string prefix) //TODO : check priv
+
+void Server::connectcmd(Message *msg, std::string & prefix) //TODO : check priv
 {
     std::vector<std::string> vec;
     int net_socket;
