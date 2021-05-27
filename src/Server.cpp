@@ -71,10 +71,7 @@ void Server::new_serv()
         connect_serv();
     }
     else
-    {
-        std::cout << "delete params" << std::endl;
         delete _pm;
-    }
 }
 
 // TODO : while res; res = res->ai_next
@@ -106,7 +103,6 @@ int Server::connect_serv()
     server_address.sin_family = res->ai_family;
     server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
     server_address.sin_port = htons(_pm->getPortNetwork());
-    bind(net_socket, (struct sockaddr*)&server_address, sizeof(server_address));
     FD_SET(net_socket, &_fds->master);
     if (net_socket != -1)
     {
@@ -135,6 +131,7 @@ int Server::connect_serv()
 
 int Server::addclient(int listener)
 {
+    std::cout << "ADDCLIENT\n";
     Client *nc = new Client();
     std::string s;
     if((nc->clfd = accept(listener, nc->clientaddr, &nc->addrlen)) == -1)
@@ -232,7 +229,7 @@ void Server::do_command(Message *msg, int fd)
     }
     else if (msg->command == "SERVER")
     {
-        if (_m_pclients[_m_fdprefix[fd]]->password != _peer_password)
+        if (_m_fdserver.count(fd) == 0 && _m_pclients[_m_fdprefix[fd]]->password != _peer_password)
         {
             req = msg_rpl("", ERR_PASSWDMISMATCH, "");
             send(fd, req.c_str(), strlen(req.c_str()), 0);
@@ -287,7 +284,7 @@ void Server::do_command(Message *msg, int fd)
         else
             send_reply(msg->command, _m_fdprefix[fd], ERR_NOTOCHANNEL);
     }
-    else
+    else if (_m_fdserver.count(fd) == 0)
         send_reply("", _m_fdprefix[fd], ERR_NOTREGISTERED);
     delete msg;
 }
