@@ -77,6 +77,7 @@ class Server
 		int     addclient(int listener);
 
 		void setFds(Fds *fds);
+		Fds *getFds() const;
 
 
 	private:
@@ -111,9 +112,10 @@ class Server
 
 		/*server to server*/
 		void servercmd(Message *msg, std::string prefix, int fd);
-		void connectcmd(Message *msg, std::string &prefix);
+		void connectcmd(Message *msg, std::string & prefix);
 		void broadcast_known_servers(int fd);
 		void broadcast_known_users(int fd);
+		void createParams(Message *msg);
 
 		/*channels*/
 		void joincmd(Message *msg, std::string & prefix);

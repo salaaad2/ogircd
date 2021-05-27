@@ -3,15 +3,19 @@
 
 void Server::passcmd(Message *msg, int fd)
 {
+    std::cout << "111111111111111\n";
     std::string s = ft_utoa(fd);
+    std::cout << "2222222222222222\n";
     if (_m_pclients[s]->is_register == true)
         send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
-    else if (!msg->params[0][0])
+    std::cout << "33333333333333\n";
+    if (!msg->params[0][0])
         send_reply("", _m_fdprefix[fd], ERR_NEEDMOREPARAMS);
-    else if (msg->params[0] != _password && msg->params[0] != _peer_password)
+    std::cout << "444444444444444444444\n";
+    if (msg->params[0] != _password && msg->params[0] != _peer_password)
         send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
-    else
-        _m_pclients[s]->password =  msg->params[0];
+    std::cout << "5555555555555555555\n";
+    _m_pclients[s]->password =  msg->params[0];
 }
 
 

@@ -37,6 +37,7 @@ void rec_data(Server &serv, int i, Fds *fds)
         for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
             if ((*it)->command.size() > 0)
             {
+                std::cout << "FD REC DATA : " << i << "\n";
                 serv.do_command(*it, i);
             }
         }

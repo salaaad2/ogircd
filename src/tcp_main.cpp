@@ -17,7 +17,6 @@
 int main_loop(Server &serv, Fds *fds)
 {
 	int newfd;
-
 	for (int i = 0 ; i <= fds->fdmax ; i++)
 	{
 		if(FD_ISSET(i, &fds->read))
@@ -26,6 +25,7 @@ int main_loop(Server &serv, Fds *fds)
 			{
 				if ((newfd = serv.addclient(serv.listener)) != -1)
 				{
+				std::cout << "NEW FD :" << newfd << "\n";
 					if(newfd > fds->fdmax)
 						fds->fdmax = newfd;
 					return newfd;
@@ -56,8 +56,7 @@ int main(int ac, char *av[])
 	int newfd;
 	Params *pm = new Params(ac, getParams(ac, av));
 	Server serv(pm);
-	Fds *fds = new Fds;
-	serv.setFds(fds);
+	Fds *fds = serv.getFds();
 
 	FD_ZERO(&fds->master);
 	FD_ZERO(&fds->read);
@@ -65,6 +64,7 @@ int main(int ac, char *av[])
 	fds->fdmax = serv.listener;
 	for(;;)
 	{
+		fds = serv.getFds();
 		fds->read = fds->master;
 		if(select(fds->fdmax + 1, &fds->read, NULL, NULL, NULL) == -1)
 		{

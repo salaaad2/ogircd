@@ -52,6 +52,7 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
     std::string hopcount;
     std::string token;
     std::string req;
+    Message tmp;
     if (msg->params.size() == 3) {
         servername = msg->params[0];
         hopcount = msg->params[1];
@@ -84,8 +85,8 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
         send(fd, req.c_str(), req.size(), 0);
         req = "SERVER " + _servername + " 0 1\r\n";
         send(fd, req.c_str(), req.size(), 0);
-        broadcast_known_servers(fd);
-        broadcast_known_users(fd);
+        // broadcast_known_servers(fd);
+        // broadcast_known_users(fd);
         req = "INFO\r\n";
         send(fd, req.c_str(), req.size(), 0);
  //       broadcast_known_channels(fd);
@@ -93,6 +94,15 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
         std::cout << "net->hopcount " << net->hopcount << "\n";
         std::cout << "net->token " << net->token << "\n";
     }
+}
+
+void Server::createParams(Message *msg)
+{
+    std::vector<std::string> vec;
+    vec.push_back(msg->params[0] + ":" + msg->params[2] + ":" + _password);
+    vec.push_back(ft_utoa(_port));
+    vec.push_back(_password);
+    _pm = new Params(vec.size() + 1, vec);
 }
 
 void Server::connectcmd(Message *msg, std::string & prefix) //TODO : check priv
@@ -103,10 +113,7 @@ void Server::connectcmd(Message *msg, std::string & prefix) //TODO : check priv
         send_reply("", prefix, ERR_NEEDMOREPARAMS);
     else
     {
-        vec.push_back(msg->params[0] + ":" + msg->params[2] + ":" + _password);
-        vec.push_back(ft_utoa(_port));
-        vec.push_back(_password);
-        _pm = new Params(vec.size() + 1, vec);
+        createParams(msg);
         if ((net_socket = connect_serv()) != -1)
         {
             Message msg;
@@ -114,6 +121,7 @@ void Server::connectcmd(Message *msg, std::string & prefix) //TODO : check priv
             msg.params.push_back(ft_utoa(0));
             msg.params.push_back(ft_utoa(net_socket));
             servercmd(&msg, prefix, net_socket);
+
         }
         delete _pm;
     }

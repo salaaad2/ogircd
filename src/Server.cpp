@@ -16,17 +16,20 @@
 
 void Server::setFds(Fds *fds) {_fds = fds;}
 
+Fds *Server::getFds() const { return (_fds);}
+
 
 Server::Server(Params *pm)
 {
     time(&_launch_time);
     _pm = pm;
     _peer_password = "PeerSecret";
-    _servername = "42lyon.irc.fr";
+    // _servername = "42lyon.irc.fr";
     if (pm->isnew())
         new_serv();
     else
         connect_serv();
+    _servername = _ip;
 }
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================
@@ -35,7 +38,7 @@ void Server::new_serv()
 {
     int yes = 1;
     getIP();
-
+    _fds = new Fds;
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cerr << SOCKET_ERROR << std::endl;
@@ -93,8 +96,6 @@ int Server::connect_serv()
         return(-1) ;
     }
     res = result;
-    server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
-    server_address.sin_port = htons(_pm->getPortNetwork());
     if (res->ai_family == AF_INET ||
         res->ai_family==AF_INET6)
         net_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
@@ -103,9 +104,14 @@ int Server::connect_serv()
         return(-1) ;
     }
     server_address.sin_family = res->ai_family;
+    server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
+    server_address.sin_port = htons(_pm->getPortNetwork());
+    bind(net_socket, (struct sockaddr*)&server_address, sizeof(server_address));
+    FD_SET(net_socket, &_fds->master);
     if (net_socket != -1)
     {
 
+        std::cout << "CONNECTION ON  " << _pm->getHost() << " ON PORT " << _pm->getPortNetwork() << "\n";
         status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
         if (status != 0)
         {
@@ -117,6 +123,8 @@ int Server::connect_serv()
         std::cout << "Error: socket failed to open" << std::endl;
         return (-1);
     }
+    if (net_socket > _fds->fdmax)
+        _fds->fdmax = net_socket;
     freeaddrinfo(res);
     return (net_socket);
 }
