@@ -14,6 +14,7 @@ std::string ft_utoa(unsigned int n);
 std::string ft_format_cmd(std::string cmd);
 std::string ft_current_time(void);
 std::string ft_uptime(time_t &launch_time);
+bool strmatch(std::string s, std::string p);
 
 
 #endif // __UTILS_H_

@@ -16,12 +16,16 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return response;
         }
         case RPL_TOPIC :
-            return(s + " :" + _m_topics[s]);
+            return(s + ":" + _m_topics[s] + RESET);
         case RPL_NAMREPLY :
         {
+            response += "= " + s + " :";
             for (size_t i = 0 ; i < _m_chans[s].size() ; i++)
             {
-                response += _m_uflags[s][_m_chans[s][i]][3] == 'o' ? "@" : "+";
+                if (_m_uflags[s][_m_chans[s][i]].find('o') != std::string::npos)
+                    response += "@";
+                else if (_m_uflags[s][_m_chans[s][i]].find('v') != std::string::npos)
+                    response += "+";
                 response += _m_chans[s][i]->nickname;
                 response += " ";
             }
@@ -47,7 +51,23 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
         case RPL_WHOREPLY :
             return (RESET);
         case RPL_ENDOFWHO :
-            return (":End of WHO list");
+            return (s + ":End of WHO list");
+        case RPL_LISTSTART :
+            return (std::string() + "Channel :Users  Name");
+        case RPL_LIST :
+            return (s + " :" + _m_topics[s]);
+        case RPL_LISTEND :
+            return(std::string() + ":End of /LIST");
+        case RPL_CHANNELMODEIS :
+            return (s);
+        case RPL_BANLIST :
+            return (s);
+        case RPL_ENDOFBANLIST :
+            return (s + " :End of channel ban list");
+        case RPL_EXCEPTLIST :
+            return (s + RESET);
+        case RPL_ENDOFEXCEPTLIST :
+            return (s + " :End of channel exception list");
 
         /* ERRORS */
 
@@ -74,7 +94,19 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
         case ERR_NOTOCHANNEL :
             return std::string (BOLDRED":To join a channel, type : JOIN #" + s );
         case ERR_BADCHANMASK :
-            return std::string (BOLDRED":Invalid JOIN parameter" + s );
+            return std::string (BOLDRED":Invalid JOIN parameter" + s + RESET);
+        case ERR_UNKNOWNMODE :
+            return std::string(BOLDRED + s + ":is unknown mode char to me" + RESET);
+        case ERR_NOSUCHCHANNEL :
+            return std::string(BOLDRED + s + ":No such channel");
+        case ERR_CHANOPRIVSNEEDED :
+            return std::string(BOLDRED":You are not channel operator");
+        case ERR_BADCHANNELKEY :
+            return std::string(BOLDRED + s + ":Cannot join channel (+k) -- Wrong channel key");
+        case ERR_BANNEDFROMCHAN :
+            return std::string(BOLDRED + s + ":Cannot join channel (+b) -- You are banned");
+        case ERR_CHANNELISFULL :
+            return std::string(BOLDRED + s + ":Cannot join channel (+l) -- Channel is full, try later");
         default :
             return s;
     }
