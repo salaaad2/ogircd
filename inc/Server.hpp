@@ -72,13 +72,13 @@ class Server
 		std::map<std::string, std::string>			 _m_flags;
 
 
-			/* bans */
+		/* bans */
 		std::map<std::string, std::vector<std::string> >		_m_banmask;
 		std::map<std::string, std::string>						_m_whoban;
 		std::map<std::string, uint64_t>							_m_banid;
 
-			/* exceptions */
-		
+		/* exceptions */
+
 		std::map<std::string, std::vector<std::string> >		_m_exceptmask;
 		std::map<std::string, std::string>						_m_whoexcept;
 		std::map<std::string, uint64_t>							_m_exceptid;
@@ -110,7 +110,7 @@ class Server
 		void send_reply_broad(std::string prefix, std::vector<Client*> & cl, int code, Message *msg);
 		std::string msg_rpl(std::string s, int code, std::string prefix);
 
-/* MESSAGE TREATMENT */
+		/* MESSAGE TREATMENT */
 
 	public:
 		/*registration*/
@@ -124,7 +124,7 @@ class Server
 		void quitcmd(Message *msg, std::string & prefix);
 		void versioncmd(Message *msg, std::string & prefix);
 		void statscmd(Message *msg, std::string & prefix);
-	//	void linkscmd(Message *msg, std::string prefix);
+		//	void linkscmd(Message *msg, std::string prefix);
 		void timecmd(Message *msg, std::string & prefix);
 		void infocmd(Message *msg, std::string & prefix);
 		void whocmd(Message *msg, std::string & prefix);
@@ -148,16 +148,16 @@ class Server
 		void namescmd(Message *msg, std::string prefix);
 		void listcmd(Message *msg, std::string prefix);
 		void modecmd(Message *msg, std::string prefix);
-			void chanMode(std::vector<std::string> params, std::string prefix);
-			void setChanMode(std::vector<std::string> params, std::string prefix);
-			void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, std::string prefix);
-			void treat_args(std::string chan, std::string cmd, std::string prefix);
+		void chanMode(std::vector<std::string> params, std::string prefix);
+		void setChanMode(std::vector<std::string> params, std::string prefix);
+		void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, std::string prefix);
+		void treat_args(std::string chan, std::string cmd, std::string prefix);
 
-			
+
 
 		/*messages*/
 		void privmsgcmd(Message *msg, std::string & prefix);
 		void noticecmd(Message *msg, std::string & prefix);
 		void chan_msg(Message * msg, std::string prefix);
-		
+
 };
