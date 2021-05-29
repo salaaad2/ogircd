@@ -7,12 +7,12 @@ void Server::privmsgcmd(Message *msg, std::string & prefix)
     // ERR_WILDTOPLEVEL --No                ERR_TOOMANYTARGETS --No
     // ERR_NOSUCHNICK --Yes
     //  RPL_AWAY --No
-    size_t i = 0;
+    std::list<std::string> chans;
+    std:: list<Client*> nicknames;
+    std::string curr_chan_tmp;
     Message text;
     Client *cl_tmp;
-    std::string curr_chan_tmp;
-    std:: list<Client*> nicknames;
-    std::list<std::string> chans;
+    size_t i = 0;
 
     while (i < msg->params.size() && msg->params[i] != ":")
     {
@@ -56,12 +56,13 @@ void Server::privmsgcmd(Message *msg, std::string & prefix)
 
 void Server::noticecmd(Message *msg, std::string & prefix)
 {
-    size_t i = 0;
-    Message text;
-    Client *cl_tmp;
-    std::string curr_chan_tmp;
-    std:: list<Client*> nicknames;
     std::list<std::string> chans;
+    std::vector<Client*> vec;
+    std::list<Client*> nicknames;
+    std::string curr_chan_tmp;
+    Message text;
+    size_t i = 0;
+    Client *cl_tmp;
 
     while (i < msg->params.size() && msg->params[i] != ":")
     {
@@ -94,6 +95,6 @@ void Server::noticecmd(Message *msg, std::string & prefix)
         chan_msg(&text, prefix);
     }
     _m_pclients[prefix]->current_chan = curr_chan_tmp;
-    std::vector<Client*> vec(nicknames.begin(), nicknames.end());
+    vec.assign(nicknames.begin(), nicknames.end());
     send_reply_broad(prefix, vec, -1, &text);
 }

@@ -16,9 +16,9 @@
 
 void rec_data(Server &serv, int i, Fds *fds)
 {
-    int nbytes;
-    char buf[512];
     std::vector<Message *> vm;
+    char buf[512];
+    int nbytes;
 
     ft_bzero(buf, 512);
     if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)

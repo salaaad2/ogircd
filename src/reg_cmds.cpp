@@ -6,7 +6,6 @@ void Server::passcmd(Message *msg, int fd)
     std::string s = ft_utoa(fd);
 
     std::cout << "given password : [" << msg->params[0] << "]" << std::endl;
-
     if (_m_fdserver.count(fd) == 1)
         return;
     if (_m_pclients[s]->is_register == true)
@@ -25,6 +24,7 @@ void Server::nickcmd(Message *msg, int fd)
     // return :
     // ERR_NICKCOLLISION ERR_NICKNAMEINUSE ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE
     std::string s = ft_utoa(fd);
+
     if (msg->params[0].size() > 9)
         msg->params[0].resize(9);
     if (_m_nickdb.count(msg->params[0]) == 1)
@@ -41,6 +41,7 @@ void Server::nickcmd(Message *msg, int fd)
 void Server::usercmd(Message *msg, int fd)
 {
     std::string s = ft_utoa(fd);
+
     if (_m_pclients[s]->is_register == true)
         send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
     else if (msg->params.size() == 8)
@@ -59,6 +60,7 @@ void Server::usercmd(Message *msg, int fd)
 void Server::do_registration(int fd)
 {
     std::string s = ft_utoa(fd);
+
     if (_m_pclients[s]->nickname[0] &&
        !_m_pclients[s]->password.compare(_password))
     {

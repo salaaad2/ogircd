@@ -47,6 +47,7 @@ int
 get_params(char buf[], Message *nm, size_t i) {
     std::string tmp;
     std::string sep_char;
+
     while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
             || buf[i] == ':'))
     {

@@ -14,8 +14,8 @@
 
 int	ft_atoi(const char *str)
 {
-    int	i;
-    int	s;
+    int i;
+    int s;
     int nb;
 
     i = 0;
@@ -98,10 +98,12 @@ size_t  ft_strlcpy(char *dst, const char *src, size_t size)
 
 std::string ft_utoa(unsigned int n)
 {
+    std::string str;
+    size_t i;
+
     if (n == 0)
         return (std::string("0"));
-    std::string str;
-    size_t i = n;
+    i = n;
     while (i)
     {
         str.insert(str.begin(), (i % 10) + 48);

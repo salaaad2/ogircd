@@ -10,11 +10,8 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
         /* REPLIES */
 
         case RPL_WELCOME :
-        {
-            response += "Welcome to the Internet Relay Network ";
-            response += _m_pclients[prefix]->prefix;
-            return response;
-        }
+            return std::string("Welcome to the Internet Relay Network "
+                    + _m_pclients[prefix]->prefix);
         case RPL_TOPIC :
             return(s + ":" + _m_topics[s] + RESET);
         case RPL_NAMREPLY :
