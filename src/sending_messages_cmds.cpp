@@ -11,23 +11,33 @@ void Server::privmsgcmd(Message *msg, std::string & prefix)
     Message text;
     Client *cl_tmp;
     std::string curr_chan_tmp;
-    std:: list<Client*> nicknames;
+    std::list<Client*> nicknames;
     std::list<std::string> chans;
 
     while (i < msg->params.size() && msg->params[i] != ":")
     {
-        if (_m_nickdb.count(msg->params[i]) == 1)
+        if (msg->params[i] != " ")
         {
-            cl_tmp = _m_nickdb[msg->params[i]].top();
-            if (cl_tmp->is_logged == true)
-                nicknames.push_back(cl_tmp);
+            if (_m_nickdb.count(msg->params[i]) == 1)
+            {
+                cl_tmp = _m_nickdb[msg->params[i]].top();
+                if (cl_tmp->is_logged == true)
+                    nicknames.push_back(cl_tmp);
+                else
+                    send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
+            }
+            else if (msg->params[i] == "#" ||
+                     msg->params[i] == "&")
+            {
+                i += (i < msg->params.size()) ? 1 : 0;
+                if (_m_chans.count(msg->params[i - 1] + msg->params[i]) == 1)
+                {
+                    chans.push_back(msg->params[i - 1] + msg->params[i]);
+                }
+            }
             else
                 send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
         }
-        else if (_m_chans.count(msg->params[i]) == 1)
-            chans.push_back(msg->params[i]);
-        else
-            send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
         i++;
     }
     i++;
