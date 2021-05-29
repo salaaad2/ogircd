@@ -272,8 +272,8 @@ void Server::do_command(Message *msg, int fd)
         else if (msg->command == "NAMES")
             namescmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (msg->command == "LIST")
-            listcmd(msg->command, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "MODE")
+            listcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (msg->command == "MODE")
             modecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (msg->command == "PRIVMSG")
 

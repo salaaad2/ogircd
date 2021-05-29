@@ -87,8 +87,6 @@ class Server
 		std::map<std::string, std::map<Client*, std::string> >	_m_uflags;
 		std::map<std::string, size_t>							_m_limits;
 
-		Params                                                     *_pm;
-		time_t                                              _launch_time;
 	public:
 
 		int							listener;
@@ -142,10 +140,10 @@ class Server
 
 		void joincmd(Message *msg, std::string prefix);
 		void join2(std::string chan, std::string key, std::string prefix);
-		std::vector<std::string> parse_m_chans(std::vector<std::string> params);
+		std::vector<std::string> parse_m_chans(std::vector<std::string> & params);
 		std::vector<std::string> parse_keys(std::vector<std::string> params, std::vector<std::string> channels);
 		bool isbanned(std::string prefix, std::string chan);
-		void new_channel(std::string chan, std::string prefix);
+		void new_channel(std::string chan, std::string & prefix);
 		void partcmd(Message *msg, std::string prefix);
 		void namescmd(Message *msg, std::string prefix);
 		void listcmd(Message *msg, std::string prefix);
