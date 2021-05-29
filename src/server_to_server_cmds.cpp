@@ -23,6 +23,8 @@ void Server::broadcast_known_users(int fd)
         req = "PASS :" + _password + "\r\n";
         send(fd, req.c_str(), strlen(req.c_str()), 0);
         req = "NICK :" + (*it).second->nickname + "\r\n";
+        std::cout << "_m_pclients.size()" << _m_pclients.size() << "send nick : " << (*it).second->nickname << std::endl;
+
         send(fd, req.c_str(), strlen(req.c_str()), 0);
         req = "USER " + (*it).second->username + " " + (*it).second->host + " " +
             (*it).second->servername + ":" + (*it).second->realname + "\r\n";
@@ -47,18 +49,21 @@ void Server::broadcast_known_users(int fd)
 void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername> <hopcount> <token> <info>
 {
     (void)prefix;
-    network *net;
     std::string servername;
     std::string hopcount;
     std::string token;
     std::string req;
     Message tmp;
+    network *net;
+
     if (msg->params.size() == 3) {
+        std::cout << "size 3 " << std::endl;
         servername = msg->params[0];
         hopcount = msg->params[1];
         token = msg->params[2];
     }
     else if (msg->params.size() == 5){
+        std::cout << "size 5 " << std::endl;
         servername = msg->params[0];
         hopcount = msg->params[2];
         token = msg->params[4];
@@ -71,11 +76,13 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
     }
     if (_m_fdserver.count(fd) == 1)
     {
+        std::cout << "serv already exists " << std::endl;
         req = msg_rpl(servername, ERR_ALREADYREGISTERED, "");
         send(fd, req.c_str(), strlen(req.c_str()), 0);
         return;
     }
     else {
+        std::cout << "new server" << std::endl;
         net = new network;
         net->servername = servername;
         net->hopcount = ft_atoi(hopcount.c_str()) + 1;
@@ -85,14 +92,14 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
         send(fd, req.c_str(), req.size(), 0);
         req = "SERVER " + _servername + " 0 1\r\n";
         send(fd, req.c_str(), req.size(), 0);
-        // broadcast_known_servers(fd);
+        broadcast_known_servers(fd);
         // broadcast_known_users(fd);
         req = "INFO\r\n";
         send(fd, req.c_str(), req.size(), 0);
- //       broadcast_known_channels(fd);
-        std::cout << "net->servername " << net->servername << "\n";
-        std::cout << "net->hopcount " << net->hopcount << "\n";
-        std::cout << "net->token " << net->token << "\n";
+        // broadcast_known_channels(fd);
+        // std::cout << "net->servername " << net->servername << "\n";
+        // std::cout << "net->hopcount " << net->hopcount << "\n";
+        // std::cout << "net->token " << net->token << "\n";
     }
 }
 

@@ -13,6 +13,7 @@
 #include "../inc/Server.hpp"
 
 #include <netdb.h>
+#include <errno.h>
 
 void Server::setFds(Fds *fds) {_fds = fds;}
 
@@ -79,8 +80,8 @@ void Server::new_serv()
 int Server::connect_serv()
 {
     struct addrinfo hints, *res, *result;
-    int errcode, status, net_socket;
     sockaddr_in server_address;
+    int errcode, status, net_socket;
 
     memset(&hints, 0, sizeof (hints));
     hints.ai_family = PF_UNSPEC;
@@ -131,9 +132,10 @@ int Server::connect_serv()
 
 int Server::addclient(int listener)
 {
-    std::cout << "ADDCLIENT\n";
     Client *nc = new Client();
     std::string s;
+
+    std::cout << "ADDCLIENT\n";
     if((nc->clfd = accept(listener, nc->clientaddr, &nc->addrlen)) == -1)
     {
         std::cout << "Server-accept() error\n";
@@ -152,9 +154,9 @@ int Server::addclient(int listener)
 
 void Server::getIP()
 {
+    struct sockaddr_in serv;
     const char* google_dns_server = "8.8.8.8";
     int dns_port = 53;
-    struct sockaddr_in serv;
     int sock = socket ( AF_INET, SOCK_DGRAM, 0);
 
     memset( &serv, 0, sizeof(serv) );
@@ -181,9 +183,10 @@ void Server::getIP()
 void Server::send_reply(std::string s, std::string prefix, int code)
 {
     std::string ccmd;
+    std::string to_send;
+
     if (code)
         ccmd = ft_format_cmd(ft_utoa(code));
-    std::string to_send;
     _prefix = BOLDWHITE;
     _prefix += "[" + ft_current_time();
     _prefix.erase(_prefix.size() - 1, 1);
@@ -196,6 +199,7 @@ void Server::send_reply(std::string s, std::string prefix, int code)
 void Server::send_reply_broad(std::string prefix, std::vector<Client*> & cl, int code, Message *msg)
 {
     std::string s;
+
     for (size_t i = 0; i < cl.size(); i++)
     {
         if (cl[i]->clfd != _m_pclients[prefix]->clfd)
@@ -224,6 +228,7 @@ void Server::chan_msg(Message * msg, std::string prefix) {
 void Server::do_command(Message *msg, int fd)
 {
     std::string req;
+
     if (msg->command == "PASS") {
         passcmd(msg, fd);
     }
@@ -244,7 +249,9 @@ void Server::do_command(Message *msg, int fd)
     }
     else if (msg->command == "NICK")
     {
-        if (_m_pclients[_m_fdprefix[fd]]->password != _password)
+        if (_m_fdserver.count(fd) != 0)
+            nickcmd(msg, fd);
+        else if (_m_pclients[_m_fdprefix[fd]]->password != _password)
             send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
         else
             nickcmd(msg, fd);

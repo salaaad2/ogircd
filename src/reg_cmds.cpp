@@ -4,6 +4,9 @@
 void Server::passcmd(Message *msg, int fd)
 {
     std::string s = ft_utoa(fd);
+
+    std::cout << "given password : [" << msg->params[0] << "]" << std::endl;
+
     if (_m_fdserver.count(fd) == 1)
         return;
     if (_m_pclients[s]->is_register == true)

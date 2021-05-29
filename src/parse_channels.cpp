@@ -3,9 +3,9 @@
 
 void Server::joincmd(Message *msg, std::string & prefix)
 {
-    std::cout << "CLIENT JOIN FD :" << _m_pclients[prefix]->clfd << "\n";
     std::vector<std::string> channels = parse_m_chans(msg->params);
-    std::cout << "joincmd\n";
+    // std::cout << "CLIENT JOIN FD :" << _m_pclients[prefix]->clfd << "\n";
+    // std::cout << "joincmd\n";
     for (size_t i = 0 ; i < channels.size() ; i++)
         join2(channels[i], prefix);
     if (channels.empty() == false)
@@ -38,8 +38,8 @@ void Server::join2(std::string chan, std::string & prefix)
         if (_m_uflags[chan].find(_m_pclients[prefix]) == _m_uflags[chan].end())
             _m_uflags[chan][_m_pclients[prefix]] = "----";
     }
-    std::cout << "joined\n";
-    std::cout << "nickname : " << _m_pclients[prefix]->username << "\n";
+    // std::cout << "joined\n";
+    // std::cout << "nickname : " << _m_pclients[prefix]->username << "\n";
     send_reply(chan, prefix, RPL_TOPIC);
     send_reply(chan, prefix, RPL_NAMREPLY);
     send_reply(chan, prefix, RPL_ENDOFNAMES);
