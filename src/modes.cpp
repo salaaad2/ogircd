@@ -232,19 +232,48 @@ void Server::treat_args(std::string chan, std::string cmd, std::string prefix)
             {
                 if (cmd[0] == '+')
                 {
-                    if (_m_uflags[chan][_m_pclients[prefix]].find('v') == std::string::npos)
+                    if (_m_uflags[chan][_m_pclients[(*it)->prefix]].find('v') == std::string::npos)
                     {
-                        _m_uflags[chan][_m_pclients[prefix]].push_back('v');
+                        _m_uflags[chan][_m_pclients[(*it)->prefix]].push_back('v');
                         send_to_channel(prefix + " MODE " + chan + " +v " + arg + "\r\n", chan);
                     }
                     return ;
                 }
                 else if (cmd[0] == '-')
                 {
-                    if (_m_uflags[chan][_m_pclients[prefix]].find('v') != std::string::npos)
+                    if (_m_uflags[chan][_m_pclients[(*it)->prefix]].find('v') != std::string::npos)
                     {
-                        _m_uflags[chan][_m_pclients[prefix]].erase(_m_uflags[chan][_m_pclients[prefix]].find('v'), 1);
+                        _m_uflags[chan][_m_pclients[(*it)->prefix]].erase(_m_uflags[chan][_m_pclients[(*it)->prefix]].find('v'), 1);
                         send_to_channel(prefix + " MODE " + chan + " -v " + arg + "\r\n", chan);
+                    }
+                    return ;
+                }
+            }
+        }
+        send_reply("", prefix, ERR_NOSUCHNICK);
+    }
+    else if (cmd[1] == 'o' && arg.size())
+    {
+        for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
+        {
+            if ((*it)->nickname == arg)
+            {
+                if (cmd[0] == '+')
+                {
+                    std::cout << _m_uflags[chan][_m_pclients[(*it)->prefix]] << "\n";
+                    if (_m_uflags[chan][_m_pclients[(*it)->prefix]].find('o') == std::string::npos)
+                    {
+                        _m_uflags[chan][_m_pclients[(*it)->prefix]].push_back('o');
+                        send_to_channel(prefix + " MODE " + chan + " +o " + arg + "\r\n", chan);
+                    }
+                    return ;
+                }
+                else if (cmd[0] == '-')
+                {
+                    if (_m_uflags[chan][_m_pclients[(*it)->prefix]].find('o') != std::string::npos)
+                    {
+                        _m_uflags[chan][_m_pclients[(*it)->prefix]].erase(_m_uflags[chan][_m_pclients[(*it)->prefix]].find('o'), 1);
+                        send_to_channel(prefix + " MODE " + chan + " -o " + arg + "\r\n", chan);
                     }
                     return ;
                 }

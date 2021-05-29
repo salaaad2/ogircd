@@ -97,3 +97,4 @@ void Server::noticecmd(Message *msg, std::string & prefix)
     std::vector<Client*> vec(nicknames.begin(), nicknames.end());
     send_reply_broad(prefix, vec, -1, &text);
 }
+

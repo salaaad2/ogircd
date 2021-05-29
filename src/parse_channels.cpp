@@ -108,10 +108,15 @@ std::vector<std::string> Server::parse_keys(std::vector<std::string> params, std
     {
         if (params[i][0] != ' ')
         {
-            keys.push_back(params[i]);
-            i += 2;
-            if (i < params.size() && params[i] != ",")
-                break ;
+            if (params[i][0] == ':')
+                i++;
+            if (params[i][0])
+            {
+                keys.push_back(params[i]);
+                i += 2;
+                if (i < params.size() && params[i] != ",")
+                    break ;
+            }
         }
         i++;
     }
