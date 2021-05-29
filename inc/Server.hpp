@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/27 18:21:41 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/29 18:55:00 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,44 +48,47 @@ class Server
 
 		//server
 		std::string                                             _servername;
-		struct sockaddr_in			                _addr;
-		char						        _ip[INET_ADDRSTRLEN];
-		std::string						_prefix;
-		std::string						_password;
+		struct sockaddr_in										_addr;
+		char													_ip[INET_ADDRSTRLEN];
+		std::string												_prefix;
+		std::string												_password;
 		std::string                                             _peer_password;
 		int                                                     _port;
-		Fds							*_fds;
+		Fds														*_fds;
 		std::map<int, network*>                                  _m_fdserver;
 		Params                                                  *_pm;
-		time_t                                              _launch_time;
+		time_t													_launch_time;
 		//client
-		std::map<int, std::string>                              _m_fdprefix;
-		std::map<std::string, Client*>           	 	_m_pclients;
-		std::map<std::string, std::stack<Client*> > 		_m_nickdb;
+		std::map<int, std::string>                              _m_fdprefix; // _m_pclients[_m_fdprefix[fd]] = find client with fd
+		std::map<std::string, Client*>							_m_pclients; // _m_pclients[prefix] = find client with prefix
+		std::map<std::string, std::stack<Client*> >				_m_nickdb; // _m_nickdb[name] = last client with nickname "name"
 
 
 		/*channels maps */
 
-		std::map<std::string, std::vector<Client*> > 			_m_chans;
-		std::map<std::string, std::string> 			_m_topics;
-		std::map<std::string, std::string>			 _m_passwords;
-		std::map<std::string, std::string>			 _m_flags;
+		std::map<std::string, std::vector<Client*> > 			_m_chans; // _m_chans[#channel] = vector containing all clients on #channel
+		std::map<std::string, std::string>						_m_topics; // _m_topics[#channel] = topic of channel
+		std::map<std::string, std::string>						_m_flags; // _m_flags[#channel] = all channels flags
 
+		/* invite */
+
+		std::map<std::string, std::vector<std::string> >		_m_invite; // list of nicknames invited on channel (if 'i' mode set)
 
 		/* bans */
-		std::map<std::string, std::vector<std::string> >		_m_banmask;
-		std::map<std::string, std::string>						_m_whoban;
-		std::map<std::string, uint64_t>							_m_banid;
+
+		std::map<std::string, std::vector<std::string> >		_m_banmask; // all banned patterns
+		std::map<std::string, std::string>						_m_whoban; // _m_whoban[pattern] = name of those who banned the pattern
+		std::map<std::string, uint64_t>							_m_banid; // _m_banid[pattern] = unique id of ban
 
 		/* exceptions */
 
-		std::map<std::string, std::vector<std::string> >		_m_exceptmask;
-		std::map<std::string, std::string>						_m_whoexcept;
-		std::map<std::string, uint64_t>							_m_exceptid;
+		std::map<std::string, std::vector<std::string> >		_m_exceptmask; // all ban exceptions patterns
+		std::map<std::string, std::string>						_m_whoexcept; // _m_whoexcept[pattern] = name of those who ban except the pattern
+		std::map<std::string, uint64_t>							_m_exceptid; // _m_exceptid[pattern] = unique id of except
 
-		std::map<std::string, std::string>						_m_chankey;
-		std::map<std::string, std::map<Client*, std::string> >	_m_uflags;
-		std::map<std::string, size_t>							_m_limits;
+		std::map<std::string, std::string>						_m_chankey; // _m_chankey[#channel] = password of channel if set
+		std::map<std::string, std::map<Client*, std::string> >	_m_uflags; // _m_uflags[#channel][client] = flags set for user in given channel
+		std::map<std::string, size_t>							_m_limits; // _m_limits[#channel] = limit of users in channel (if 'l' mode set)
 
 	public:
 
@@ -140,7 +143,7 @@ class Server
 
 		void joincmd(Message *msg, std::string prefix);
 		void join2(std::string chan, std::string key, std::string prefix);
-		std::vector<std::string> parse_m_chans(std::vector<std::string> & params);
+		std::vector<std::string> parse_m_chans(std::string chan);
 		std::vector<std::string> parse_keys(std::vector<std::string> params, std::vector<std::string> channels);
 		bool isbanned(std::string prefix, std::string chan);
 		void new_channel(std::string chan, std::string & prefix);
@@ -153,7 +156,7 @@ class Server
 		void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, std::string prefix);
 		void treat_args(std::string chan, std::string cmd, std::string prefix);
 
-
+		void invitecmd(Message *msg, std::string prefix);
 
 		/*messages*/
 		void privmsgcmd(Message *msg, std::string & prefix);

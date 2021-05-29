@@ -6,7 +6,13 @@
 
 void Server::joincmd(Message *msg, std::string prefix)
 {
-    std::vector<std::string> channels = parse_m_chans(msg->params);
+    if (msg->params.size() < 1)
+    {
+        send_reply("", prefix, ERR_NEEDMOREPARAMS);
+        return ;
+    }
+
+    std::vector<std::string> channels = parse_m_chans(msg->params[0]);
     std::vector<std::string> keys = parse_keys(msg->params, channels);
 
     for (size_t i = 0 ; i < channels.size() ; i++)
@@ -80,19 +86,22 @@ void Server::new_channel(std::string chan, std::string & prefix)
     _m_uflags[chan][_m_pclients[prefix]] = "o";
 }
 
-std::vector<std::string> Server::parse_m_chans(std::vector<std::string> & params)
+std::vector<std::string> Server::parse_m_chans(std::string chan)
 {
     std::vector<std::string> channels;
+    std::string c_chan;
+    size_t i = 0;
 
-    for (unsigned int i = 0 ; i < params.size() ; i++)
+    while (chan[i])
     {
-        if (params[i] == "#" || params[i] == "&")
+        if (chan[i] != ',')
+            c_chan += c_chan[i];
+        else
         {
-            channels.push_back(params[i] + params[i + 1]);
-            i += 2;
-            if (i < params.size() && params[i] != ",")
-                break ;
+            channels.push_back(c_chan);
+            c_chan.clear();
         }
+        i++;
     }
     return channels;
 }
