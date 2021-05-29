@@ -8,7 +8,7 @@ void Server::passcmd(Message *msg, int fd)
         send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
     else if (!msg->params[0][0])
         send_reply("", _m_fdprefix[fd], ERR_NEEDMOREPARAMS);
-    else if (strncmp(msg->params[0].c_str(), _password, strlen(_password)))
+    else if (msg->params[0] != _password)
         send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
     else
         _m_pclients[s]->password =  msg->params[0];

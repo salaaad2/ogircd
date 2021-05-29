@@ -42,7 +42,8 @@ class Server
 		struct sockaddr_in			_addr;
 		char						_ip[INET_ADDRSTRLEN];
 		std::string						_prefix;
-		char						_password[32];
+		std::string						_password;
+		int                                                     _port;
 		Fds							*_fds;
 		std::map<int, std::string>                              _m_fdprefix;
 		std::map<std::string, Client*>           	 	_m_pclients;
@@ -55,6 +56,7 @@ class Server
 		std::map<std::string, std::string> 			_m_topics;
 		std::map<std::string, std::string>			 _m_passwords;
 		std::map<std::string, std::string>			 _m_flags;
+
 
 			/* bans */
 		std::map<std::string, std::vector<std::string> >		_m_banmask;
@@ -71,7 +73,7 @@ class Server
 		std::map<std::string, std::map<Client*, std::string> >	_m_uflags;
 		std::map<std::string, size_t>							_m_limits;
 
-
+		Params                                                     *_pm;
 		time_t                                              _launch_time;
 	public:
 
@@ -86,9 +88,9 @@ class Server
 
 	private:
 
-		void new_serv(Params *pm);
-		void connect_serv(Params *pm);
-		void do_connect(Params *pm);
+		void new_serv();
+		void connect_serv();
+		void do_connect();
 		void do_registration(int fd);
 		void create_client_prefix(int fd);
 		void getIP();

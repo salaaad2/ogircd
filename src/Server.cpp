@@ -12,29 +12,31 @@
 
 #include "../inc/Server.hpp"
 
+#include <netdb.h>
+
 void Server::setFds(Fds *fds) {_fds = fds;}
 
 
 Server::Server(Params *pm)
 {
     time(&_launch_time);
-    _network = new std::vector<sockaddr_in>;
+    _pm = pm;
     if (pm->isnew())
-        new_serv(pm);
+        new_serv();
     else
-        connect_serv(pm);
+        connect_serv();
 }
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================
 
-void Server::new_serv(Params *pm)
+void Server::new_serv()
 {
     int yes = 1;
     getIP();
 
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        std::cout << SOCKET_ERROR << std::endl;
+        std::cerr << SOCKET_ERROR << std::endl;
         exit(1);
     }
     if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
@@ -44,8 +46,9 @@ void Server::new_serv(Params *pm)
     }
     _addr.sin_family = AF_INET;
     _addr.sin_addr.s_addr = INADDR_ANY;
-    _addr.sin_port = htons(pm->getPort());
-    strcpy(_password, pm->getPwd());
+    _addr.sin_port = htons(_pm->getPort());
+    _port = _pm->getPort();
+    _password = _pm->getPwd();
     ft_bzero(&(_addr.sin_zero), 8);
     if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
     {
@@ -57,54 +60,68 @@ void Server::new_serv(Params *pm)
         perror(LISTEN_ERROR);
         exit(1);
     }
+    if (!_pm->getHost().empty() && _pm->getPortNetwork() && !_pm->getPwdNetwork().empty())
+    {
+        std::cout << "conn_serv()" << std::endl;
+        connect_serv();
+    }
+    else
+    {
+        std::cout << "delete params" << std::endl;
+        delete _pm;
+    }
 }
 
-void Server::connect_serv(Params *pm)
+void Server::connect_serv()
 {
-    int yes = 1;
-    if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-    {
-        std::cout << SOCKET_ERROR << std::endl;
-        exit(1);
-    }
-    if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-    {
-        std::cout << SETSOCK_ERROR << std::endl;
-        exit(1);
-    }
-    _addr.sin_family = AF_INET;
-    _addr.sin_addr.s_addr = INADDR_ANY;
-    _addr.sin_port = htons(pm->getPort());
-    strcpy(_password, pm->getPwd());
-    ft_bzero(&(_addr.sin_zero), 8);
-    if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
-    {
-        perror(BIND_ERROR);
-        exit(1);
-    }
-    if(listen(listener, 10) == -1)
-    {
-        perror(LISTEN_ERROR);
-        exit(1);
-    }
-    do_connect(pm);
+    do_connect();
 }
 
-void Server::do_connect(Params *pm)
+// TODO : while res; res = res->ai_next
+// inet_ntop (res->ai_family, ptr, addrstr, 100);
+void Server::do_connect()
 {
-    int net_socket = socket(AF_INET, SOCK_STREAM, 0);
+    struct addrinfo hints, *res, *result;
+    int errcode, status, net_socket;
+    sockaddr_in server_address;
 
-    struct sockaddr_in server_address;
+    memset(&hints, 0, sizeof (hints));
+    hints.ai_family = PF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags |= AI_CANONNAME;
+    errcode = getaddrinfo(_pm->getHost().c_str(), NULL, &hints, &result);
+    if (errcode != 0)
+    {
+        std::cerr << "Error: getaddrinfo on \'" << _pm->getHost() << "\' failed\n\n";
+        return ;
+    }
+    res = result;
+    server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
+    server_address.sin_port = htons(_pm->getPortNetwork());
+    if (res->ai_family == AF_INET ||
+        res->ai_family==AF_INET6)
+        net_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    else {
+        std::cerr << "Error: wrong hostname\n\n";
+        return ;
+    }
+    server_address.sin_family = res->ai_family;
+    if (net_socket != -1)
+    {
 
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(pm->getPortNetwork());
-    server_address.sin_addr.s_addr = INADDR_ANY;
-    this->_network->push_back(server_address);
-
-    int connection_status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
-    if (connection_status == -1)
-        std::cout << "Error making connection to the remote socket\n\n";
-    send(net_socket, "SERVER", 6, 0);
+        status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
+        if (status != 0)
+        {
+            std::cerr << "Error: connection to the remote socket failed: " << strerror(errno) << "\n";
+            return;
+        }
+        send(net_socket, "SERVER\r\n", 6, 0);
+    }
+    else {
+        std::cout << "Error: socket failed to open" << std::endl;
+    }
+    freeaddrinfo(res);
+    delete _pm;
 }
 
 //========================================================================================
@@ -204,11 +221,10 @@ void Server::chan_msg(Message * msg, std::string prefix) {
 
 void Server::do_command(Message *msg, int fd)
 {
-    std::string tmp(msg->command);
-    if (tmp == "PASS") {
+    if (msg->command == "PASS") {
         passcmd(msg, fd);
     }
-    else if (tmp == "SERVER")
+    else if (msg->command == "SERVER")
     {
         if (_m_pclients[_m_fdprefix[fd]]->password != _password)
             send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
@@ -217,14 +233,14 @@ void Server::do_command(Message *msg, int fd)
         else
             servercmd(msg, fd);
     }
-    else if (tmp == "NICK")
+    else if (msg->command == "NICK")
     {
         if (_m_pclients[_m_fdprefix[fd]]->password != _password)
             send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
         else
             nickcmd(msg, fd);
     }
-    else if (tmp == "USER" ) {
+    else if (msg->command == "USER" ) {
         if (_m_pclients[_m_fdprefix[fd]]->password != _password)
             send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
         else if (_m_pclients[_m_fdprefix[fd]]->nickname[0] == 0)
@@ -234,31 +250,33 @@ void Server::do_command(Message *msg, int fd)
     }
     else if (_m_pclients.count(_m_fdprefix[fd]) && _m_pclients[_m_fdprefix[fd]]->is_register == true)
     {
-        if (tmp == "JOIN")
+        if (msg->command == "JOIN")
             joincmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "NAMES")
+
+        else if (msg->command == "NAMES")
             namescmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "LIST")
-            listcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (msg->command == "LIST")
+            listcmd(msg->command, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (tmp == "MODE")
             modecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "PRIVMSG")
+        else if (msg->command == "PRIVMSG")
+
             privmsgcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "NOTICE")
+        else if (msg->command == "NOTICE")
             noticecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "QUIT")
+        else if (msg->command == "QUIT")
             quitcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "VERSION")
+        else if (msg->command == "VERSION")
             versioncmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "STATS")
+        else if (msg->command == "STATS")
             statscmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "TIME")
+        else if (msg->command == "TIME")
             timecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "INFO")
+        else if (msg->command == "INFO")
             infocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "WHO")
+        else if (msg->command == "WHO")
             whocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-        else if (tmp == "CONNECT")
+        else if (msg->command == "CONNECT")
             connectcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (_m_pclients[_m_fdprefix[fd]]->current_chan.empty() == false)
             chan_msg(msg, _m_pclients[_m_fdprefix[fd]]->prefix); // TODO: cadegage

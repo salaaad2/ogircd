@@ -38,6 +38,14 @@ int main_loop(Server &serv, Fds *fds)
 	return 0;
 }
 
+std::vector<std::string> getParams(size_t  ac, char **av)
+{
+	std::vector<std::string> vec;
+	for (size_t i = 1; i < ac; i++)
+		vec.push_back(std::string(av[i]));
+	return (vec);
+}
+
 int main(int ac, char *av[])
 {
 	if (ac < 3)
@@ -46,7 +54,7 @@ int main(int ac, char *av[])
 		return (1);
 	}
 	int newfd;
-	Params *pm = new Params(ac, av);
+	Params *pm = new Params(ac, getParams(ac, av));
 	Server serv(pm);
 	Fds *fds = new Fds;
 	serv.setFds(fds);
