@@ -18,12 +18,16 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return response;
         }
         case RPL_TOPIC :
-            return(s + " :" + _m_topics[s]);
+            return(s + ":" + _m_topics[s] + RESET);
         case RPL_NAMREPLY :
         {
+            response += "= " + s + " :";
             for (size_t i = 0 ; i < _m_chans[s].size() ; i++)
             {
-                response += _m_uflags[s][_m_chans[s][i]][3] == 'o' ? "@" : "+";
+                if (_m_uflags[s][_m_chans[s][i]].find('o') != std::string::npos)
+                    response += "@";
+                else if (_m_uflags[s][_m_chans[s][i]].find('v') != std::string::npos)
+                    response += "+";
                 response += _m_chans[s][i]->nickname;
                 response += " ";
                 response += RESET;
@@ -36,7 +40,7 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
         case RPL_ENDOFINFO :
             return (BOLDCYAN + s + ":End of /INFO list" + RESET);
         case RPL_ENDOFNAMES :
-            return(BOLDWHITE + s + ":End of /NAMES list" + RESET);
+            return(BOLDWHITE"= " + s + ":End of /NAMES list" + RESET);
         case RPL_SUMMONING :
             return (BOLDCYAN + s + "You have been summoned" + RESET);
         case RPL_VERSION :
@@ -51,6 +55,22 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return (BOLDCYAN + s + RESET);
         case RPL_ENDOFWHO :
             return (BOLDCYAN + s + ":End of WHO list");
+        case RPL_LISTSTART :
+            return (std::string() + "Channel :Users  Name" + RESET);
+        case RPL_LIST :
+            return (s + " :" + _m_topics[s] + RESET);
+        case RPL_LISTEND :
+            return(std::string() + ":End of /LIST" + RESET);
+        case RPL_CHANNELMODEIS :
+            return (s + RESET);
+        case RPL_BANLIST :
+            return (s + RESET);
+        case RPL_ENDOFBANLIST :
+            return (s + " :End of channel ban list" + RESET);
+        case RPL_EXCEPTLIST :
+            return (s + RESET);
+        case RPL_ENDOFEXCEPTLIST :
+            return (s + " :End of channel exception list" + RESET);
 
         /* ERRORS */
 
@@ -78,6 +98,18 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return std::string (BOLDRED":To join a channel, type : JOIN #" + s + RESET);
         case ERR_BADCHANMASK :
             return std::string (BOLDRED":Invalid JOIN parameter" + s + RESET);
+        case ERR_UNKNOWNMODE :
+            return std::string(BOLDRED + s + ":is unknown mode char to me" + RESET);
+        case ERR_NOSUCHCHANNEL :
+            return std::string(BOLDRED + s + ":No such channel");
+        case ERR_CHANOPRIVSNEEDED :
+            return std::string(BOLDRED":You are not channel operator");
+        case ERR_BADCHANNELKEY :
+            return std::string(BOLDRED + s + ":Cannot join channel (+k) -- Wrong channel key");
+        case ERR_BANNEDFROMCHAN :
+            return std::string(BOLDRED + s + ":Cannot join channel (+b) -- You are banned");
+        case ERR_CHANNELISFULL :
+            return std::string(BOLDRED + s + ":Cannot join channel (+l) -- Channel is full, try later");
         default :
             return s;
     }

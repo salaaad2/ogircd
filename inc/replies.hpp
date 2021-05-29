@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 14:01:08 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/13 16:44:43 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/27 14:34:09 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,11 @@
 #define ERR_USERSDONTMATCH 502
 
 #define RPL_WELCOME 001
+#define RPL_YOURHOST 002
+#define RPL_CREATED 003
+#define RPL_MYINFO 004
+#define RPL_BOUNCE 005
+
 
 #define RPL_NONE 300
 #define RPL_USERHOST 302
@@ -99,6 +104,8 @@
 #define RPL_TOPIC 332
 #define RPL_INVITING 341
 #define RPL_SUMMONING 342
+#define RPL_EXCEPTLIST 348
+#define RPL_ENDOFEXCEPTLIST 349
 #define RPL_VERSION 351
 #define RPL_WHOREPLY 352
 #define RPL_ENDOFWHO 315

@@ -96,7 +96,7 @@ int main(int ac, char **av)
         {
             char all[512];
             bzero(all, 512);
-            printf("{->}");
+            //printf("{->}");
             if (fgets(message, 512, stdin) == NULL)
             {
                 close(net_socket);
@@ -114,7 +114,7 @@ int main(int ac, char **av)
             bzero(response, 256);
             if (recv(net_socket, &response, sizeof(response), 0) <= 0)
                 exit(0);
-            printf("%s\n", response);
+            printf("%s", response);
         }
     }
     close(net_socket);

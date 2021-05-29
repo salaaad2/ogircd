@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/20 15:52:36 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/27 15:13:46 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,7 +252,15 @@ void Server::do_command(Message *msg, int fd)
     {
         if (msg->command == "JOIN")
             joincmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+
+        else if (msg->command == "NAMES")
+            namescmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (msg->command == "LIST")
+            listcmd(msg->command, _m_pclients[_m_fdprefix[fd]]->prefix);
+        else if (tmp == "MODE")
+            modecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (msg->command == "PRIVMSG")
+
             privmsgcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
         else if (msg->command == "NOTICE")
             noticecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
