@@ -1,6 +1,6 @@
 #include "../inc/Server.hpp"
 
-void Server::privmsgcmd(Message *msg, std::string prefix)
+void Server::privmsgcmd(Message *msg, std::string & prefix)
 {
     // ERR_NORECIPIENT --NO                ERR_NOTEXTTOSEND -- Yes
     // ERR_CANNOTSENDTOCHAN --No            ERR_NOTOPLEVEL -- No
@@ -54,7 +54,7 @@ void Server::privmsgcmd(Message *msg, std::string prefix)
     send_reply_broad(prefix, vec, -1, &text);
 }
 
-void Server::noticecmd(Message *msg, std::string prefix)
+void Server::noticecmd(Message *msg, std::string & prefix)
 {
     size_t i = 0;
     Message text;

@@ -26,7 +26,7 @@ Params::Params(int ac, std::vector<std::string> av)
         _port = ft_atoi(av[1].c_str());
         _password = av[2];
         _isnew = false;
-        std::cout << "here : " << av[0] << "<-- 4 params\n";
+        std::cout << "here : " << _host << "<-- 4 params\n";
     }
     else
     {

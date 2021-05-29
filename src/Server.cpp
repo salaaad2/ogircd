@@ -13,18 +13,24 @@
 #include "../inc/Server.hpp"
 
 #include <netdb.h>
+#include <errno.h>
 
 void Server::setFds(Fds *fds) {_fds = fds;}
+
+Fds *Server::getFds() const { return (_fds);}
 
 
 Server::Server(Params *pm)
 {
     time(&_launch_time);
     _pm = pm;
+    _peer_password = "PeerSecret";
+    // _servername = "42lyon.irc.fr";
     if (pm->isnew())
         new_serv();
     else
         connect_serv();
+    _servername = _ip;
 }
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================
@@ -33,7 +39,7 @@ void Server::new_serv()
 {
     int yes = 1;
     getIP();
-
+    _fds = new Fds;
     if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cerr << SOCKET_ERROR << std::endl;
@@ -66,24 +72,16 @@ void Server::new_serv()
         connect_serv();
     }
     else
-    {
-        std::cout << "delete params" << std::endl;
         delete _pm;
-    }
-}
-
-void Server::connect_serv()
-{
-    do_connect();
 }
 
 // TODO : while res; res = res->ai_next
 // inet_ntop (res->ai_family, ptr, addrstr, 100);
-void Server::do_connect()
+int Server::connect_serv()
 {
     struct addrinfo hints, *res, *result;
-    int errcode, status, net_socket;
     sockaddr_in server_address;
+    int errcode, status, net_socket;
 
     memset(&hints, 0, sizeof (hints));
     hints.ai_family = PF_UNSPEC;
@@ -93,35 +91,39 @@ void Server::do_connect()
     if (errcode != 0)
     {
         std::cerr << "Error: getaddrinfo on \'" << _pm->getHost() << "\' failed\n\n";
-        return ;
+        return(-1) ;
     }
     res = result;
-    server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
-    server_address.sin_port = htons(_pm->getPortNetwork());
     if (res->ai_family == AF_INET ||
         res->ai_family==AF_INET6)
         net_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     else {
         std::cerr << "Error: wrong hostname\n\n";
-        return ;
+        return(-1) ;
     }
     server_address.sin_family = res->ai_family;
+    server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
+    server_address.sin_port = htons(_pm->getPortNetwork());
+    FD_SET(net_socket, &_fds->master);
     if (net_socket != -1)
     {
 
+        std::cout << "CONNECTION ON  " << _pm->getHost() << " ON PORT " << _pm->getPortNetwork() << "\n";
         status = connect(net_socket, (struct sockaddr *)&server_address, sizeof(server_address));
         if (status != 0)
         {
             std::cerr << "Error: connection to the remote socket failed: " << strerror(errno) << "\n";
-            return;
+            return(-1);
         }
-        send(net_socket, "SERVER\r\n", 6, 0);
     }
     else {
         std::cout << "Error: socket failed to open" << std::endl;
+        return (-1);
     }
+    if (net_socket > _fds->fdmax)
+        _fds->fdmax = net_socket;
     freeaddrinfo(res);
-    delete _pm;
+    return (net_socket);
 }
 
 //========================================================================================
@@ -132,6 +134,8 @@ int Server::addclient(int listener)
 {
     Client *nc = new Client();
     std::string s;
+
+    std::cout << "ADDCLIENT\n";
     if((nc->clfd = accept(listener, nc->clientaddr, &nc->addrlen)) == -1)
     {
         std::cout << "Server-accept() error\n";
@@ -150,9 +154,9 @@ int Server::addclient(int listener)
 
 void Server::getIP()
 {
+    struct sockaddr_in serv;
     const char* google_dns_server = "8.8.8.8";
     int dns_port = 53;
-    struct sockaddr_in serv;
     int sock = socket ( AF_INET, SOCK_DGRAM, 0);
 
     memset( &serv, 0, sizeof(serv) );
@@ -179,9 +183,10 @@ void Server::getIP()
 void Server::send_reply(std::string s, std::string prefix, int code)
 {
     std::string ccmd;
+    std::string to_send;
+
     if (code)
         ccmd = ft_format_cmd(ft_utoa(code));
-    std::string to_send;
     _prefix = BOLDWHITE;
     _prefix += "[" + ft_current_time();
     _prefix.erase(_prefix.size() - 1, 1);
@@ -191,9 +196,10 @@ void Server::send_reply(std::string s, std::string prefix, int code)
     send(_m_pclients[prefix]->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
-void Server::send_reply_broad(std::string prefix, std::vector<Client*> cl, int code, Message *msg)
+void Server::send_reply_broad(std::string prefix, std::vector<Client*> & cl, int code, Message *msg)
 {
     std::string s;
+
     for (size_t i = 0; i < cl.size(); i++)
     {
         if (cl[i]->clfd != _m_pclients[prefix]->clfd)
@@ -221,21 +227,31 @@ void Server::chan_msg(Message * msg, std::string prefix) {
 
 void Server::do_command(Message *msg, int fd)
 {
+    std::string req;
+
     if (msg->command == "PASS") {
         passcmd(msg, fd);
     }
     else if (msg->command == "SERVER")
     {
-        if (_m_pclients[_m_fdprefix[fd]]->password != _password)
-            send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
-        else if (_m_pclients[_m_fdprefix[fd]]->is_register == true)
-            send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
+        if (_m_fdserver.count(fd) == 0 && _m_pclients[_m_fdprefix[fd]]->password != _peer_password)
+        {
+            req = msg_rpl("", ERR_PASSWDMISMATCH, "");
+            send(fd, req.c_str(), strlen(req.c_str()), 0);
+        }
+        else if (_m_fdserver.count(fd) == 1)
+        {
+            req = msg_rpl("", ERR_ALREADYREGISTERED, "");
+            send(fd, req.c_str(), strlen(req.c_str()), 0);
+        }
         else
-            servercmd(msg, fd);
+            servercmd(msg, "", fd);
     }
     else if (msg->command == "NICK")
     {
-        if (_m_pclients[_m_fdprefix[fd]]->password != _password)
+        if (_m_fdserver.count(fd) != 0)
+            nickcmd(msg, fd);
+        else if (_m_pclients[_m_fdprefix[fd]]->password != _password)
             send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
         else
             nickcmd(msg, fd);
@@ -283,7 +299,7 @@ void Server::do_command(Message *msg, int fd)
         else
             send_reply(msg->command, _m_fdprefix[fd], ERR_NOTOCHANNEL);
     }
-    else
+    else if (_m_fdserver.count(fd) == 0)
         send_reply("", _m_fdprefix[fd], ERR_NOTREGISTERED);
     delete msg;
 }

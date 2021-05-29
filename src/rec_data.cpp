@@ -32,25 +32,13 @@ void rec_data(Server &serv, int i, Fds *fds)
     }
     else
     {
-       // std::cout << "data received  : {" << buf << "}\n";
         vm = parse_message(buf);
         for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
             if ((*it)->command.size() > 0)
             {
+                // std::cout << "FD REC DATA : " << i << "\n";
                 serv.do_command(*it, i);
             }
         }
-
-    //     for(int j = 0; j <= fds->fdmax; j++)
-    //     {
-    //         if(FD_ISSET(j, &fds->master))
-    //         {
-    //             if(j != serv.listener && j != i)
-    //             {
-    //                 if(send(j, buf, nbytes, 0) == -1)
-    //                     perror("send() error");
-    //             }
-    //         }
-    //     }
     }
 }

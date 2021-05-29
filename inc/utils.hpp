@@ -6,8 +6,8 @@
 #include <sys/types.h>
 #include <ctime>
 
-int	        ft_atoi(const char *str);
-void	    ft_bzero(void *s, size_t n);
+int         ft_atoi(const char *str);
+void        ft_bzero(void *s, size_t n);
 int         ft_isalpha(const char c);
 int         ft_isnum(const char c);
 std::string ft_utoa(unsigned int n);

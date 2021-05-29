@@ -1,6 +1,7 @@
 #include "../inc/Server.hpp"
 #include "../inc/ftirc.hpp"
 
+
 // void Server::canIjoin(std::string prefix, )
 
 void Server::joincmd(Message *msg, std::string prefix)
@@ -15,6 +16,7 @@ void Server::joincmd(Message *msg, std::string prefix)
     else
         send_reply("", prefix, ERR_BADCHANMASK);
 }
+
 
 void Server::join2(std::string chan, std::string key, std::string prefix)
 {
@@ -54,6 +56,7 @@ void Server::join2(std::string chan, std::string key, std::string prefix)
                 _m_uflags[chan][_m_pclients[prefix]] = "";
         }
     }
+
     send_reply(chan, prefix, RPL_TOPIC);
     send_reply(chan, prefix, RPL_NAMREPLY);
     send_reply(chan, prefix, RPL_ENDOFNAMES);
@@ -64,7 +67,11 @@ void Server::join2(std::string chan, std::string key, std::string prefix)
     send_reply_broad(prefix, _m_chans[chan], -1, &s);
 }
 
-void Server::new_channel(std::string chan, std::string prefix)
+	/* CHANNELS INFOS */
+	/* CHANNEL MODE : [opsitnbv] */
+	/* USER MODE : [iwso] */
+
+void Server::new_channel(std::string chan, std::string & prefix)
 {
     _m_chans[chan].push_back(_m_pclients[prefix]);
    _m_pclients[prefix]->chans.push_back(chan);
@@ -73,7 +80,7 @@ void Server::new_channel(std::string chan, std::string prefix)
     _m_uflags[chan][_m_pclients[prefix]] = "o";
 }
 
-std::vector<std::string> Server::parse_m_chans(std::vector<std::string> params)
+std::vector<std::string> Server::parse_m_chans(std::vector<std::string> & params)
 {
     std::vector<std::string> channels;
 
