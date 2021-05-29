@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/29 18:55:00 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/30 00:41:23 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,8 +144,9 @@ class Server
 		void joincmd(Message *msg, std::string prefix);
 		void join2(std::string chan, std::string key, std::string prefix);
 		std::vector<std::string> parse_m_chans(std::string chan);
-		std::vector<std::string> parse_keys(std::vector<std::string> params, std::vector<std::string> channels);
+		std::vector<std::string> parse_keys(std::string keys, std::vector<std::string> channels);
 		bool isbanned(std::string prefix, std::string chan);
+		bool isinvited(std::string nickname, std::string chan);
 		void new_channel(std::string chan, std::string & prefix);
 		void partcmd(Message *msg, std::string prefix);
 		void namescmd(Message *msg, std::string prefix);

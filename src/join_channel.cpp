@@ -13,8 +13,12 @@ void Server::joincmd(Message *msg, std::string prefix)
     }
 
     std::vector<std::string> channels = parse_m_chans(msg->params[0]);
-    std::vector<std::string> keys = parse_keys(msg->params, channels);
-
+    std::vector<std::string> keys;
+    
+    if (msg->params.size() >= 2)
+        keys = parse_keys(msg->params[1], channels);
+    else
+        keys = std::vector<std::string>(channels.size(), "");
     for (size_t i = 0 ; i < channels.size() ; i++)
         join2(channels[i], keys[i], prefix);
     if (channels.empty() == false)
@@ -35,6 +39,11 @@ void Server::join2(std::string chan, std::string key, std::string prefix)
             return;
         }
     }
+    if (chan[0] != '#' && chan[0] != '&')
+    {
+        send_reply("", prefix, ERR_NOSUCHCHANNEL);
+        return ;
+    }
     if (_m_chans.find(chan) == _m_chans.end())
         new_channel(chan, prefix);
     else
@@ -52,6 +61,11 @@ void Server::join2(std::string chan, std::string key, std::string prefix)
         else if (_m_flags[chan].find('l') != std::string::npos && (_m_chans.size() >= _m_limits[chan]))
         {
             send_reply(chan, prefix, ERR_CHANNELISFULL);
+            return ;
+        }
+        else if (_m_flags[chan].find('i') != std::string::npos && !isinvited(_m_pclients[prefix]->nickname, chan))
+        {
+            send_reply(chan, prefix, ERR_INVITEONLYCHAN);
             return ;
         }
         else
@@ -83,7 +97,7 @@ void Server::new_channel(std::string chan, std::string & prefix)
    _m_pclients[prefix]->chans.push_back(chan);
     _m_topics[chan] = "Welcome to the channel you chose";
     _m_flags[chan] = "";
-    _m_uflags[chan][_m_pclients[prefix]] = "o";
+    _m_uflags[chan][_m_pclients[prefix]] = "Oo";
 }
 
 std::vector<std::string> Server::parse_m_chans(std::string chan)
@@ -95,7 +109,7 @@ std::vector<std::string> Server::parse_m_chans(std::string chan)
     while (chan[i])
     {
         if (chan[i] != ',')
-            c_chan += c_chan[i];
+            c_chan.push_back(chan[i]);
         else
         {
             channels.push_back(c_chan);
@@ -103,32 +117,28 @@ std::vector<std::string> Server::parse_m_chans(std::string chan)
         }
         i++;
     }
+    channels.push_back(c_chan);
     return channels;
 }
 
-std::vector<std::string> Server::parse_keys(std::vector<std::string> params, std::vector<std::string> channels)
+std::vector<std::string> Server::parse_keys(std::string key, std::vector<std::string> channels)
 {
     std::vector<std::string> keys;
+    std::string c_keys;
     size_t i = 0;
 
-    while (i < params.size() && params[i][0] != ' ')
-        i++;
-    while (i < params.size())
+    while (key[i])
     {
-        if (params[i][0] != ' ')
+        if (key[i] != ',')
+            c_keys.push_back(key[i]);
+        else
         {
-            if (params[i][0] == ':')
-                i++;
-            if (params[i][0])
-            {
-                keys.push_back(params[i]);
-                i += 2;
-                if (i < params.size() && params[i] != ",")
-                    break ;
-            }
+            keys.push_back(c_keys);
+            c_keys.clear();
         }
         i++;
     }
+    keys.push_back(c_keys);
     while (keys.size() < channels.size())
         keys.push_back("");
     return keys;
@@ -147,6 +157,17 @@ bool Server::isbanned(std::string prefix, std::string chan)
             }
             return true;
         }
+    }
+    return false;
+}
+
+bool Server::isinvited(std::string nickname, std::string chan)
+{
+    for (std::vector<std::string>::iterator it = _m_invite[chan].begin() ; it != _m_invite[chan].end() ; it++)
+    {
+        std::cout << "invites " << *it << "\nnick " << nickname;
+        if (*it == nickname)
+            return true;
     }
     return false;
 }

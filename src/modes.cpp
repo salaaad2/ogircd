@@ -10,18 +10,19 @@ void Server::modecmd(Message *msg, std::string prefix)
 {
     if (msg->params.empty())
         send_reply("", prefix, ERR_NEEDMOREPARAMS);
-    else if (msg->params[0] == "#" || msg->params[0] == "&")
+    else if (msg->params[0][0] == '#' || msg->params[0][0] == '&')
         chanMode(msg->params, prefix);
+    std::cout << "flags after " << _m_flags[msg->params[0]];
     // else
     //     userMode(msg->params, prefix);
 }
 
 void Server::chanMode(std::vector<std::string> params, std::string prefix)
 {
-    std::string chan = params[0] + params[1];
+    std::string chan = params[0];
 
-    if (_m_chans.find(params[0] + params[1]) == _m_chans.end())
-        send_reply(params[0] + params[1], prefix, ERR_NOSUCHCHANNEL);
+    if (_m_chans.find(params[0]) == _m_chans.end())
+        send_reply(params[0], prefix, ERR_NOSUCHCHANNEL);
     else if (_m_uflags[chan][_m_pclients[prefix]].find('o') == std::string::npos)
         send_reply(chan, prefix, ERR_CHANOPRIVSNEEDED);
     else
@@ -35,11 +36,11 @@ void Server::setChanMode(std::vector<std::string> params, std::string prefix)
     std::string c_par;
     bool        ar = true;
 
-    std::string modes = "aimnqpsrt"; 
+    std::string modes = "aimnqpsrt";
     std::string pmodes = "OovklbeI";
 
-    for (size_t j = 3 ; j < params.size() ; j++)
-        c_par += params[j];
+    for (size_t j = 1 ; j < params.size() ; j++)
+        c_par += params[j] + ' ';
 
     for (size_t j = 0 ; j < c_par.size() ; j++)
     {
@@ -101,7 +102,7 @@ void Server::treat_modes(std::vector<std::string> params, std::vector<std::strin
 {
     std::string cmd;
     bool ar;
-    std::string chan = params[0] + params[1];
+    std::string chan = params[0];
 
     for (size_t i = 0 ; i < cmds.size() ; i++)
     {

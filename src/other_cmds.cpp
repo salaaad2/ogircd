@@ -3,26 +3,27 @@
 void Server::invitecmd(Message *msg, std::string prefix)
 {
     std::string nickname;
-    size_t i = 0;
 
-    while (msg->params[i] == " ")
-        i++;
-    if (_m_nickdb.count(msg->params[i]) == 1)
-        nickname = msg->params[i];
+    if (_m_nickdb.count(msg->params[0]) == 1)
+        nickname = msg->params[0];
     else
-        send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
-    while (msg->params[i] == " ")
-        i++;
-    if ((msg->params[i] == "#" || msg->params[i] == "&") && (i < msg->params.size() + 1)
-    && _m_chans.find(msg->params[i] + msg->params[i + 1]) != _m_chans.end())
     {
-        std::string chan = msg->params[i] + msg->params[i + 1];
-        if (_m_uflags[chan][_m_pclients[prefix]].find('o') == std::string::npos)
-        {
-            send_reply("", prefix, ERR_CHANOPRIVSNEEDED);
-            return ;
-        }
-        for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
+        send_reply(msg->params[0], prefix, ERR_NOSUCHNICK);
+        return ;
+    }
+    if (msg->params.size() < 2)
+    {
+        send_reply(msg->params[0], prefix, ERR_NEEDMOREPARAMS);
+        return ;
+    }
+    else if (_m_uflags[msg->params[1]][_m_pclients[prefix]].find('o') == std::string::npos)
+    {
+        send_reply("", prefix, ERR_CHANOPRIVSNEEDED);
+        return ;
+    }
+    if ((msg->params[1][0] == '#' || msg->params[1][0] == '&') && _m_chans.find(msg->params[1]) != _m_chans.end())
+    {
+        for (std::vector<Client *>::iterator it = _m_chans[msg->params[1]].begin() ; it != _m_chans[msg->params[1]].end() ; it++)
         {
             if ((*it)->nickname == nickname)
             {
@@ -30,7 +31,6 @@ void Server::invitecmd(Message *msg, std::string prefix)
                 return ;
             }
         }
-        _m_invite[msg->params[i] + msg->params[i + 1]].push_back(nickname);
-        
+        _m_invite[msg->params[1]].push_back(nickname);
     }
 }
