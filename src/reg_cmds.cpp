@@ -69,6 +69,12 @@ void Server::do_registration(int fd)
         send_reply("", _m_fdprefix[fd], RPL_YOURHOST);
         _m_pclients.erase(s);
     }
+    std::cout << "list of all clients :\n";
+    for (std::map<std::string, Client*>::iterator it = _m_pclients.begin() ; it != _m_pclients.end() ; it++)
+        std::cout << it->second->nickname << "\n";
+    std::cout << "list of all channels :\n";
+    for (std::map<std::string, std::string>::iterator it = _m_topics.begin() ; it != _m_topics.end() ; it++)
+        std::cout << it->first << "\n";
 }
 
 void Server::create_client_prefix(int fd)
