@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 13:41:20 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/20 14:37:36 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/30 14:08:08 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,45 +43,77 @@ get_command(char buf[], Message *nm, size_t i)
     return (i);
 }
 
-int
-get_params(char buf[], Message *nm, size_t i) {
-    std::string tmp;
-    std::string sep_char;
-    while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
-            || buf[i] == ':'))
+// int
+// get_params(char buf[], Message *nm, size_t i) {
+//     std::string tmp;
+//     std::string sep_char;
+//     while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
+//             || buf[i] == ':'))
+//     {
+//         i++;
+//     }
+//     while (buf[i] && buf[i] != '\r')
+//     {
+//         if (buf[i] == ':' || buf[i] == ' ' || buf[i] == ',')
+//         {
+//             if (tmp != "")
+//             {
+//                 nm->params.push_back(tmp);
+//                 nm->len += tmp.length();
+//                 tmp.clear();
+//             }
+//             sep_char += buf[i];
+//             nm->params.push_back(sep_char);
+//             nm->len += sep_char.length();
+//             sep_char.clear();
+//         }
+//         else
+//             tmp += buf[i];
+//         i++;
+//     }
+//     if (tmp != "")
+//         nm->params.push_back(tmp);
+//     nm->len += tmp.length();
+//     if (buf[i] == '\r')
+//         return (i + 2);
+//     return  (i);
+// }
+
+int get_params(char buf[], Message *nm, size_t i)
+{
+    while (buf[i] && buf[i] != '\r' && buf[i] == ' ')
+        i++;
+    while (buf[i] && buf[i] != '\r')
     {
-        i++;
-    }
-    while (buf[i] && buf[i] != '\r') {
-        if (buf[i] == ':' || buf[i] == ' ' || buf[i] == ',' || buf[i] == '#')
+        if (buf[i] == ' ')
+            i++;
+        else if (buf[i] != ':')
         {
-            if (tmp != "")
+            std::string param;
+            while (buf[i] && buf[i] != '\r' && buf[i] != ' ')
             {
-                nm->params.push_back(tmp);
-                nm->len += tmp.length();
-                tmp.clear();
+                param += buf[i];
+                i++;
+                nm->len++;
             }
-            sep_char += buf[i];
-            nm->params.push_back(sep_char);
-            nm->len += sep_char.length();
-            sep_char.clear();
-            // if (buf[i] && buf[i] != ' ')
-            // {
-            //     tmp += buf[i];
-            //     nm->params.push_back(tmp);
-            //     tmp.clear();
-            // }
+            nm->params.push_back(param);
         }
-        else
-            tmp += buf[i];
-        i++;
+        else if (buf[i] == ':')
+        {
+            i++;
+            std::string param;
+            while (buf[i] && buf[i] != '\r')
+            {
+                param += buf[i];
+                nm->len++;
+                i++;
+            }
+            nm->params.push_back(param);
+        }
     }
-    if (tmp != "")
-        nm->params.push_back(tmp);
-    nm->len += tmp.length();
     if (buf[i] == '\r')
-        return (i + 2);
-    return  (i);
+         return (i + 2);
+    return i;
 }
 
 std::vector<Message*>
@@ -101,21 +133,20 @@ parse_message(char buf[])
         else
             i = get_params(buf, nm, i);
         vm.push_back(nm);
-        std::cout << "nm command : " << nm->command << "\n";
+        //std::cout << "nm command : " << nm->command << "\n";
         nc++;
         if (nc != n)
             nm = new Message;
     }
+    // std::cout << "count : " << n <<  "\n";
+    // std::cout << "command number : " << nc << "command : " << nm->command <<
+    // "first param : " << nm->params[0] << "\n";
+    // i = 0;
+    // std::cout << "CMD " << nm->command <<  "\n";
+    // while (i < nm->params.size()) {
+    //     std::cout << "[" << nm->params[i] << "] ";
+    //     i++;
+    // }
+    // std::cout << "\n";
     return vm;
 }
-
-// std::cout << "count : " << n <<  "\n";
-// std::cout << "command number : " << nc << "command : " << nm->command <<
-// "first param : " << nm->params[0] << "\n";
-// i = 0;
-// std::cout << "CMD " << nm->command <<  "\n";
-// while (i < nm->params.size()) {
-//     std::cout << "[" << nm->params[i] << "] ";
-//     i++;
-// }
-// std::cout << "\n";
