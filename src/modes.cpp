@@ -12,7 +12,7 @@ void Server::modecmd(Message *msg, std::string prefix)
         send_reply("", prefix, ERR_NEEDMOREPARAMS);
     else if (msg->params[0][0] == '#' || msg->params[0][0] == '&')
         chanMode(msg->params, prefix);
-    std::cout << "flags after " << _m_flags[msg->params[0]];
+    std::cout << "flags after " << _m_flags[msg->params[0]] << "\r\n";
     // else
     //     userMode(msg->params, prefix);
 }

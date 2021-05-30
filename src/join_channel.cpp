@@ -165,7 +165,6 @@ bool Server::isinvited(std::string nickname, std::string chan)
 {
     for (std::vector<std::string>::iterator it = _m_invite[chan].begin() ; it != _m_invite[chan].end() ; it++)
     {
-        std::cout << "invites " << *it << "\nnick " << nickname;
         if (*it == nickname)
             return true;
     }

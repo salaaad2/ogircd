@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 13:41:20 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/29 18:26:45 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/30 14:08:08 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,20 +133,20 @@ parse_message(char buf[])
         else
             i = get_params(buf, nm, i);
         vm.push_back(nm);
-        std::cout << "nm command : " << nm->command << "\n";
+        //std::cout << "nm command : " << nm->command << "\n";
         nc++;
         if (nc != n)
             nm = new Message;
     }
-    std::cout << "count : " << n <<  "\n";
-    std::cout << "command number : " << nc << "command : " << nm->command <<
-    "first param : " << nm->params[0] << "\n";
-    i = 0;
-    std::cout << "CMD " << nm->command <<  "\n";
-    while (i < nm->params.size()) {
-        std::cout << "[" << nm->params[i] << "] ";
-        i++;
-    }
-    std::cout << "\n";
+    // std::cout << "count : " << n <<  "\n";
+    // std::cout << "command number : " << nc << "command : " << nm->command <<
+    // "first param : " << nm->params[0] << "\n";
+    // i = 0;
+    // std::cout << "CMD " << nm->command <<  "\n";
+    // while (i < nm->params.size()) {
+    //     std::cout << "[" << nm->params[i] << "] ";
+    //     i++;
+    // }
+    // std::cout << "\n";
     return vm;
 }
