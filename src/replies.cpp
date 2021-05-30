@@ -15,6 +15,8 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             response += _m_pclients[prefix]->prefix;
             return response;
         }
+        case RPL_YOURHOST :
+            return (":Your host is " + _prefix + " running ircserv");
         case RPL_TOPIC :
             return(s + ":" + _m_topics[s] + RESET);
         case RPL_NAMREPLY :

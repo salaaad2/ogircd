@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/30 00:41:23 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/30 16:14:18 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,12 @@ class Server
 		std::map<int, network*>                                  _m_fdserver;
 		Params                                                  *_pm;
 		time_t													_launch_time;
+
 		//client
 		std::map<int, std::string>                              _m_fdprefix; // _m_pclients[_m_fdprefix[fd]] = find client with fd
 		std::map<std::string, Client*>							_m_pclients; // _m_pclients[prefix] = find client with prefix
 		std::map<std::string, std::stack<Client*> >				_m_nickdb; // _m_nickdb[name] = last client with nickname "name"
+
 
 
 		/*channels maps */

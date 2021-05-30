@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/30 14:14:02 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/30 16:01:31 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,10 +187,12 @@ void Server::send_reply(std::string s, std::string prefix, int code)
 
 	if (code)
 		ccmd = ft_format_cmd(ft_utoa(code));
-	_prefix = BOLDWHITE;
-	_prefix += "[" + ft_current_time();
-	_prefix.erase(_prefix.size() - 1, 1);
-	_prefix += + "]:";
+	// _prefix = BOLDWHITE;
+	// _prefix += "[" + ft_current_time();
+	// _prefix.erase(_prefix.size() - 1, 1);
+	// _prefix += + "]:";
+	_prefix = ":";
+	_prefix += _ip;
 
 	to_send += (_prefix +  " " + ccmd + " " + msg_rpl(s, code, prefix) + RESET + "\r\n");
 	send(_m_pclients[prefix]->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);

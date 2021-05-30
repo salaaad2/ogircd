@@ -66,6 +66,7 @@ void Server::do_registration(int fd)
         _m_pclients[_m_fdprefix[fd]]->is_register = true;
         _m_pclients[_m_fdprefix[fd]]->is_logged = true;
         send_reply("", _m_fdprefix[fd], RPL_WELCOME);
+        send_reply("", _m_fdprefix[fd], RPL_YOURHOST);
         _m_pclients.erase(s);
     }
 }
