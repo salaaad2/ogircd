@@ -1,6 +1,6 @@
 #include "../inc/Server.hpp"
 
-void Server::privmsgcmd(Message *msg, std::string & prefix)
+void Server::privmsgcmd(Message *msg, Client *cl)
 {
     // ERR_NORECIPIENT --NO                ERR_NOTEXTTOSEND -- Yes
     // ERR_CANNOTSENDTOCHAN --No            ERR_NOTOPLEVEL -- No
@@ -22,12 +22,12 @@ void Server::privmsgcmd(Message *msg, std::string & prefix)
             if (cl_tmp->is_logged == true)
                 nicknames.push_back(cl_tmp);
             else
-                send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
+                send_reply(msg->params[i], cl, ERR_NOSUCHNICK);
         }
         else if (_m_chans.count(msg->params[i]) == 1)
             chans.push_back(msg->params[i]);
         else
-            send_reply(msg->params[i], prefix, ERR_NOSUCHNICK);
+            send_reply(msg->params[i], cl, ERR_NOSUCHNICK);
         i++;
     }
     i++;
@@ -37,24 +37,24 @@ void Server::privmsgcmd(Message *msg, std::string & prefix)
         i++;
     }
     if (text.params.size() == 0)
-        send_reply("", prefix, ERR_NOTEXTTOSEND);
+        send_reply("", cl, ERR_NOTEXTTOSEND);
     nicknames.sort();
     nicknames.unique();
     chans.sort();
     chans.unique();
     i = 0;
-    curr_chan_tmp = _m_pclients[prefix]->current_chan;
+    curr_chan_tmp = cl->current_chan;
     for (std::list<std::string>::iterator it = chans.begin(); it != chans.end(); it++)
     {
-        _m_pclients[prefix]->current_chan = *it;
-        chan_msg(&text, prefix);
+        cl->current_chan = *it;
+        chan_msg(&text, cl);
     }
-    _m_pclients[prefix]->current_chan = curr_chan_tmp;
+    cl->current_chan = curr_chan_tmp;
     std::vector<Client*> vec(nicknames.begin(), nicknames.end());
-    send_reply_broad(prefix, vec, -1, &text);
+    send_reply_broad(cl, vec, -1, &text);
 }
 
-void Server::noticecmd(Message *msg, std::string & prefix)
+void Server::noticecmd(Message *msg, Client *cl)
 {
     std::list<std::string> chans;
     std::vector<Client*> vec;
@@ -88,13 +88,13 @@ void Server::noticecmd(Message *msg, std::string & prefix)
     chans.sort();
     chans.unique();
     i = 0;
-    curr_chan_tmp = _m_pclients[prefix]->current_chan;
+    curr_chan_tmp = cl->current_chan;
     for (std::list<std::string>::iterator it = chans.begin(); it != chans.end(); it++)
     {
-        _m_pclients[prefix]->current_chan = *it;
-        chan_msg(&text, prefix);
+        cl->current_chan = *it;
+        chan_msg(&text, cl);
     }
-    _m_pclients[prefix]->current_chan = curr_chan_tmp;
+    cl->current_chan = curr_chan_tmp;
     vec.assign(nicknames.begin(), nicknames.end());
-    send_reply_broad(prefix, vec, -1, &text);
+    send_reply_broad(cl, vec, -1, &text);
 }

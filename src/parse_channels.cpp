@@ -4,80 +4,80 @@
 
 // void Server::canIjoin(std::string prefix, )
 
-void Server::joincmd(Message *msg, std::string prefix)
+void Server::joincmd(Message *msg, Client *cl)
 {
     std::vector<std::string> channels = parse_m_chans(msg->params);
     std::vector<std::string> keys = parse_keys(msg->params, channels);
 
     for (size_t i = 0 ; i < channels.size() ; i++)
-        join2(channels[i], keys[i], prefix);
+        join2(channels[i], keys[i], cl);
     if (channels.empty() == false)
-        _m_pclients[prefix]->current_chan = channels.back();
+        cl->current_chan = channels.back();
     else
-        send_reply("", prefix, ERR_BADCHANMASK);
+        send_reply("", cl, ERR_BADCHANMASK);
 }
 
 
-void Server::join2(std::string chan, std::string key, std::string prefix)
+void Server::join2(std::string chan, std::string key, Client *cl)
 {
     Message s;
 
-    for (size_t i = 0; i < _m_pclients[prefix]->chans.size(); i++) {
-        if (chan == _m_pclients[prefix]->chans[i])
+    for (size_t i = 0; i < cl->chans.size(); i++) {
+        if (chan == cl->chans[i])
         {
-            send_reply("", prefix, ERR_USERONCHANNEL);
+            send_reply("", cl, ERR_USERONCHANNEL);
             return;
         }
     }
     if (_m_chans.find(chan) == _m_chans.end())
-        new_channel(chan, prefix);
+        new_channel(chan, cl);
     else
     {
         if (_m_flags[chan].find('k') != std::string::npos && key != _m_chankey[chan])
         {
-            send_reply(chan, prefix, ERR_BADCHANNELKEY);
+            send_reply(chan, cl, ERR_BADCHANNELKEY);
             return ;
         }
-        else if (isbanned(prefix, chan))
+        else if (isbanned(cl, chan))
         {
-            send_reply(chan, prefix, ERR_BANNEDFROMCHAN);
+            send_reply(chan, cl, ERR_BANNEDFROMCHAN);
             return ;
         }
         else if (_m_flags[chan].find('l') != std::string::npos && (_m_chans.size() >= _m_limits[chan]))
         {
-            send_reply(chan, prefix, ERR_CHANNELISFULL);
+            send_reply(chan, cl, ERR_CHANNELISFULL);
             return ;
         }
         else
         {
-            _m_chans[chan].push_back(_m_pclients[prefix]);
-            _m_pclients[prefix]->chans.push_back(chan);
-            if (_m_uflags[chan].find(_m_pclients[prefix]) == _m_uflags[chan].end())
-                _m_uflags[chan][_m_pclients[prefix]] = "";
+            _m_chans[chan].push_back(cl);
+            cl->chans.push_back(chan);
+            if (_m_uflags[chan].find(cl) == _m_uflags[chan].end())
+                _m_uflags[chan][cl] = "";
         }
     }
 
-    send_reply(chan, prefix, RPL_TOPIC);
-    send_reply(chan, prefix, RPL_NAMREPLY);
-    send_reply(chan, prefix, RPL_ENDOFNAMES);
-    s.params.push_back(_m_pclients[prefix]->nickname);
+    send_reply(chan, cl, RPL_TOPIC);
+    send_reply(chan, cl, RPL_NAMREPLY);
+    send_reply(chan, cl, RPL_ENDOFNAMES);
+    s.params.push_back(cl->nickname);
     s.params.push_back (" joined channel ");
     s.params.push_back(chan);
     s.params.push_back("\r\n");
-    send_reply_broad(prefix, _m_chans[chan], -1, &s);
+    send_reply_broad(cl, _m_chans[chan], -1, &s);
 }
 
 	/* CHANNELS INFOS */
 	/* CHANNEL MODE : [opsitnbv] */
 	/* USER MODE : [iwso] */
 
-void Server::new_channel(std::string chan, std::string & prefix)
+void Server::new_channel(std::string chan, Client *cl)
 {
-    _m_chans[chan].push_back(_m_pclients[prefix]);
-   _m_pclients[prefix]->chans.push_back(chan);
+    _m_chans[chan].push_back(cl);
+   cl->chans.push_back(chan);
     _m_topics[chan] = "Welcome to the channel you chose";
     _m_flags[chan] = "";
-    _m_uflags[chan][_m_pclients[prefix]] = "o";
+    _m_uflags[chan][cl] = "o";
 }
 
 std::vector<std::string> Server::parse_m_chans(std::vector<std::string> & params)
@@ -120,15 +120,15 @@ std::vector<std::string> Server::parse_keys(std::vector<std::string> params, std
     return keys;
 }
 
-bool Server::isbanned(std::string prefix, std::string chan)
+bool Server::isbanned(Client *cl, std::string chan)
 {
     for (std::vector<std::string>::iterator it = _m_banmask[chan].begin() ; it != _m_banmask[chan].end() ; it++)
     {
-        if (strmatch(prefix, *it))
+        if (strmatch(cl->prefix, *it))
         {
             for (std::vector<std::string>::iterator it2 = _m_exceptmask[chan].begin() ; it2 != _m_exceptmask[chan].end() ; it2++)
             {
-                if (strmatch(prefix, *it2))
+                if (strmatch(cl->prefix, *it2))
                     return false;
             }
             return true;

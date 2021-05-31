@@ -9,11 +9,11 @@ void Server::passcmd(Message *msg, int fd)
     if (_m_fdserver.count(fd) == 1)
         return;
     if (_m_pclients[s]->is_register == true)
-        send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
+        send_reply("", _m_pclients[_m_fdprefix[fd]], ERR_ALREADYREGISTERED);
     if (!msg->params[0][0])
-        send_reply("", _m_fdprefix[fd], ERR_NEEDMOREPARAMS);
+        send_reply("", _m_pclients[_m_fdprefix[fd]], ERR_NEEDMOREPARAMS);
     if (msg->params[0] != _password && msg->params[0] != _peer_password)
-        send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
+        send_reply("", _m_pclients[_m_fdprefix[fd]], ERR_PASSWDMISMATCH);
     _m_pclients[s]->password =  msg->params[0];
 }
 
@@ -31,7 +31,7 @@ void Server::nickcmd(Message *msg, int fd)
     {
         if (_m_nickdb[msg->params[0]].top()->is_logged == true)
          {
-            send_reply(msg->params[0], _m_fdprefix[fd], ERR_NICKNAMEINUSE);
+            send_reply(msg->params[0], _m_pclients[_m_fdprefix[fd]], ERR_NICKNAMEINUSE);
             return;
         }
     }
@@ -43,10 +43,10 @@ void Server::usercmd(Message *msg, int fd)
     std::string s = ft_utoa(fd);
 
     if (_m_pclients[s]->is_register == true)
-        send_reply("", _m_fdprefix[fd], ERR_ALREADYREGISTERED);
+        send_reply("", _m_pclients[_m_fdprefix[fd]], ERR_ALREADYREGISTERED);
     else if (msg->params.size() == 8)
     {
-        send_reply("", _m_fdprefix[fd], ERR_NEEDMOREPARAMS);
+        send_reply("", _m_pclients[_m_fdprefix[fd]], ERR_NEEDMOREPARAMS);
     }
     else
     {
@@ -67,7 +67,7 @@ void Server::do_registration(int fd)
         create_client_prefix(fd);
         _m_pclients[_m_fdprefix[fd]]->is_register = true;
         _m_pclients[_m_fdprefix[fd]]->is_logged = true;
-        send_reply("", _m_fdprefix[fd], RPL_WELCOME);
+        send_reply("", _m_pclients[_m_fdprefix[fd]], RPL_WELCOME);
         _m_pclients.erase(s);
     }
 }

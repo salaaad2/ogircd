@@ -50,7 +50,7 @@ void Server::broadcast_known_users(int fd)
 //     }
 // }
 
-void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername> <hopcount> <token> <info>
+void Server::servercmd(Message *msg, Client *cl, int fd) // <servername> <hopcount> <token> <info>
 {
     std::string servername;
     std::string hopcount;
@@ -58,8 +58,8 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
     std::string req;
     Message tmp;
     network *net;
+    (void)cl;
 
-    (void)prefix;
 
     if (msg->params.size() == 3) {
         std::cout << "size 3 " << std::endl;
@@ -75,14 +75,14 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
     }
     else
     {
-        req = msg_rpl("", ERR_NEEDMOREPARAMS, "");
+        req = msg_rpl("", ERR_NEEDMOREPARAMS, NULL);
         send(fd, req.c_str(), strlen(req.c_str()), 0);
         return;
     }
-    if (_m_fdserver.count(fd) == 1)
+    if (_m_fdserver.count(fd) == 2)
     {
         std::cout << "serv already exists " << std::endl;
-        req = msg_rpl(servername, ERR_ALREADYREGISTERED, "");
+        req = msg_rpl(servername, ERR_ALREADYREGISTERED, NULL);
         send(fd, req.c_str(), strlen(req.c_str()), 0);
         return;
     }
@@ -118,13 +118,13 @@ void Server::createParams(Message *msg)
     _pm = new Params(vec.size() + 1, vec);
 }
 
-void Server::connectcmd(Message *msg, std::string & prefix) //TODO : check priv
+void Server::connectcmd(Message *msg, Client *cl) //TODO : check priv
 {
     std::vector<std::string> vec;
     int net_socket;
 
     if (msg->params.size() < 3)
-        send_reply("", prefix, ERR_NEEDMOREPARAMS);
+        send_reply("", cl, ERR_NEEDMOREPARAMS);
     else
     {
         createParams(msg);
@@ -134,7 +134,7 @@ void Server::connectcmd(Message *msg, std::string & prefix) //TODO : check priv
             msg.params.push_back(_pm->getHost());
             msg.params.push_back(ft_utoa(0));
             msg.params.push_back(ft_utoa(net_socket));
-            servercmd(&msg, prefix, net_socket);
+            servercmd(&msg, cl, net_socket);
 
         }
         delete _pm;
