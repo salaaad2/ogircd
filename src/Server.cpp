@@ -192,7 +192,6 @@ void Server::send_reply(std::string s, Client *cl, int code)
 		ccmd = ft_format_cmd(ft_utoa(code));
 	if (!cl->is_server)
 	{
-		prefix = BOLDWHITE;
 		prefix += "[" + ft_current_time();
 		prefix.erase(prefix.size() - 1, 1);
 		prefix += + "]:";
