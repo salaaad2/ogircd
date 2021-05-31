@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/30 14:14:02 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/31 17:07:20 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,8 @@ void Server::send_reply(std::string s, Client *cl, int code)
 		prefix += + "]:";
 	}
 
-	to_send = (prefix +  " " + ccmd + " " + msg_rpl(s, code, cl) + RESET + "\r\n");
+	to_send += (prefix +  " " + ccmd + " " + cl->nickname + " " + msg_rpl(s, code, cl) + "\r\n");
+	std::cout << "send to client : " << to_send;
 	send(cl->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
@@ -278,6 +279,8 @@ void Server::do_command(Message *msg, int fd)
 				 _m_pclients[_m_fdprefix[fd]]->is_register == true) {
 			if (msg->command == "JOIN")
 				joincmd(msg, cl);
+			else if (msg->command == "PART")
+				partcmd(msg, cl);
 			else if (msg->command == "NAMES")
 				namescmd(msg, cl);
 			else if (msg->command == "LIST")

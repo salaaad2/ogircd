@@ -1,6 +1,6 @@
 #include "../inc/Server.hpp"
 
-void Server::invitecmd(Message *msg, std::string prefix)
+void Server::invitecmd(Message *msg, Client *cl)
 {
     std::string nickname;
 
@@ -8,17 +8,17 @@ void Server::invitecmd(Message *msg, std::string prefix)
         nickname = msg->params[0];
     else
     {
-        send_reply(msg->params[0], prefix, ERR_NOSUCHNICK);
+        send_reply(msg->params[0], cl, ERR_NOSUCHNICK);
         return ;
     }
     if (msg->params.size() < 2)
     {
-        send_reply(msg->params[0], prefix, ERR_NEEDMOREPARAMS);
+        send_reply(msg->params[0], cl, ERR_NEEDMOREPARAMS);
         return ;
     }
-    else if (_m_uflags[msg->params[1]][_m_pclients[prefix]].find('o') == std::string::npos)
+    else if (_m_uflags[msg->params[1]][cl].find('o') == std::string::npos)
     {
-        send_reply("", prefix, ERR_CHANOPRIVSNEEDED);
+        send_reply("", cl, ERR_CHANOPRIVSNEEDED);
         return ;
     }
     if ((msg->params[1][0] == '#' || msg->params[1][0] == '&') && _m_chans.find(msg->params[1]) != _m_chans.end())
@@ -27,7 +27,7 @@ void Server::invitecmd(Message *msg, std::string prefix)
         {
             if ((*it)->nickname == nickname)
             {
-                send_reply("", prefix, ERR_USERONCHANNEL);
+                send_reply("", cl, ERR_USERONCHANNEL);
                 return ;
             }
         }

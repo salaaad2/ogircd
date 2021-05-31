@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/03 11:02:36 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/20 14:21:59 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/31 13:34:00 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ void rec_data(Server &serv, int i, Fds *fds)
         for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
             if ((*it)->command.size() > 0)
             {
-                // std::cout << "FD REC DATA : " << i << "\n";
                 serv.do_command(*it, i);
             }
         }

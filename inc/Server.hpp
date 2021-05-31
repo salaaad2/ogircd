@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/30 00:41:23 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/31 15:51:15 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,13 @@ class Server
 		std::map<int, Client*>                                  _m_fdserver;
 		Params                                                  *_pm;
 		time_t													_launch_time;
+
 		//client
 		std::map<int, std::string>                              _m_fdprefix; // _m_pclients[_m_fdprefix[fd]] = find client with fd
 		std::map<std::string, Client*>							_m_pclients; // _m_pclients[prefix] = find client with prefix
 		std::map<std::string, std::stack<Client*> >				_m_nickdb; // _m_nickdb[name] = last client with nickname "name"
 
+		
 
 		/*channels maps */
 
@@ -148,18 +150,23 @@ class Server
 		void new_channel(std::string chan, Client *cl);
 		void partcmd(Message *msg, Client *cl);
 		void namescmd(Message *msg, Client *cl);
+		bool isNickonchan(std::string nick, std::string chan);
 		void listcmd(Message *msg, Client *cl);
 		void modecmd(Message *msg, Client *cl);
 		void setChanMode(std::vector<std::string> params, Client *cl);
+		void chanMode(std::vector<std::string> params, Client *cl);
 		void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, Client *cl);
 		void treat_args(std::string chan, std::string cmd, Client *cl);
 		bool isinvited(std::string nickname, std::string chan);
 
-		void invitecmd(Message *msg, std::string prefix);
+		void invitecmd(Message *msg, Client *cl);
 
 		/*messages*/
 		void privmsgcmd(Message *msg, Client *cl);
 		void noticecmd(Message *msg, Client *cl);
 		void chan_msg(Message * msg, Client *cl);
+
+		std::vector<Client *>::iterator clposition(std::string nick, std::string chan);
+		std::vector<std::string>::iterator chposition(Client *cl, std::string chan);
 
 };
