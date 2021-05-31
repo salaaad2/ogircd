@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/31 13:43:41 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/31 17:07:20 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,7 +271,9 @@ void Server::do_command(Message *msg, int fd)
 	{
 		if (msg->command == "JOIN")
 			joincmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		if (msg->command == "INVITE")
+		else if (msg->command == "PART")
+			partcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
+		else if (msg->command == "INVITE")
 			invitecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
 		else if (msg->command == "NAMES")
 			namescmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);

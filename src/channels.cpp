@@ -89,8 +89,12 @@ void Server::partcmd(Message *msg, std::string prefix)
             send_reply("", prefix, ERR_USERNOTINCHANNEL);
         else
         {
+            std::string to_send = ":" + prefix + " PART " + (*it) + "\r\n";
+            send_to_channel(to_send, (*it));
             _m_chans[*it].erase(clposition(_m_pclients[prefix]->nickname, *it));
             _m_pclients[prefix]->chans.erase(chposition(prefix, *it));
+            if (_m_chans[*it].size() == 0)
+                _m_chans.erase(*it);
         }
     }
 }
