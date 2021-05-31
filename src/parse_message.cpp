@@ -90,7 +90,7 @@ parse_message(char buf[])
     size_t n = 0;
 
     n = count_commands(buf);
-    while (nc != n) {
+    while (nc < n) {
         if ((i = get_command(buf, nm, i)) == 0) {
             break;
         }

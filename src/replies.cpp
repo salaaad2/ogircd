@@ -1,7 +1,7 @@
 #include "../inc/replies.hpp"
 #include "../inc/Server.hpp"
 
-std::string Server::msg_rpl(std::string s, int code, std::string prefix)
+std::string Server::msg_rpl(std::string s, int code, Client *cl)
 {
     std::string response;
 
@@ -11,7 +11,7 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
 
         case RPL_WELCOME :
             return std::string("Welcome to the Internet Relay Network "
-                    + _m_pclients[prefix]->prefix);
+                    + cl->prefix);
         case RPL_TOPIC :
             return(s + ":" + _m_topics[s] + RESET);
         case RPL_NAMREPLY :
@@ -29,8 +29,8 @@ std::string Server::msg_rpl(std::string s, int code, std::string prefix)
             return response;
         }
         case RPL_INFO :
-            return (msg_rpl(s, RPL_VERSION, prefix)
-            + "\n" + msg_rpl(s, RPL_STATSUPTIME, prefix));
+            return (msg_rpl(s, RPL_VERSION, cl)
+            + "\n" + msg_rpl(s, RPL_STATSUPTIME, cl));
         case RPL_ENDOFINFO :
             return (":End of /INFO list");
         case RPL_ENDOFNAMES :

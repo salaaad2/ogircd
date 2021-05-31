@@ -97,7 +97,7 @@ int Server::connect_serv()
 	}
 	res = result;
 	if (res->ai_family == AF_INET ||
-			res->ai_family==AF_INET6)
+		res->ai_family==AF_INET6)
 		net_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 	else {
 		std::cerr << "Error: wrong hostname\n\n";
@@ -106,7 +106,6 @@ int Server::connect_serv()
 	server_address.sin_family = res->ai_family;
 	server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
 	server_address.sin_port = htons(_pm->getPortNetwork());
-	FD_SET(net_socket, &_fds->master);
 	if (net_socket != -1)
 	{
 
@@ -122,6 +121,8 @@ int Server::connect_serv()
 		std::cout << "Error: socket failed to open" << std::endl;
 		return (-1);
 	}
+	FD_SET(net_socket, &_fds->master);
+	FD_SET(net_socket, &_fds->read);
 	if (net_socket > _fds->fdmax)
 		_fds->fdmax = net_socket;
 	freeaddrinfo(res);
@@ -182,54 +183,59 @@ void Server::getIP()
 
 //==============================TREAT COMMANDS======================================
 
-void Server::send_reply(std::string s, std::string prefix, int code)
+void Server::send_reply(std::string s, Client *cl, int code)
 {
 	std::string ccmd;
 	std::string to_send;
-
+	std::string prefix;
 	if (code)
 		ccmd = ft_format_cmd(ft_utoa(code));
-	_prefix = BOLDWHITE;
-	_prefix += "[" + ft_current_time();
-	_prefix.erase(_prefix.size() - 1, 1);
-	_prefix += + "]:";
+	if (!cl->is_server)
+	{
+		prefix = BOLDWHITE;
+		prefix += "[" + ft_current_time();
+		prefix.erase(prefix.size() - 1, 1);
+		prefix += + "]:";
+	}
 
-	to_send += (_prefix +  " " + ccmd + " " + msg_rpl(s, code, prefix) + RESET + "\r\n");
-	send(_m_pclients[prefix]->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
+	to_send = (prefix +  " " + ccmd + " " + msg_rpl(s, code, cl) + RESET + "\r\n");
+	send(cl->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
-void Server::send_reply_broad(std::string prefix, std::vector<Client*> & cl, int code, Message *msg)
+void Server::send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code, Message *msg)
 {
 	std::string s;
 
-	for (size_t i = 0; i < cl.size(); i++)
+	for (size_t i = 0; i < v_cl.size(); i++)
 	{
-		if (cl[i]->clfd != _m_pclients[prefix]->clfd)
+		if (v_cl[i]->clfd != cl->clfd)
 		{
 			if (code != -1)
-				send_reply("", cl[i]->prefix, code);
+				send_reply("", v_cl[i], code);
 			else
 			{
 				for(size_t i = 0; i < msg->params.size(); i++)
 					s += msg->params[i];
-				send_reply(s, cl[i]->prefix, 0);
+				send_reply(s, v_cl[i], 0);
 			}
 		}
 	}
 }
 
-void Server::chan_msg(Message * msg, std::string prefix) {
-	std::string nick = _m_pclients[prefix]->nickname;
+void Server::chan_msg(Message * msg, Client *cl) {
+	std::string nick = cl->nickname;
 	std::string s;
 
-	s += ("<" + _m_nickdb[nick].top()->nickname + ">@["+ _m_pclients[prefix]->current_chan + "] : " += msg->command + " ");
+	s += ("<" + _m_nickdb[nick].top()->nickname + ">@["+ cl->current_chan + "] : " += msg->command + " ");
 	msg->params.insert(msg->params.begin(), s);
-	send_reply_broad(prefix, _m_chans[_m_pclients[prefix]->current_chan], -1, msg);
+	send_reply_broad(cl, _m_chans[cl->current_chan], -1, msg);
 }
 
 void Server::do_command(Message *msg, int fd)
 {
+	std::cout << "FD [" << fd << "] says " << msg->command << "\n";
 	std::string req;
+	Client *cl = _m_pclients[_m_fdprefix[fd]];
 
 	if (msg->command == "PASS") {
 		passcmd(msg, fd);
@@ -238,71 +244,70 @@ void Server::do_command(Message *msg, int fd)
 	{
 		if (_m_fdserver.count(fd) == 0 && _m_pclients[_m_fdprefix[fd]]->password != _peer_password)
 		{
-			req = msg_rpl("", ERR_PASSWDMISMATCH, "");
+			req = msg_rpl("", ERR_PASSWDMISMATCH, NULL);
 			send(fd, req.c_str(), strlen(req.c_str()), 0);
 		}
 		else if (_m_fdserver.count(fd) == 1)
 		{
-			req = msg_rpl("", ERR_ALREADYREGISTERED, "");
+			req = msg_rpl("", ERR_ALREADYREGISTERED, NULL);
 			send(fd, req.c_str(), strlen(req.c_str()), 0);
 		}
 		else
-			servercmd(msg, "", fd);
+			servercmd(msg, NULL, fd);
 	}
-	else if (msg->command == "NICK")
+	else if (cl->is_server == false)
 	{
-		if (_m_fdserver.count(fd) != 0)
-			nickcmd(msg, fd);
-		else if (_m_pclients[_m_fdprefix[fd]]->password != _password)
-			send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
-		else
-			nickcmd(msg, fd);
+		if (msg->command == "NICK")
+		{
+			if (_m_fdserver.count(fd) != 0)
+				nickcmd(msg, fd);
+			else if (_m_pclients[_m_fdprefix[fd]]->password != _password)
+				send_reply("", cl, ERR_PASSWDMISMATCH);
+			else
+				nickcmd(msg, fd);
+		}
+		else if (msg->command == "USER" ) {
+			if (_m_pclients[_m_fdprefix[fd]]->password != _password)
+				send_reply("", cl, ERR_PASSWDMISMATCH);
+			else if (_m_pclients[_m_fdprefix[fd]]->nickname[0] == 0)
+				send_reply("", cl, ERR_NONICKNAMEGIVEN);
+			else
+				usercmd(msg, fd);
+		}
+		else if (_m_pclients.count(_m_fdprefix[fd]) &&
+				 _m_pclients[_m_fdprefix[fd]]->is_register == true) {
+			if (msg->command == "JOIN")
+				joincmd(msg, cl);
+			else if (msg->command == "NAMES")
+				namescmd(msg, cl);
+			else if (msg->command == "LIST")
+				listcmd(msg, cl);
+			else if (msg->command == "MODE")
+				modecmd(msg, cl);
+			else if (msg->command == "PRIVMSG")
+				privmsgcmd(msg, cl);
+			else if (msg->command == "NOTICE")
+				noticecmd(msg, cl);
+			else if (msg->command == "QUIT")
+				quitcmd(msg, cl);
+			else if (msg->command == "VERSION")
+				versioncmd(msg, cl);
+			else if (msg->command == "STATS")
+				statscmd(msg, cl);
+			else if (msg->command == "TIME")
+				timecmd(msg, cl);
+			else if (msg->command == "INFO")
+				infocmd(msg, cl);
+			else if (msg->command == "WHO")
+				whocmd(msg, cl);
+			else if (msg->command == "CONNECT")
+				connectcmd(msg, cl);
+			else
+				send_reply(msg->command, cl, ERR_NOTOCHANNEL);
+		}
 	}
-	else if (msg->command == "USER" ) {
-		if (_m_pclients[_m_fdprefix[fd]]->password != _password)
-			send_reply("", _m_fdprefix[fd], ERR_PASSWDMISMATCH);
-		else if (_m_pclients[_m_fdprefix[fd]]->nickname[0] == 0)
-			send_reply("", _m_fdprefix[fd], ERR_NONICKNAMEGIVEN);
-		else
-			usercmd(msg, fd);
-	}
-	else if (_m_pclients.count(_m_fdprefix[fd]) && _m_pclients[_m_fdprefix[fd]]->is_register == true)
-	{
-		if (msg->command == "JOIN")
-			joincmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		if (msg->command == "INVITE")
-			invitecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "NAMES")
-			namescmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "LIST")
-			listcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "MODE")
-			modecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "PRIVMSG")
-			privmsgcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "NOTICE")
-			noticecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "QUIT")
-			quitcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "VERSION")
-			versioncmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "STATS")
-			statscmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "TIME")
-			timecmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "INFO")
-			infocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "WHO")
-			whocmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (msg->command == "CONNECT")
-			connectcmd(msg, _m_pclients[_m_fdprefix[fd]]->prefix);
-		else if (_m_pclients[_m_fdprefix[fd]]->current_chan.empty() == false)
-			chan_msg(msg, _m_pclients[_m_fdprefix[fd]]->prefix); // TODO: cadegage
-		else
-			send_reply(msg->command, _m_fdprefix[fd], ERR_NOTOCHANNEL);
-	}
-	else if (_m_fdserver.count(fd) == 0)
-		send_reply("", _m_fdprefix[fd], ERR_NOTREGISTERED);
+	else
+		send_reply("", cl, ERR_NOTREGISTERED);
 	delete msg;
 }
 

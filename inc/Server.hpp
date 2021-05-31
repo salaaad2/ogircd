@@ -48,14 +48,13 @@ class Server
 
 		//server
 		std::string                                             _servername;
-		struct sockaddr_in										_addr;
-		char													_ip[INET_ADDRSTRLEN];
-		std::string												_prefix;
-		std::string												_password;
+		struct sockaddr_in			                _addr;
+		char						        _ip[INET_ADDRSTRLEN];
+		std::string						_password;
 		std::string                                             _peer_password;
 		int                                                     _port;
-		Fds														*_fds;
-		std::map<int, network*>                                  _m_fdserver;
+		Fds							*_fds;
+		std::map<int, Client*>                                  _m_fdserver;
 		Params                                                  *_pm;
 		time_t													_launch_time;
 		//client
@@ -109,9 +108,9 @@ class Server
 		void do_registration(int fd);
 		void create_client_prefix(int fd);
 		void getIP();
-		void send_reply(std::string s, std::string prefix, int code);
-		void send_reply_broad(std::string prefix, std::vector<Client*> & cl, int code, Message *msg);
-		std::string msg_rpl(std::string s, int code, std::string prefix);
+		void send_reply(std::string s, Client *cl, int code);
+		void send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code, Message *msg);
+		std::string msg_rpl(std::string s, int code, Client *cl);
 
 		/* MESSAGE TREATMENT */
 
@@ -124,44 +123,43 @@ class Server
 		void send_to_channel(std::string send, std::string chan);
 
 		/*server*/
-		void quitcmd(Message *msg, std::string & prefix);
-		void versioncmd(Message *msg, std::string & prefix);
-		void statscmd(Message *msg, std::string & prefix);
-		//	void linkscmd(Message *msg, std::string prefix);
-		void timecmd(Message *msg, std::string & prefix);
-		void infocmd(Message *msg, std::string & prefix);
-		void whocmd(Message *msg, std::string & prefix);
+		void quitcmd(Message *msg, Client *cl);
+		void versioncmd(Message *msg, Client *cl);
+		void statscmd(Message *msg, Client *cl);
+		//	void linkscmd(Message *msg, Client *cl);
+		void timecmd(Message *msg, Client *cl);
+		void infocmd(Message *msg, Client *cl);
+		void whocmd(Message *msg, Client *cl);
 
 		/*server to server*/
-		void servercmd(Message *msg, std::string prefix, int fd);
-		void connectcmd(Message *msg, std::string & prefix);
+		void servercmd(Message *msg, Client *cl, int fd);
+		void connectcmd(Message *msg, Client *cl);
 		void broadcast_known_servers(int fd);
 		void broadcast_known_users(int fd);
 		void createParams(Message *msg);
 
 		/*channels*/
 
-		void joincmd(Message *msg, std::string prefix);
-		void join2(std::string chan, std::string key, std::string prefix);
+		void joincmd(Message *msg, Client *cl);
+		void join2(std::string chan, std::string key, Client *cl);
 		std::vector<std::string> parse_m_chans(std::string chan);
 		std::vector<std::string> parse_keys(std::string keys, std::vector<std::string> channels);
-		bool isbanned(std::string prefix, std::string chan);
+		bool isbanned(Client *cl, std::string chan);
+		void new_channel(std::string chan, Client *cl);
+		void partcmd(Message *msg, Client *cl);
+		void namescmd(Message *msg, Client *cl);
+		void listcmd(Message *msg, Client *cl);
+		void modecmd(Message *msg, Client *cl);
+		void setChanMode(std::vector<std::string> params, Client *cl);
+		void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, Client *cl);
+		void treat_args(std::string chan, std::string cmd, Client *cl);
 		bool isinvited(std::string nickname, std::string chan);
-		void new_channel(std::string chan, std::string & prefix);
-		void partcmd(Message *msg, std::string prefix);
-		void namescmd(Message *msg, std::string prefix);
-		void listcmd(Message *msg, std::string prefix);
-		void modecmd(Message *msg, std::string prefix);
-		void chanMode(std::vector<std::string> params, std::string prefix);
-		void setChanMode(std::vector<std::string> params, std::string prefix);
-		void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, std::string prefix);
-		void treat_args(std::string chan, std::string cmd, std::string prefix);
 
 		void invitecmd(Message *msg, std::string prefix);
 
 		/*messages*/
-		void privmsgcmd(Message *msg, std::string & prefix);
-		void noticecmd(Message *msg, std::string & prefix);
-		void chan_msg(Message * msg, std::string prefix);
+		void privmsgcmd(Message *msg, Client *cl);
+		void noticecmd(Message *msg, Client *cl);
+		void chan_msg(Message * msg, Client *cl);
 
 };

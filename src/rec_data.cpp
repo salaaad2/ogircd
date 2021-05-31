@@ -32,6 +32,7 @@ void rec_data(Server &serv, int i, Fds *fds)
     }
     else
     {
+        std::cout << "DATA RECEIVED : [" << buf << "]\n";
         vm = parse_message(buf);
         for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
             if ((*it)->command.size() > 0)
