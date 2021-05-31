@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/30 16:15:37 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/05/31 15:51:15 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,7 @@ class Server
 		std::vector<std::string> parse_keys(std::string keys, std::vector<std::string> channels);
 		bool isbanned(std::string prefix, std::string chan);
 		bool isinvited(std::string nickname, std::string chan);
+		bool isNickonchan(std::string nick, std::string chan);
 		void new_channel(std::string chan, std::string & prefix);
 		void partcmd(Message *msg, std::string prefix);
 		void namescmd(Message *msg, std::string prefix);
@@ -165,5 +166,8 @@ class Server
 		void privmsgcmd(Message *msg, std::string & prefix);
 		void noticecmd(Message *msg, std::string & prefix);
 		void chan_msg(Message * msg, std::string prefix);
+
+		std::vector<Client *>::iterator clposition(std::string nick, std::string chan);
+		std::vector<std::string>::iterator chposition(std::string prefix, std::string chan);
 
 };

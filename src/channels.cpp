@@ -1,5 +1,35 @@
 #include "../inc/Server.hpp"
 
+bool Server::isNickonchan(std::string nick, std::string chan)
+{
+    for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
+    {
+        if ((*it)->nickname == nick)
+            return true;
+    }
+    return false;
+}
+
+std::vector<Client *>::iterator Server::clposition(std::string nick, std::string chan)
+{
+    for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
+    {
+        if ((*it)->nickname == nick)
+            return it;
+    }
+    return _m_chans[chan].end();
+}
+
+std::vector<std::string>::iterator Server::chposition(std::string prefix, std::string chan)
+{
+    for (std::vector<std::string>::iterator it = _m_pclients[prefix]->chans.begin() ; it != _m_pclients[prefix]->chans.end() ; it++)
+    {
+        if ((*it) == chan)
+            return it;
+    }
+    return _m_pclients[prefix]->chans.end();
+}
+
 void Server::namescmd(Message *msg, std::string prefix)
 {
     if (msg->params.empty())
@@ -40,4 +70,27 @@ void Server::listcmd(Message *msg, std::string prefix)
         }
     }
     send_reply("", prefix, RPL_LISTEND);
+}
+
+void Server::partcmd(Message *msg, std::string prefix)
+{
+    if (msg->params.size() == 0)
+    {
+        send_reply("", prefix, ERR_NEEDMOREPARAMS);
+        return ;
+    }
+    std::vector<std::string> channels = parse_m_chans(msg->params[0]);
+
+    for (std::vector<std::string>::iterator it = channels.begin() ; it != channels.end() ; it++)
+    {
+        if (_m_chans.find(*it) == _m_chans.end())
+            send_reply("", prefix, ERR_NOSUCHCHANNEL);
+        else if (!isNickonchan(_m_pclients[prefix]->nickname, *it))
+            send_reply("", prefix, ERR_USERNOTINCHANNEL);
+        else
+        {
+            _m_chans[*it].erase(clposition(_m_pclients[prefix]->nickname, *it));
+            _m_pclients[prefix]->chans.erase(chposition(prefix, *it));
+        }
+    }
 }
