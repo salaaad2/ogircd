@@ -2,6 +2,7 @@
 
 void Server::send_to_channel(std::string to_send, std::string chan)
 {
+    std::cout << "send to channel : " << to_send;
     for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
             send((*it)->clfd, to_send.c_str(), to_send.length(), 0);
 }
@@ -12,7 +13,6 @@ void Server::modecmd(Message *msg, std::string prefix)
         send_reply("", prefix, ERR_NEEDMOREPARAMS);
     else if (msg->params[0][0] == '#' || msg->params[0][0] == '&')
         chanMode(msg->params, prefix);
-    std::cout << "flags after " << _m_flags[msg->params[0]] << "\r\n";
     // else
     //     userMode(msg->params, prefix);
 }
