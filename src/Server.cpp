@@ -106,7 +106,6 @@ int Server::connect_serv()
 	server_address.sin_family = res->ai_family;
 	server_address.sin_addr.s_addr = inet_addr(_pm->getHost().c_str());
 	server_address.sin_port = htons(_pm->getPortNetwork());
-	FD_SET(net_socket, &_fds->master);
 	if (net_socket != -1)
 	{
 
@@ -122,6 +121,8 @@ int Server::connect_serv()
 		std::cout << "Error: socket failed to open" << std::endl;
 		return (-1);
 	}
+	FD_SET(net_socket, &_fds->master);
+	FD_SET(net_socket, &_fds->read);
 	if (net_socket > _fds->fdmax)
 		_fds->fdmax = net_socket;
 	freeaddrinfo(res);
@@ -189,12 +190,15 @@ void Server::send_reply(std::string s, Client *cl, int code)
 	std::string prefix;
 	if (code)
 		ccmd = ft_format_cmd(ft_utoa(code));
-	prefix = BOLDWHITE;
-	prefix += "[" + ft_current_time();
-	prefix.erase(prefix.size() - 1, 1);
-	prefix += + "]:";
+	if (!cl->is_server)
+	{
+		prefix = BOLDWHITE;
+		prefix += "[" + ft_current_time();
+		prefix.erase(prefix.size() - 1, 1);
+		prefix += + "]:";
+	}
 
-	to_send += (prefix +  " " + ccmd + " " + msg_rpl(s, code, cl) + RESET + "\r\n");
+	to_send = (prefix +  " " + ccmd + " " + msg_rpl(s, code, cl) + RESET + "\r\n");
 	send(cl->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
@@ -229,6 +233,7 @@ void Server::chan_msg(Message * msg, Client *cl) {
 
 void Server::do_command(Message *msg, int fd)
 {
+	std::cout << "FD [" << fd << "] says " << msg->command << "\n";
 	std::string req;
 	Client *cl = _m_pclients[_m_fdprefix[fd]];
 
@@ -250,7 +255,7 @@ void Server::do_command(Message *msg, int fd)
 		else
 			servercmd(msg, NULL, fd);
 	}
-	else if (cl->is_server == false || cl->is_server == true)
+	else if (cl->is_server == false)
 	{
 		if (msg->command == "NICK")
 		{
@@ -302,10 +307,7 @@ void Server::do_command(Message *msg, int fd)
 		}
 	}
 	else
-	{
-		std::cout << "ON RENTRE ICI AVEC " << msg->command << " VOILA \n";
 		send_reply("", cl, ERR_NOTREGISTERED);
-	}
 	delete msg;
 }
 

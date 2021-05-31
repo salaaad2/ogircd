@@ -102,7 +102,7 @@ parse_message(char buf[])
         else
             i = get_params(buf, nm, i);
         vm.push_back(nm);
-        std::cout << "nm command : " << nm->command << "n : " << n << "nc : " << nc <<  "\n";
+        std::cout << "nm command : " << nm->command << "\n";
         nc++;
         if (nc != n)
             nm = new Message;

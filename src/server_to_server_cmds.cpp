@@ -78,7 +78,7 @@ void Server::servercmd(Message *msg, Client *cl, int fd) // <servername> <hopcou
         send(fd, req.c_str(), strlen(req.c_str()), 0);
         return;
     }
-    if (serv->is_server == true)
+    if (serv->is_server == true && serv->is_register == true)
     {
         std::cout << "serv already exists " << std::endl;
         req = msg_rpl(servername, ERR_ALREADYREGISTERED, NULL);
@@ -101,9 +101,9 @@ void Server::servercmd(Message *msg, Client *cl, int fd) // <servername> <hopcou
         send(fd, req.c_str(), req.size(), 0);
         req = "SERVER " + _servername + " 0 1\r\n";
         send(fd, req.c_str(), req.size(), 0);
-        // req = "INFO\r\n";
-        // send(fd, req.c_str(), req.size(), 0);
- //       broadcast_known_servers(fd);
+        req = "INFO\r\n";
+        send(fd, req.c_str(), req.size(), 0);
+        // broadcast_known_servers(fd);
         // broadcast_known_users(fd);
         // broadcast_known_channels(fd);
         // std::cout << "net->servername " << net->servername << "\n";
