@@ -34,6 +34,7 @@ void Server::timecmd(Message *msg, Client *cl) //TODO :parameter server
 void Server::infocmd(Message *msg, Client *cl) //TODO :parameter server
 {
     (void)msg;
+    std::cout << "CLFD : " << cl->clfd << "\n";
     send_reply("", cl, RPL_INFO);
     send_reply("", cl, RPL_ENDOFINFO);
 }

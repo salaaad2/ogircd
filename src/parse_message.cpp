@@ -95,14 +95,14 @@ parse_message(char buf[])
     size_t n = 0;
 
     n = count_commands(buf);
-    while (nc != n) {
+    while (nc < n) {
         if ((i = get_command(buf, nm, i)) == 0) {
             break;
         }
         else
             i = get_params(buf, nm, i);
         vm.push_back(nm);
-        std::cout << "nm command : " << nm->command << "\n";
+        std::cout << "nm command : " << nm->command << "n : " << n << "nc : " << nc <<  "\n";
         nc++;
         if (nc != n)
             nm = new Message;

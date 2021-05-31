@@ -21,9 +21,11 @@ struct Client
     bool                is_server;
     bool                is_register;
     bool                is_logged;
+    int                 hopcount;
+    std::string         token;
 
     Client(void) : chans(), current_chan(), clientaddr(new sockaddr), addrlen(sizeof(clientaddr)), clfd(), password(), nickname(), username(),
-                   realname(), host(), prefix(), is_server(false), is_register(false), is_logged(false) {}
+                   realname(), host(), prefix(), is_server(false), is_register(false), is_logged(false), hopcount(0), token(""){}
     ~Client(void){
         delete clientaddr;
     }
@@ -44,6 +46,8 @@ struct Client
         is_register = cl.is_register;
         is_logged = cl.is_logged;
         clfd = cl.clfd;
+        hopcount = cl.hopcount;
+        token = cl.token;
         return (*this);
     }
 

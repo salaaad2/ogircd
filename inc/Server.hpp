@@ -50,12 +50,11 @@ class Server
 		std::string                                             _servername;
 		struct sockaddr_in			                _addr;
 		char						        _ip[INET_ADDRSTRLEN];
-		std::string						_prefix;
 		std::string						_password;
 		std::string                                             _peer_password;
 		int                                                     _port;
 		Fds							*_fds;
-		std::map<int, network*>                                  _m_fdserver;
+		std::map<int, Client*>                                  _m_fdserver;
 		Params                                                  *_pm;
 		time_t                                              _launch_time;
 		//client

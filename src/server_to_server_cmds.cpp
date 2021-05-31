@@ -2,15 +2,15 @@
 
 void Server::broadcast_known_servers(int fd)
 {
-    typedef std::map<int, network*>::iterator iterator;
+    typedef std::map<int, Client*>::iterator iterator;
 
     std::string req;
 
     std::cout << "BROADCAST KNOWN SERVERS TO SOCKET " << fd << "\n";
     for (iterator it = _m_fdserver.begin(); it != _m_fdserver.end(); it++) {
-        if ((*it).second->token != fd)
+        if ((*it).second->token != ft_utoa(fd))
         {
-            req = "SERVER " + (*it).second->servername + " " + ft_utoa((*it).second->hopcount) + " " + ft_utoa((*it).second->token) + "\r\n";
+            req = "SERVER " + (*it).second->servername + " " + ft_utoa((*it).second->hopcount) + " " + (*it).second->token + "\r\n";
             send(fd, req.c_str(), strlen(req.c_str()), 0);
         }
     }
@@ -57,10 +57,9 @@ void Server::servercmd(Message *msg, Client *cl, int fd) // <servername> <hopcou
     std::string token;
     std::string req;
     Message tmp;
-    network *net;
     (void)cl;
 
-
+    Client *serv = _m_pclients[ft_utoa(fd)];
     if (msg->params.size() == 3) {
         std::cout << "size 3 " << std::endl;
         servername = msg->params[0];
@@ -79,7 +78,7 @@ void Server::servercmd(Message *msg, Client *cl, int fd) // <servername> <hopcou
         send(fd, req.c_str(), strlen(req.c_str()), 0);
         return;
     }
-    if (_m_fdserver.count(fd) == 2)
+    if (serv->is_server == true)
     {
         std::cout << "serv already exists " << std::endl;
         req = msg_rpl(servername, ERR_ALREADYREGISTERED, NULL);
@@ -87,20 +86,25 @@ void Server::servercmd(Message *msg, Client *cl, int fd) // <servername> <hopcou
         return;
     }
     else {
+        serv->clfd = fd;
+        serv->is_server = true;
+        serv->is_logged = true;
+        serv->is_register = true;
+        serv->prefix = servername;
+        serv->servername = servername;
+        serv->hopcount = atoi(hopcount.c_str());
+        serv->token = token;
+        _m_pclients[serv->prefix] = serv;
+        _m_fdprefix[fd] = serv->prefix;
         std::cout << "new server" << std::endl;
-        net = new network;
-        net->servername = servername;
-        net->hopcount = ft_atoi(hopcount.c_str()) + 1;
-        net->token = fd;
-        _m_fdserver[fd] = net;
         req = "PASS :" + _peer_password + "\r\n";
         send(fd, req.c_str(), req.size(), 0);
         req = "SERVER " + _servername + " 0 1\r\n";
         send(fd, req.c_str(), req.size(), 0);
-        broadcast_known_servers(fd);
+        // req = "INFO\r\n";
+        // send(fd, req.c_str(), req.size(), 0);
+ //       broadcast_known_servers(fd);
         // broadcast_known_users(fd);
-        req = "INFO\r\n";
-        send(fd, req.c_str(), req.size(), 0);
         // broadcast_known_channels(fd);
         // std::cout << "net->servername " << net->servername << "\n";
         // std::cout << "net->hopcount " << net->hopcount << "\n";
@@ -122,6 +126,7 @@ void Server::connectcmd(Message *msg, Client *cl) //TODO : check priv
 {
     std::vector<std::string> vec;
     int net_socket;
+    std::string req;
 
     if (msg->params.size() < 3)
         send_reply("", cl, ERR_NEEDMOREPARAMS);
@@ -134,9 +139,14 @@ void Server::connectcmd(Message *msg, Client *cl) //TODO : check priv
             msg.params.push_back(_pm->getHost());
             msg.params.push_back(ft_utoa(0));
             msg.params.push_back(ft_utoa(net_socket));
-            servercmd(&msg, cl, net_socket);
-
+            _m_pclients[ft_utoa(net_socket)] = new Client();
+            _m_fdprefix[net_socket] = ft_utoa(net_socket);
+            // servercmd(&msg, cl, net_socket);
+            req = "PASS :" + _peer_password + "\r\n";
+            send(net_socket, req.c_str(), req.size(), 0);
+            req = "SERVER " + _servername + " 0 1\r\n";
+            send(net_socket, req.c_str(), req.size(), 0);
         }
-        delete _pm;
     }
+    delete _pm;
 }

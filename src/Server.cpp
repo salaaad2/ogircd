@@ -186,15 +186,15 @@ void Server::send_reply(std::string s, Client *cl, int code)
 {
 	std::string ccmd;
 	std::string to_send;
-
+	std::string prefix;
 	if (code)
 		ccmd = ft_format_cmd(ft_utoa(code));
-	_prefix = BOLDWHITE;
-	_prefix += "[" + ft_current_time();
-	_prefix.erase(_prefix.size() - 1, 1);
-	_prefix += + "]:";
+	prefix = BOLDWHITE;
+	prefix += "[" + ft_current_time();
+	prefix.erase(prefix.size() - 1, 1);
+	prefix += + "]:";
 
-	to_send += (_prefix +  " " + ccmd + " " + msg_rpl(s, code, cl) + RESET + "\r\n");
+	to_send += (prefix +  " " + ccmd + " " + msg_rpl(s, code, cl) + RESET + "\r\n");
 	send(cl->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
@@ -250,8 +250,7 @@ void Server::do_command(Message *msg, int fd)
 		else
 			servercmd(msg, NULL, fd);
 	}
-
-	if (cl->is_server == false)
+	else if (cl->is_server == false || cl->is_server == true)
 	{
 		if (msg->command == "NICK")
 		{
@@ -270,12 +269,10 @@ void Server::do_command(Message *msg, int fd)
 			else
 				usercmd(msg, fd);
 		}
-
 		else if (_m_pclients.count(_m_fdprefix[fd]) &&
 				 _m_pclients[_m_fdprefix[fd]]->is_register == true) {
 			if (msg->command == "JOIN")
 				joincmd(msg, cl);
-
 			else if (msg->command == "NAMES")
 				namescmd(msg, cl);
 			else if (msg->command == "LIST")
@@ -283,7 +280,6 @@ void Server::do_command(Message *msg, int fd)
 			else if (msg->command == "MODE")
 				modecmd(msg, cl);
 			else if (msg->command == "PRIVMSG")
-
 				privmsgcmd(msg, cl);
 			else if (msg->command == "NOTICE")
 				noticecmd(msg, cl);
@@ -301,15 +297,15 @@ void Server::do_command(Message *msg, int fd)
 				whocmd(msg, cl);
 			else if (msg->command == "CONNECT")
 				connectcmd(msg, cl);
-			else if (_m_pclients[_m_fdprefix[fd]]->current_chan.empty() ==
-					 false)
-				chan_msg(msg, cl); // TODO: cadegage
 			else
 				send_reply(msg->command, cl, ERR_NOTOCHANNEL);
 		}
 	}
 	else
+	{
+		std::cout << "ON RENTRE ICI AVEC " << msg->command << " VOILA \n";
 		send_reply("", cl, ERR_NOTREGISTERED);
+	}
 	delete msg;
 }
 
