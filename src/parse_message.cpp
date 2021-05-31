@@ -43,42 +43,6 @@ get_command(char buf[], Message *nm, size_t i)
     return (i);
 }
 
-// int
-// get_params(char buf[], Message *nm, size_t i) {
-//     std::string tmp;
-//     std::string sep_char;
-//     while (buf[i] && buf[i] != '\r' && (buf[i] == ' '
-//             || buf[i] == ':'))
-//     {
-//         i++;
-//     }
-//     while (buf[i] && buf[i] != '\r')
-//     {
-//         if (buf[i] == ':' || buf[i] == ' ' || buf[i] == ',')
-//         {
-//             if (tmp != "")
-//             {
-//                 nm->params.push_back(tmp);
-//                 nm->len += tmp.length();
-//                 tmp.clear();
-//             }
-//             sep_char += buf[i];
-//             nm->params.push_back(sep_char);
-//             nm->len += sep_char.length();
-//             sep_char.clear();
-//         }
-//         else
-//             tmp += buf[i];
-//         i++;
-//     }
-//     if (tmp != "")
-//         nm->params.push_back(tmp);
-//     nm->len += tmp.length();
-//     if (buf[i] == '\r')
-//         return (i + 2);
-//     return  (i);
-// }
-
 int get_params(char buf[], Message *nm, size_t i)
 {
     while (buf[i] && buf[i] != '\r' && buf[i] == ' ')

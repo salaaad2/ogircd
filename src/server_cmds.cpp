@@ -41,10 +41,12 @@ void Server::infocmd(Message *msg, std::string & prefix) //TODO :parameter serve
 
 void Server::whocmd(Message *msg, std::string & prefix) //TODO :wildcard, server
 {
-    std::string s;
-    Client *cl;
     typedef std::map<std::string, Client*>::iterator _m_iterator;
     typedef std::vector<Client*>::iterator _v_iterator;
+
+    std::string s;
+    Client *cl;
+
     if (_m_chans.count(msg->params[0]) == 1)
     {
         for (_v_iterator it = _m_chans[msg->params[0]].begin(); it != _m_chans[msg->params[0]].end(); it++)

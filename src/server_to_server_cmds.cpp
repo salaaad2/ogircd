@@ -3,7 +3,9 @@
 void Server::broadcast_known_servers(int fd)
 {
     typedef std::map<int, network*>::iterator iterator;
+
     std::string req;
+
     std::cout << "BROADCAST KNOWN SERVERS TO SOCKET " << fd << "\n";
     for (iterator it = _m_fdserver.begin(); it != _m_fdserver.end(); it++) {
         if ((*it).second->token != fd)
@@ -17,7 +19,9 @@ void Server::broadcast_known_servers(int fd)
 void Server::broadcast_known_users(int fd)
 {
     typedef std::map<std::string, Client*>::iterator iterator;
+
     std::string req;
+
     std::cout << "BROADCAST KNOWN USERS TO SOCKET " << fd << "\n";
     for (iterator it = _m_pclients.begin(); it != _m_pclients.end(); it++) {
         req = "PASS :" + _password + "\r\n";
@@ -48,13 +52,14 @@ void Server::broadcast_known_users(int fd)
 
 void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername> <hopcount> <token> <info>
 {
-    (void)prefix;
     std::string servername;
     std::string hopcount;
     std::string token;
     std::string req;
     Message tmp;
     network *net;
+
+    (void)prefix;
 
     if (msg->params.size() == 3) {
         std::cout << "size 3 " << std::endl;
@@ -106,6 +111,7 @@ void Server::servercmd(Message *msg, std::string prefix, int fd) // <servername>
 void Server::createParams(Message *msg)
 {
     std::vector<std::string> vec;
+
     vec.push_back(msg->params[0] + ":" + msg->params[2] + ":" + _password);
     vec.push_back(ft_utoa(_port));
     vec.push_back(_password);
@@ -116,6 +122,7 @@ void Server::connectcmd(Message *msg, std::string & prefix) //TODO : check priv
 {
     std::vector<std::string> vec;
     int net_socket;
+
     if (msg->params.size() < 3)
         send_reply("", prefix, ERR_NEEDMOREPARAMS);
     else

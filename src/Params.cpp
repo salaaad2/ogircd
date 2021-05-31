@@ -5,6 +5,10 @@ Params::~Params() {}
 
 Params::Params(int ac, std::vector<std::string> av)
 {
+    size_t fst;
+    size_t scd;
+    size_t no;
+
     if (ac != 3 && ac != 4)
     {
         std::cout << "wrong parameters\n";
@@ -13,10 +17,9 @@ Params::Params(int ac, std::vector<std::string> av)
 
     if (ac == 4)
     {
-        size_t fst = av[0].find(':');
-        size_t scd = av[0].find(':', fst + 1);
-        size_t no = av[0].find(':', scd + 1);
-
+        fst = av[0].find(':');
+        scd = av[0].find(':', fst + 1);
+        no = av[0].find(':', scd + 1);
         if (fst == std::string::npos || scd == std::string::npos || no != std::string::npos)
             return ;
 

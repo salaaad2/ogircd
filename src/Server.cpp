@@ -25,7 +25,8 @@ Server::Server(Params *pm)
 	time(&_launch_time);
 	_pm = pm;
 	_peer_password = "PeerSecret";
-	// _servername = "42lyon.irc.fr";
+	_servername = "42lyon.irc.fr";
+
 	if (pm->isnew())
 		new_serv();
 	else
@@ -38,8 +39,12 @@ Server::Server(Params *pm)
 void Server::new_serv()
 {
 	int yes = 1;
+
 	getIP();
 	_fds = new Fds;
+	_addr.sin_family = AF_INET;
+	_addr.sin_addr.s_addr = INADDR_ANY;
+	_addr.sin_port = htons(_pm->getPort());
 	if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
 		std::cerr << SOCKET_ERROR << std::endl;
@@ -50,9 +55,6 @@ void Server::new_serv()
 		std::cout << SETSOCK_ERROR << std::endl;;
 		exit(1);
 	}
-	_addr.sin_family = AF_INET;
-	_addr.sin_addr.s_addr = INADDR_ANY;
-	_addr.sin_port = htons(_pm->getPort());
 	_port = _pm->getPort();
 	_password = _pm->getPwd();
 	ft_bzero(&(_addr.sin_zero), 8);

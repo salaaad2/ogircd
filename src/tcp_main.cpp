@@ -17,6 +17,7 @@
 int main_loop(Server &serv, Fds *fds)
 {
 	int newfd;
+
 	for (int i = 0 ; i <= fds->fdmax ; i++)
 	{
 		if(FD_ISSET(i, &fds->read))
@@ -41,6 +42,7 @@ int main_loop(Server &serv, Fds *fds)
 std::vector<std::string> getParams(size_t  ac, char **av)
 {
 	std::vector<std::string> vec;
+
 	for (size_t i = 1; i < ac; i++)
 		vec.push_back(std::string(av[i]));
 	return (vec);
@@ -53,9 +55,9 @@ int main(int ac, char *av[])
 		std::cout << "Insufficient parameters. \nUsage : ./ircserv [PORT] [PASS]" << std::endl;
 		return (1);
 	}
-	int newfd;
 	Params *pm = new Params(ac, getParams(ac, av));
 	Server serv(pm);
+	int newfd;
 	Fds *fds = serv.getFds();
 
 	FD_ZERO(&fds->master);
