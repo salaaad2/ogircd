@@ -29,7 +29,6 @@ SRCS_NAME		  += join_channel
 SRCS_NAME		  += channels
 SRCS_NAME		  += sending_messages_cmds
 SRCS_NAME		  += server_cmds
-SRCS_NAME		  += server_to_server_cmds
 SRCS_NAME		  += modes
 SRCS_NAME		  += other_cmds
 #------------------------------------------------------------------------------#

@@ -35,12 +35,6 @@
 #define SETSOCK_ERROR "Error: setting socket options"
 
 
-struct network
-{
-	std::string servername;
-	int hopcount;
-	int token;
-};
 
 class Server
 {
@@ -51,10 +45,8 @@ class Server
 		struct sockaddr_in			                _addr;
 		char						        _ip[INET_ADDRSTRLEN];
 		std::string						_password;
-		std::string                                             _peer_password;
 		int                                                     _port;
 		Fds							*_fds;
-		std::map<int, Client*>                                  _m_fdserver;
 		Params                                                  *_pm;
 		time_t													_launch_time;
 
@@ -94,7 +86,6 @@ class Server
 	public:
 
 		int							listener;
-		std::vector<sockaddr_in> 	*_network;
 
 		Server(Params *pm);
 		int     addclient(int listener);
@@ -106,7 +97,6 @@ class Server
 	private:
 
 		void new_serv();
-		int connect_serv();
 		void do_registration(int fd);
 		void create_client_prefix(int fd);
 		void getIP();
@@ -132,13 +122,6 @@ class Server
 		void timecmd(Message *msg, Client *cl);
 		void infocmd(Message *msg, Client *cl);
 		void whocmd(Message *msg, Client *cl);
-
-		/*server to server*/
-		void servercmd(Message *msg, Client *cl, int fd);
-		void connectcmd(Message *msg, Client *cl);
-		void broadcast_known_servers(int fd);
-		void broadcast_known_users(int fd);
-		void createParams(Message *msg);
 
 		/*channels*/
 
