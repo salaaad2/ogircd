@@ -90,7 +90,7 @@ void Server::partcmd(Message *msg, Client *cl)
         else
         {
             std::string to_send = ":" + cl->prefix + " PART " + (*it) + "\r\n";
-            send_to_channel(to_send, (*it));
+            send_to_channel(to_send, (*it), NULL);
             _m_chans[*it].erase(clposition(cl->nickname, *it));
             cl->chans.erase(chposition(cl, *it));
             if (_m_chans[*it].size() == 0)

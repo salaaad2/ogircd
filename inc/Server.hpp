@@ -112,7 +112,7 @@ class Server
 		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
-		void send_to_channel(std::string send, std::string chan);
+		void send_to_channel(std::string send, std::string chan, Client *cl);
 
 		/*server*/
 		void quitcmd(Message *msg, Client *cl);

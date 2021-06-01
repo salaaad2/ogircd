@@ -91,11 +91,8 @@ void Server::pingcmd(Message *msg, Client *cl)
     else
     {
         std::string to_send;
-        std::string prefix;
-        prefix = ":";
-        prefix += _ip;
 
-        to_send += (prefix + " " + cl->nickname + " PONG\r\n");
+        to_send += (":" + cl->prefix + " PONG " + _servername + " \r\n");
         send(cl->clfd, to_send.c_str(), to_send.length(), 0);
     }
 }

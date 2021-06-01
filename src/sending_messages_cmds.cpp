@@ -58,14 +58,14 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const & cmd)
     for (std::list<std::string>::iterator it = chans.begin(); it != chans.end(); it++)
     {
         cl->current_chan = *it;
-        send_to_channel(cl->prefix + cmd + *it + " " + text + "\r\n", *it);
+        send_to_channel(":" + cl->prefix + " " + cmd + " " + *it + " " + text + "\r\n", *it, cl);
     }
     cl->current_chan = curr_chan_tmp;
     std::vector<Client*> vec(nicknames.begin(), nicknames.end());
     std::string to_send;
     for (std::vector<Client *>::iterator it = vec.begin() ; it != vec.end() ; it++)
     {
-        to_send = cl->prefix + cmd + (*it)->nickname + " " + text + "\r\n";
+        to_send = ":" + cl->prefix + " " + cmd + " " + (*it)->nickname + " " + text + "\r\n";
         send((*it)->clfd, to_send.c_str(), to_send.length(), 0);
     }
 }

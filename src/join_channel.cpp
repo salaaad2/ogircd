@@ -76,7 +76,7 @@ void Server::join2(std::string chan, std::string key, Client *cl)
                 _m_uflags[chan][cl] = "";
         }
     }
-    send_to_channel(":" + cl->prefix + " JOIN :" + chan + "\r\n", chan);
+    send_to_channel(":" + cl->prefix + " JOIN :" + chan + "\r\n", chan, NULL);
     send_reply(chan, cl, RPL_TOPIC);
     send_reply(chan, cl, RPL_NAMREPLY);
     send_reply(chan, cl, RPL_ENDOFNAMES);
