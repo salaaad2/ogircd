@@ -13,7 +13,6 @@
 #include "../inc/Server.hpp"
 
 #include <netdb.h>
-#include <errno.h>
 
 void Server::setFds(Fds *fds) {_fds = fds;}
 
@@ -134,7 +133,7 @@ void Server::send_reply(std::string s, Client *cl, int code)
 
 	to_send += (prefix +  " " + ccmd + " " + cl->nickname + " " + msg_rpl(s, code, cl) + "\r\n");
 	std::cout << "send to client : " << to_send;
-	send(cl->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
+	send(cl->clfd, to_send.c_str(), to_send.length(), 0);
 }
 
 void Server::send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code, Message *msg)
@@ -155,15 +154,6 @@ void Server::send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code,
 			}
 		}
 	}
-}
-
-void Server::chan_msg(Message * msg, Client *cl) {
-	std::string nick = cl->nickname;
-	std::string s;
-
-	s += ("<" + _m_nickdb[nick].top()->nickname + ">@["+ cl->current_chan + "] : " += msg->command + " ");
-	msg->params.insert(msg->params.begin(), s);
-	send_reply_broad(cl, _m_chans[cl->current_chan], -1, msg);
 }
 
 void Server::do_command(Message *msg, int fd)
@@ -220,6 +210,8 @@ void Server::do_command(Message *msg, int fd)
 			infocmd(msg, cl);
 		else if (msg->command == "WHO")
 			whocmd(msg, cl);
+		else if (msg->command == "PING")
+			pingcmd(msg, cl);
 		else
 			send_reply(msg->command, cl, ERR_NOTOCHANNEL);
 	}

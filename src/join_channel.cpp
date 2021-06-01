@@ -94,7 +94,7 @@ void Server::join2(std::string chan, std::string key, Client *cl)
 void Server::new_channel(std::string chan, Client *cl)
 {
     _m_chans[chan].push_back(cl);
-   cl->chans.push_back(chan);
+    cl->chans.push_back(chan);
     _m_topics[chan] = "Welcome to the channel you chose";
     _m_flags[chan] = "";
     _m_uflags[chan][cl] = "o";

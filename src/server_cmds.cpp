@@ -1,5 +1,7 @@
 #include "../inc/Server.hpp"
 
+#include <netdb.h>
+
 void Server::quitcmd(Message *msg, Client *cl) // TODO: NOT WORKING SERVER_SELECT ERROR
 {
     (void)msg;
@@ -25,13 +27,13 @@ void Server::statscmd(Message *msg, Client *cl) // TODO :parameters: c - h - i -
 //void Server::linkscmd(Message *msg, std::string cl) TODO
 
 
-void Server::timecmd(Message *msg, Client *cl) //TODO :parameter server
+void Server::timecmd(Message *msg, Client *cl)
 {
     (void)msg;
     send_reply("", cl, RPL_TIME);
 }
 
-void Server::infocmd(Message *msg, Client *cl) //TODO :parameter server
+void Server::infocmd(Message *msg, Client *cl)
 {
     (void)msg;
     std::cout << "CLFD : " << cl->clfd << "\n";
@@ -40,7 +42,7 @@ void Server::infocmd(Message *msg, Client *cl) //TODO :parameter server
 }
 
 
-void Server::whocmd(Message *msg, Client *cl) //TODO :wildcard, server
+void Server::whocmd(Message *msg, Client *cl) //TODO :wildcard
 {
     typedef std::map<std::string, Client*>::iterator _m_iterator;
     typedef std::vector<Client*>::iterator _v_iterator;
@@ -50,7 +52,9 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :wildcard, server
 
     if (_m_chans.count(msg->params[0]) == 1)
     {
-        for (_v_iterator it = _m_chans[msg->params[0]].begin(); it != _m_chans[msg->params[0]].end(); it++)
+        for (_v_iterator it = _m_chans[msg->params[0]].begin();
+             it != _m_chans[msg->params[0]].end();
+             it++)
         {
             cl2 = *it;
             if (cl2->nickname == msg->params[0] || cl2->username == msg->params[0] || cl2->realname == msg->params[0]
@@ -74,5 +78,24 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :wildcard, server
         s.insert(0, "\n" + msg->params[0] + ":");
         send_reply(s, cl, RPL_WHOREPLY);
         send_reply(msg->params[0], cl,  RPL_ENDOFWHO);
+    }
+}
+
+void Server::pingcmd(Message *msg, Client *cl)
+{
+
+    if (msg->params[0].empty())
+    {
+        send_reply(msg->params[0], cl, ERR_NOSUCHSERVER);
+    }
+    else
+    {
+        std::string to_send;
+        std::string prefix;
+        prefix = ":";
+        prefix += _ip;
+
+        to_send += (prefix + " " + cl->nickname + " PONG\r\n");
+        send(cl->clfd, to_send.c_str(), to_send.length(), 0);
     }
 }

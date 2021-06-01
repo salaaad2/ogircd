@@ -6,31 +6,42 @@ void Server::passcmd(Message *msg, int fd)
     std::string s = ft_utoa(fd);
 
     if (_m_pclients[s]->is_register == true)
+    {
         send_reply("", _m_pclients[_m_fdprefix[fd]], ERR_ALREADYREGISTERED);
-    if (!msg->params[0][0])
+    }
+    else if (!msg->params[0][0])
+    {
         send_reply("", _m_pclients[_m_fdprefix[fd]], ERR_NEEDMOREPARAMS);
-    _m_pclients[s]->password =  msg->params[0];
+    }
+    else
+    {
+        _m_pclients[s]->password =  msg->params[0];
+    }
 }
 
 
 void Server::nickcmd(Message *msg, int fd)
 {
-    // check against other usernicks
-    // return :
-    // ERR_NICKCOLLISION ERR_NICKNAMEINUSE ERR_ERRONEUSNICKNAME ERR_NICKNAMEINUSE
     std::string s = ft_utoa(fd);
 
-    if (msg->params[0].size() > 9)
-        msg->params[0].resize(9);
-    if (_m_nickdb.count(msg->params[0]) == 1)
-    {
-        if (_m_nickdb[msg->params[0]].top()->is_logged == true)
-         {
-            send_reply(msg->params[0], _m_pclients[_m_fdprefix[fd]], ERR_NICKNAMEINUSE);
-            return;
-        }
+    if (msg->params[0].empty() == 1) {
+        send_reply(msg->params[0], _m_pclients[_m_fdprefix[fd]], ERR_NONICKNAMEGIVEN);
+        return ;
     }
-    _m_pclients[s]->nickname = msg->params[0];
+    else if (msg->params[0].size() > 9)
+    {
+        msg->params[0].resize(9);
+        send_reply(msg->params[0], _m_pclients[_m_fdprefix[fd]], ERR_ERRONEUSENICKNAME);
+    }
+    else if (_m_nickdb.count(msg->params[0]) == 1 &&
+             _m_nickdb[msg->params[0]].top()->is_logged == true)
+    {
+        send_reply(msg->params[0], _m_pclients[_m_fdprefix[fd]], ERR_NICKNAMEINUSE);
+    }
+    else
+    {
+        _m_pclients[s]->nickname = msg->params[0];
+    }
 }
 
 void Server::usercmd(Message *msg, int fd)
