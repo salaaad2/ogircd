@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/13 14:12:23 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/31 17:07:20 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/06/01 17:32:06 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,8 @@ void Server::do_command(Message *msg, int fd)
 			infocmd(msg, cl);
 		else if (msg->command == "WHO")
 			whocmd(msg, cl);
+		else if (msg->command == "TOPIC")
+			topiccmd(msg, cl);
 		else
 			send_reply(msg->command, cl, ERR_NOTOCHANNEL);
 	}

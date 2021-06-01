@@ -6,7 +6,7 @@
 /*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/31 15:51:15 by tbajrami         ###   ########lyon.fr   */
+/*   Updated: 2021/06/01 15:47:46 by tbajrami         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,8 @@ class Server
 		bool isinvited(std::string nickname, std::string chan);
 
 		void invitecmd(Message *msg, Client *cl);
+		void topiccmd(Message *msg, Client *cl);
+		void kickcmd(Message *msg, Client *cl);
 
 		/*messages*/
 		void privmsgcmd(Message *msg, Client *cl);
