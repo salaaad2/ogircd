@@ -14,7 +14,7 @@
 #include "../inc/Server.hpp"
 
 size_t
-count_commands(char buf[])
+count_commands(std::string buf)
 {
     std::string tmp(buf);
     size_t a;
@@ -31,7 +31,7 @@ count_commands(char buf[])
 }
 
 int
-get_command(char buf[], Message *nm, size_t i)
+get_command(std::string buf, Message *nm, size_t i)
 {
     //  std::cout << "buf : " << buf;
     // std::cout << "got command : " << nm->command << "\n";
@@ -43,7 +43,7 @@ get_command(char buf[], Message *nm, size_t i)
     return (i);
 }
 
-int get_params(char buf[], Message *nm, size_t i)
+int get_params(std::string buf, Message *nm, size_t i)
 {
     while (buf[i] && buf[i] != '\r' && buf[i] == ' ')
         i++;
@@ -81,7 +81,7 @@ int get_params(char buf[], Message *nm, size_t i)
 }
 
 std::vector<Message*>
-parse_message(char buf[])
+parse_message(std::string buf)
 {
     std::vector<Message*> vm;
     Message *nm = new Message;

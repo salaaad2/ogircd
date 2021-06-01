@@ -16,13 +16,12 @@
 
 void rec_data(Server &serv, int i, Fds *fds)
 {
-    std::vector<Message *> vm;
-    std::string tmp;
     char buf[512];
     int nbytes;
 
+    if (serv._m_fdreq[i]->empty())
+        serv._m_fdreq[i]->back() = NULL;
     ft_bzero(buf, 512);
-    std::cout << "REC DATA\n";
     if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
     {
         if(nbytes == 0)
@@ -32,19 +31,19 @@ void rec_data(Server &serv, int i, Fds *fds)
         close(i);
         FD_CLR(i, &fds->master);
     }
-    tmp = buf;
-    serv._m_fdreq[i] += tmp;
-    std::cout << "serv._m_fdreq[i] [" << serv._m_fdreq[i] << "]\n";
-    if (tmp.find("\r") != std::string::npos)
+    else
     {
-        std::cout << "DATA RECEIVED : [" << serv._m_fdreq[i] << "]\n";
-        vm = parse_message(serv._m_fdreq[i]);
-        for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
-            if ((*it)->command.size() > 0)
-            {
-                serv.do_command(*it, i);
+        std::cout << "DATA RECEIVED : [" << buf << "]\n";
+        parse_message(buf, serv._m_fdreq[i]);
+        if (serv._m_fdreq[i]->back()->complete == true)
+        {
+            for (std::vector<Message*>::iterator it = serv._m_fdreq[i].begin(); it != serv._m_fdreq[i].end(); ++it) {
+                if ((*it)->command.size() > 0)
+                {
+                    serv.do_command(*it, i);
+                }
             }
+            serv._m_fdreq[i]->clear();
         }
-        serv._m_fdreq[i].clear();
     }
 }
