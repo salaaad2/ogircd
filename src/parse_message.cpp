@@ -49,12 +49,12 @@ int get_params(std::string buf, Message *nm, size_t i)
         i++;
     while (buf[i] && buf[i] != '\r')
     {
-        if (buf[i] == ' ')
+        if (buf[i] == ' ' || buf[i] == ',')
             i++;
         else if (buf[i] != ':')
         {
             std::string param;
-            while (buf[i] && buf[i] != '\r' && buf[i] != ' ')
+            while (buf[i] && buf[i] != '\r' && buf[i] != ' ' && buf[i] != ',')
             {
                 param += buf[i];
                 i++;
@@ -66,7 +66,7 @@ int get_params(std::string buf, Message *nm, size_t i)
         {
             i++;
             std::string param;
-            while (buf[i] && buf[i] != '\r')
+            while (buf[i] && buf[i] != '\r' && buf[i] != ',')
             {
                 param += buf[i];
                 nm->len++;

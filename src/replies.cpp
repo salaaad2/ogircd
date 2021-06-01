@@ -48,9 +48,21 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
         case RPL_ENDOFSTATS :
             return (":End of /STATS report");
         case RPL_WHOREPLY :
-            return ("");
+            return (s);
         case RPL_ENDOFWHO :
             return (s + ":End of WHO list");
+        case RPL_WHOISUSER :
+            return (s);
+        case RPL_WHOISOPERATOR :
+            return (s + ": is an IRC operator");
+        case RPL_WHOISIDLE :
+            return (s);
+        case RPL_WHOISCHANNELS :
+            return (s);
+        case RPL_ENDOFWHOIS :
+            return (s + ":End of /WHOIS list");
+        case RPL_WHOISSERVER :
+            return (s);
         case RPL_LISTSTART :
             return (std::string() + "Channel :Users  Name");
         case RPL_LIST :
@@ -87,7 +99,7 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
         case ERR_USERSDONTMATCH :
             return std::string( s + ":Usernames don't match" );
         case ERR_NOSUCHNICK :
-            return std::string( s + ":There is no such user on server" );
+            return std::string( s + ":No such nick/channel" );
         case ERR_NOTEXTTOSEND :
             return std::string ( s + ":There is no text to send" );
         case ERR_NOTOCHANNEL :

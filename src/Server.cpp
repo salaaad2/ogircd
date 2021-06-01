@@ -210,6 +210,8 @@ void Server::do_command(Message *msg, int fd)
 			whocmd(msg, cl);
 		else if (msg->command == "PING")
 			pingcmd(msg, cl);
+		else if (msg->command == "WHOIS")
+			whoiscmd(msg, cl);
 		else
 			send_reply(msg->command, cl, ERR_NOTOCHANNEL);
 	}
