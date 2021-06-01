@@ -194,10 +194,8 @@ void Server::do_command(Message *msg, int fd)
 			listcmd(msg, cl);
 		else if (msg->command == "MODE")
 			modecmd(msg, cl);
-		else if (msg->command == "PRIVMSG")
-			privmsgcmd(msg, cl);
-		else if (msg->command == "NOTICE")
-			noticecmd(msg, cl);
+		else if (msg->command == "PRIVMSG" || msg->command == "NOTICE")
+			privmsgcmd(msg, cl, msg->command);
 		else if (msg->command == "QUIT")
 			quitcmd(msg, cl);
 		else if (msg->command == "VERSION")

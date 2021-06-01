@@ -147,8 +147,7 @@ class Server
 		void invitecmd(Message *msg, Client *cl);
 
 		/*messages*/
-		void privmsgcmd(Message *msg, Client *cl);
-		void noticecmd(Message *msg, Client *cl);
+		void privmsgcmd(Message *msg, Client *cl, std::string const & cmd);
 		void chan_msg(Message * msg, Client *cl);
 
 		std::vector<Client *>::iterator clposition(std::string nick, std::string chan);
