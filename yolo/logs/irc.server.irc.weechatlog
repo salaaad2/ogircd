@@ -1,0 +1,30 @@
+2021-06-01 18:33:44	--	irc: connecting to server localhost/6667...
+2021-06-01 18:33:44	--	irc: connected to localhost/6667 (127.0.0.1)
+2021-06-01 18:33:44	--	irc: nickname "paure" is already in use, trying nickname "paure1"
+2021-06-01 18:33:44	--	User must provide a nickname
+2021-06-01 18:33:54	--	irc: connecting to server localhost/6667...
+2021-06-01 18:33:54	--	irc: connected to localhost/6667 (127.0.0.1)
+2021-06-01 18:33:54	--	Welcome to the Internet Relay Network paure1!paure@127.0.0.1
+2021-06-01 18:33:54	--	Your host is 192.168.1.15 running ircserv
+2021-06-01 18:34:01	--	[paure1] paureH@ (paure@127.0.0.1) paure ()
+2021-06-01 18:34:01	--	[paure1] paureH@ (paure@127.0.0.1) paure ()
+2021-06-01 18:34:01	--	[paure1] paure:End of WHO list
+2021-06-01 18:34:07	--	[paure1] paureH@ (paure@127.0.0.1) paure ()
+2021-06-01 18:34:07	--	[paure1] paureH@ (paure@127.0.0.1) paure ()
+2021-06-01 18:34:07	--	[paure1] paure*:End of WHO list
+2021-06-01 18:34:30	--	[paure1] paureH@ (paure@127.0.0.1) paure ()
+2021-06-01 18:34:30	--	[paure1] paureH@ (paure@127.0.0.1) paure ()
+2021-06-01 18:34:30	--	[paure1] p*:End of WHO list
+2021-06-01 18:34:54	--	To join a channel, type : JOIN #PING
+2021-06-01 18:34:57	--	[paure1] paureH@ (paure@127.0.0.1) paure ()
+2021-06-01 18:34:57	--	[paure1] paureH@ (paure@127.0.0.1) paure ()
+2021-06-01 18:34:57	--	[paure1] paure:End of WHO list
+2021-06-01 18:35:08	=!=	irc: command "paure1!paure@127.0.0.1" not found:
+2021-06-01 18:35:08	=!=	paure1!paure@127.0.0.1 PRIVMSG #chan1 hey
+2021-06-01 18:35:10	--	You are not channel operator
+2021-06-01 18:35:14	=!=	irc: command "paure!paure@127.0.0.1" not found:
+2021-06-01 18:35:14	=!=	paure!paure@127.0.0.1 PRIVMSG #chan1 hey
+2021-06-01 18:37:07	=!=	irc: reading data on socket: error 4 (connection closed by peer)
+2021-06-01 18:37:07	--	irc: disconnecting from server...
+2021-06-01 18:37:07	--	irc: disconnected from server
+2021-06-01 18:37:07	--	irc: reconnecting to server in 10 seconds

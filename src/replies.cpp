@@ -48,7 +48,7 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
         case RPL_ENDOFSTATS :
             return (":End of /STATS report");
         case RPL_WHOREPLY :
-            return ("");
+            return (s);
         case RPL_ENDOFWHO :
             return (s + ":End of WHO list");
         case RPL_LISTSTART :
