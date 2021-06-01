@@ -190,15 +190,21 @@ void Server::send_reply(std::string s, Client *cl, int code)
 	std::string prefix;
 	if (code)
 		ccmd = ft_format_cmd(ft_utoa(code));
-	if (!cl->is_server)
-	{
-		prefix += "[" + ft_current_time();
-		prefix.erase(prefix.size() - 1, 1);
-		prefix += + "]:";
-	}
+	// if (!cl->is_server)
+	// {
+	// 	prefix += "[" + ft_current_time();
+	// 	prefix.erase(prefix.size() - 1, 1);
+	// 	prefix += + "]:";
+	// }
+
+	prefix = ":";
+	prefix += _ip;
 
 	to_send += (prefix +  " " + ccmd + " " + cl->nickname + " " + msg_rpl(s, code, cl) + "\r\n");
 	std::cout << "send to client : " << to_send;
+	// send(_m_pclients[prefix]->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
+	// to_send += (prefix +  " " + ccmd + " " + cl->nickname + " " + msg_rpl(s, code, cl) + "\r\n");
+	// std::cout << "send to client : " << to_send;
 	send(cl->clfd, to_send.c_str(), strlen(to_send.c_str()), 0);
 }
 
