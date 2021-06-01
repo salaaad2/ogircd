@@ -40,7 +40,7 @@ void Server::infocmd(Message *msg, Client *cl) //TODO :parameter server
 }
 
 
-void Server::whocmd(Message *msg, Client *cl) //TODO :o flag
+void Server::whocmd(Message *msg, Client *cl) //TODO :o flag @ flag for operator
 {
     typedef std::map<std::string, std::vector<Client*> >::iterator chan_it;
     typedef std::map<std::string, Client *>::iterator p_it;
@@ -56,7 +56,7 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :o flag
             {
                 for (std::vector<Client *>::iterator cl_it = (*it).second.begin(); cl_it != (*it).second.end(); cl_it++)
                 {
-                    req = cl->nickname + " " + (*it).first + " " + (*cl_it)->username + " " + (*cl_it)->host + " " + (*cl_it)->nickname + "H@ :" + (*cl_it)->realname;
+                    req = (*it).first + " " + (*cl_it)->username + " " + (*cl_it)->host + " " + (*cl_it)->nickname + " H@ :0 " + (*cl_it)->realname;
                     send_reply(req, cl, RPL_WHOREPLY);
                 }
             }
@@ -69,11 +69,46 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :o flag
                     || strmatch((*it).second->realname, msg->params[0])
                     || strmatch((*it).second->nickname, msg->params[0]))
                 {
-                    req = cl->nickname + " " + (*it).second->username + " " + (*it).second->host + " " + (*it).second->nickname + " " + (*it).second->realname + "H@ :" + (*it).second->realname;
+                    req = cl->nickname + " " + (*it).second->username + " " + (*it).second->host + " " + (*it).second->nickname + " H@ :0 " + (*it).second->realname;
                     send_reply(req, cl, RPL_WHOREPLY);
                 }
             }
         }
     }
-    send_reply(std::string(cl->nickname) + " " +msg->params[0], cl, RPL_ENDOFWHO);
+    send_reply(std::string(cl->nickname) + " " +msg->params[0] + " ", cl, RPL_ENDOFWHO);
+}
+
+void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RPL_WHOISOPERATOR
+{
+    typedef std::map<std::string, Client *>::iterator p_it;
+    std::string req;
+    if (msg->params.size() == 0)
+    {
+        send_reply("", cl, ERR_NONICKNAMEGIVEN);
+        return;
+    }
+    for (size_t i = 0; i < msg->params.size(); i++)
+    {
+        for (p_it it = _m_pclients.begin(); it != _m_pclients.end(); it++)
+        {
+            if ((*it).second->nickname == msg->params[i])
+            {
+                req = (*it).second->nickname + " " + (*it).second->username + " " + (*it).second->host + " * :" + (*it).second->realname;
+                send_reply(req, cl, RPL_WHOISUSER);
+                send_reply(std::string(cl->nickname) + " " +msg->params[i] + " ", cl, RPL_ENDOFWHOIS);
+            }
+            else if (_m_chans.count(msg->params[i]) == 1)
+            {
+                req = msg->params[i];
+                send_reply(req + " @ ", cl, RPL_WHOISCHANNELS);
+                send_reply(std::string(cl->nickname) + " " + msg->params[i] + " ", cl, RPL_ENDOFWHOIS);
+            }
+            else if (msg->params[i] != "," && msg->params[i] != " ")
+            {
+                send_reply(msg->params[i] + " ", cl, ERR_NOSUCHNICK);
+                send_reply(cl->nickname + " ", cl, RPL_ENDOFWHOIS);
+            }
+
+        }
+    }
 }

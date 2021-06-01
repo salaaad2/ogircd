@@ -220,6 +220,8 @@ void Server::do_command(Message *msg, int fd)
 			infocmd(msg, cl);
 		else if (msg->command == "WHO")
 			whocmd(msg, cl);
+		else if (msg->command == "WHOIS")
+			whoiscmd(msg, cl);
 		else
 			send_reply(msg->command, cl, ERR_NOTOCHANNEL);
 	}

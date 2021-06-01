@@ -122,6 +122,7 @@ class Server
 		void timecmd(Message *msg, Client *cl);
 		void infocmd(Message *msg, Client *cl);
 		void whocmd(Message *msg, Client *cl);
+		void whoiscmd(Message *msg, Client *cl);
 
 		/*channels*/
 
