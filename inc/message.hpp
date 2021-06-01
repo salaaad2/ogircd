@@ -14,6 +14,6 @@ struct Message
     Message() : command(), params() {}
 };
 
-std::vector<Message*> parse_message(char buf[]);
+std::vector<Message*> parse_message(std::string buf);
 
 #endif // __MESSAGE_H_

@@ -86,6 +86,7 @@ class Server
 	public:
 
 		int							listener;
+		std::map<int, std::string>                              _m_fdreq;
 
 		Server(Params *pm);
 		int     addclient(int listener);
