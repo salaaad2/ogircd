@@ -129,9 +129,8 @@ void Server::send_reply(std::string s, Client *cl, int code)
 	std::string prefix;
 	if (code)
 		ccmd = ft_format_cmd(ft_utoa(code));
-	prefix += "[" + ft_current_time();
-	prefix.erase(prefix.size() - 1, 1);
-	prefix += + "]:";
+	prefix = ":";
+	prefix += _ip;
 
 	to_send += (prefix +  " " + ccmd + " " + cl->nickname + " " + msg_rpl(s, code, cl) + "\r\n");
 	std::cout << "send to client : " << to_send;
