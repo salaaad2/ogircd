@@ -44,8 +44,12 @@ void Server::nickcmd(Message *msg, int fd)
     {
         if (_m_fdprefix[fd] != s)
         {
-            s = _m_fdprefix[fd] + " " + msg->command + " " + msg->params[0];
-            send(fd, s.c_str(), strlen(s.c_str()), 0);
+            s = _m_fdprefix[fd] + " NICK " + ":" + msg->params[0];
+            //s = _m_fdprefix[fd] + " " + msg->command + " " + msg->params[0];
+            for (std::vector<std::string>::iterator it = _m_pclients[_m_fdprefix[fd]]->chans.begin(); it != _m_pclients[_m_fdprefix[fd]]->chans.end(); it++)
+            {
+                send_to_channel(s, *it, _m_pclients[_m_fdprefix[fd]]);
+            }
             _m_nickdb[_m_pclients[_m_fdprefix[fd]]->nickname].top()->is_logged = false;
             _m_pclients[_m_fdprefix[fd]]->nickname = msg->params[0];
             create_client_prefix(fd);
