@@ -53,14 +53,15 @@ void Server::topiccmd(Message *msg, Client *cl)
         else if (msg->params.size() == 1)
         {
             if (_m_topics[chan].size() == 0)
-                send_reply("", cl, RPL_NOTOPIC);
+                send_reply(chan, cl, RPL_NOTOPIC);
             else
-                send_reply("", cl, RPL_TOPIC);
+                send_reply(chan, cl, RPL_TOPIC);
         }
         else
         {
+            std::cout << "CHAN : " << chan << "\n";
             _m_topics[chan] = msg->params[1];
-            send_to_channel(":" + cl->prefix + " TOPIC " + chan + " :" + msg->params[1] + "\r\n", chan);
+            send_to_channel(":" + cl->prefix + " TOPIC " + chan + " :" + msg->params[1] + "\r\n", chan, NULL);
         }
     }
 }
