@@ -34,3 +34,68 @@ void Server::invitecmd(Message *msg, Client *cl)
         _m_invite[msg->params[1]].push_back(nickname);
     }
 }
+
+void Server::topiccmd(Message *msg, Client *cl)
+{
+    if (msg->params.size() == 0)
+    {
+        send_reply("", cl, ERR_NEEDMOREPARAMS);
+        return ;
+    }
+    else
+    {
+        std::string chan = msg->params[0];
+
+        if (_m_chans.find(chan) == _m_chans.end())
+            send_reply("", cl, ERR_NOSUCHCHANNEL);
+        else if (!isNickonchan(cl->nickname, chan))
+            send_reply(chan, cl, ERR_NOTOCHANNEL);
+        else if (msg->params.size() == 1)
+        {
+            if (_m_topics[chan].size() == 0)
+                send_reply(chan, cl, RPL_NOTOPIC);
+            else
+                send_reply(chan, cl, RPL_TOPIC);
+        }
+        else
+        {
+            if (_m_uflags[chan][cl].find('o') == std::string::npos)
+            {
+                send_reply("", cl, ERR_CHANOPRIVSNEEDED);
+                return ;
+            }
+            _m_topics[chan] = msg->params[1];
+            send_to_channel(":" + cl->prefix + " TOPIC " + chan + " :" + msg->params[1] + "\r\n", chan, NULL);
+        }
+    }
+}
+
+void Server::kickcmd(Message *msg, Client *cl)
+{
+    if (msg->params.size() < 2)
+    {
+        send_reply("", cl, ERR_NEEDMOREPARAMS);
+        return ;
+    }
+
+    std::string chan = msg->params[0];
+    std::string user = msg->params[1];
+
+    if (_m_chans.find(chan) == _m_chans.end())
+        send_reply("", cl, ERR_NOSUCHCHANNEL);
+    else if (_m_uflags[chan][cl].find('o') == std::string::npos)
+        send_reply("", cl, ERR_CHANOPRIVSNEEDED);
+    else if (!isNickonchan(cl->nickname, chan))
+        send_reply(chan, cl, ERR_NOTOCHANNEL);
+    else
+    {
+        std::string comment;
+        if (msg->params.size() >= 3)
+            comment = msg->params[2];
+        else
+            comment = cl->nickname;
+        send_to_channel(":" + cl->prefix + " KICK " + chan + " " + user + " :" + comment + "\r\n", chan, NULL);
+        _m_chans[chan].erase(clposition(user, chan));
+        _m_nickdb[user].top()->chans.erase(chposition(_m_nickdb[user].top(), chan));
+    }
+}

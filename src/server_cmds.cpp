@@ -56,19 +56,22 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :o flag @ flag for operator
             {
                 for (std::vector<Client *>::iterator cl_it = (*it).second.begin(); cl_it != (*it).second.end(); cl_it++)
                 {
-                    req =  msg->params[0] + " " + (*cl_it)->username + " " + (*cl_it)->host + " " + (*cl_it)->nickname + " H *";
-                    if (_m_uflags[(*it).first][(*cl_it)].find("o") != std::string::npos)
+                    if (op == false || _m_uflags[(*it).first][(*cl_it)].find("o") != std::string::npos)
+                    {
+                      req = msg->params[0] + " " + (*cl_it)->username + " " +
+                            (*cl_it)->host + " " + _servername + " " + (*cl_it)->nickname + " H";
+                      if (_m_uflags[(*it).first][(*cl_it)].find("o") !=
+                          std::string::npos)
                         req += "@ :0 " + (*cl_it)->realname;
-                    else if (_m_uflags[(*it).first][(*cl_it)].find("v") != std::string::npos)
+                      else if (_m_uflags[(*it).first][(*cl_it)].find("v") !=
+                               std::string::npos)
                         req += "+ :0 " + (*cl_it)->realname;
-                    else
+                      else
                         req += " :0 " + (*cl_it)->realname;
-                    send_reply(req, cl, RPL_WHOREPLY);
+                      send_reply(req, cl, RPL_WHOREPLY);
+                    }
                 }
             }
-            // "<channel> <user> <host> <server> <nick>
-            //   ( "H" / "G" > ["*"] [ ( "@" / "+" ) ]
-            //   :<hopcount> <real name>"
         }
         if (req.empty())
         {
@@ -80,7 +83,7 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :o flag @ flag for operator
                 {
                     if ((*it).second->is_logged == true)
                         {
-                            req = "* " + msg->params[0] + " " + (*it).second->username + " " + (*it).second->host + " " + (*it).second->nickname + " H@ :0 " + (*it).second->realname;
+                            req = "* " + msg->params[0] + " " + (*it).second->username + " " + (*it).second->host + " " + (*it).second->nickname + " H :0 " + (*it).second->realname;
                             send_reply(req, cl, RPL_WHOREPLY);
                         }
                 }
@@ -94,6 +97,7 @@ void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RP
 {
     typedef std::map<std::string, Client *>::iterator p_it;
     std::string req;
+    bool find;
     if (msg->params.size() == 0)
     {
         send_reply("", cl, ERR_NONICKNAMEGIVEN);
@@ -101,28 +105,40 @@ void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RP
     }
     for (size_t i = 0; i < msg->params.size(); i++)
     {
+        find = false;
         for (p_it it = _m_pclients.begin(); it != _m_pclients.end(); it++)
         {
             if ((*it).second->nickname == msg->params[i] && (*it).second->is_logged == true)
             {
                 req = (*it).second->nickname + " " + (*it).second->username + " " + (*it).second->host + " * :" + (*it).second->realname;
                 send_reply(req, cl, RPL_WHOISUSER);
-                send_reply(std::string(cl->nickname) + " " +msg->params[i] + " ", cl, RPL_ENDOFWHOIS);
-                return;
+                find = true;
             }
             else if (_m_chans.count(msg->params[i]) == 1)
             {
-                req = msg->params[i];
-                send_reply(req + " @ ", cl, RPL_WHOISCHANNELS);
-                send_reply(std::string(cl->nickname) + " " + msg->params[i] + " ", cl, RPL_ENDOFWHOIS);
-                return;
+                for (std::vector<Client *>::iterator cl_it = _m_chans[msg->params[i]].begin(); cl_it != _m_chans[msg->params[i]].end(); cl_it++)
+                {
+                  req = (*cl_it)->nickname + " :";
+                  if (_m_uflags[msg->params[i]][(*cl_it)].find("o") !=
+                      std::string::npos)
+                    req += "@ :0 " + msg->params[i];
+                  else if (_m_uflags[msg->params[i]][(*cl_it)].find("v") !=
+                           std::string::npos)
+                    req += "+ :0 " + msg->params[i];
+                  else
+                    req += " :0 " + msg->params[i];
+                  send_reply(req, cl, RPL_WHOISCHANNELS);
+                }
+                find = true;
+                break;
             }
-            else if (msg->params[i] != "," && msg->params[i] != " ")
-            {
-                send_reply(msg->params[i] + " ", cl, ERR_NOSUCHNICK);
-            }
-
         }
+        if (msg->params[i] != "," && msg->params[i] != " " && find == false) {
+            send_reply(msg->params[i] + " ", cl, ERR_NOSUCHNICK);
+        }
+        if (find)
+            send_reply(std::string(cl->nickname) + " " + msg->params[i], cl,
+                       RPL_ENDOFWHOIS);
     }
 }
 

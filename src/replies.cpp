@@ -83,6 +83,8 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
             return (s);
         case RPL_ENDOFEXCEPTLIST :
             return (s + " :End of channel exception list");
+        case RPL_NOTOPIC :
+            return (s + " :No topic is set");
 
         /* ERRORS */
 
@@ -111,7 +113,7 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
         case ERR_NOTEXTTOSEND :
             return std::string ( s + ":There is no text to send" );
         case ERR_NOTOCHANNEL :
-            return std::string (":To join a channel, type : JOIN #" + s );
+            return std::string (s + ":You're not on that channel");
         case ERR_BADCHANMASK :
             return std::string (":Invalid JOIN parameter" + s);
         case ERR_UNKNOWNMODE :
