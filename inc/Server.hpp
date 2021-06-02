@@ -111,7 +111,7 @@ class Server
 		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
-		void send_to_channel(std::string send, std::string chan, Client *cl);
+		void send_to_channel(std::string send, std::string & chan, Client *cl);
 
 		/*server*/
 		void quitcmd(Message *msg, Client *cl);
@@ -128,21 +128,21 @@ class Server
 		/*channels*/
 
 		void joincmd(Message *msg, Client *cl);
-		void join2(std::string chan, std::string key, Client *cl);
-		std::vector<std::string> parse_m_chans(std::string chan);
-		std::vector<std::string> parse_keys(std::string keys, std::vector<std::string> channels);
-		bool isbanned(Client *cl, std::string chan);
+		void join2(std::string & chan, std::string & key, Client *cl);
+		std::vector<std::string> parse_m_chans(std::string & chan);
+		std::vector<std::string> parse_keys(std::string & keys, std::vector<std::string> & channels);
+		bool isbanned(Client *cl, std::string & chan);
 		void new_channel(std::string chan, Client *cl);
 		void partcmd(Message *msg, Client *cl);
 		void namescmd(Message *msg, Client *cl);
-		bool isNickonchan(std::string nick, std::string chan);
+		bool isNickonchan(std::string & nick, std::string & chan);
 		void listcmd(Message *msg, Client *cl);
 		void modecmd(Message *msg, Client *cl);
 		void setChanMode(std::vector<std::string> params, Client *cl);
 		void chanMode(std::vector<std::string> params, Client *cl);
 		void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, Client *cl);
 		void treat_args(std::string chan, std::string cmd, Client *cl);
-		bool isinvited(std::string nickname, std::string chan);
+		bool isinvited(std::string & nickname, std::string & chan);
 
 		void invitecmd(Message *msg, Client *cl);
 		void topiccmd(Message *msg, Client *cl);
@@ -152,7 +152,6 @@ class Server
 		void privmsgcmd(Message *msg, Client *cl, std::string const & cmd);
 		void chan_msg(Message * msg, Client *cl);
 
-		std::vector<Client *>::iterator clposition(std::string nick, std::string chan);
-		std::vector<std::string>::iterator chposition(Client *cl, std::string chan);
-
+		std::vector<Client *>::iterator clposition(std::string & nick, std::string & chan);
+		std::vector<std::string>::iterator chposition(Client *cl, std::string & chan);
 };

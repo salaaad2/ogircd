@@ -55,7 +55,9 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const & cmd)
     chans.sort();
     chans.unique();
     curr_chan_tmp = cl->current_chan;
-    for (std::list<std::string>::iterator it = chans.begin(); it != chans.end(); it++)
+    for (std::list<std::string>::iterator it = chans.begin();
+         it != chans.end();
+         it++)
     {
         cl->current_chan = *it;
         send_to_channel(":" + cl->prefix + " " + cmd + " " + *it + " " + text + "\r\n", *it, cl);

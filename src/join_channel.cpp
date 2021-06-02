@@ -28,7 +28,7 @@ void Server::joincmd(Message *msg, Client *cl)
 }
 
 
-void Server::join2(std::string chan, std::string key, Client *cl)
+void Server::join2(std::string & chan, std::string & key, Client *cl)
 {
     Message s;
 
@@ -100,7 +100,7 @@ void Server::new_channel(std::string chan, Client *cl)
     _m_uflags[chan][cl] = "o";
 }
 
-std::vector<std::string> Server::parse_m_chans(std::string chan)
+std::vector<std::string> Server::parse_m_chans(std::string & chan)
 {
     std::vector<std::string> channels;
     std::string c_chan;
@@ -121,7 +121,7 @@ std::vector<std::string> Server::parse_m_chans(std::string chan)
     return channels;
 }
 
-std::vector<std::string> Server::parse_keys(std::string key, std::vector<std::string> channels)
+std::vector<std::string> Server::parse_keys(std::string & key, std::vector<std::string> & channels)
 {
     std::vector<std::string> keys;
     std::string c_keys;
@@ -144,13 +144,17 @@ std::vector<std::string> Server::parse_keys(std::string key, std::vector<std::st
     return keys;
 }
 
-bool Server::isbanned(Client *cl, std::string chan)
+bool Server::isbanned(Client *cl, std::string & chan)
 {
-    for (std::vector<std::string>::iterator it = _m_banmask[chan].begin() ; it != _m_banmask[chan].end() ; it++)
+    for (std::vector<std::string>::iterator it = _m_banmask[chan].begin() ;
+         it != _m_banmask[chan].end() ;
+         it++)
     {
         if (strmatch(cl->prefix, *it))
         {
-            for (std::vector<std::string>::iterator it2 = _m_exceptmask[chan].begin() ; it2 != _m_exceptmask[chan].end() ; it2++)
+            for (std::vector<std::string>::iterator it2 = _m_exceptmask[chan].begin() ;
+                 it2 != _m_exceptmask[chan].end() ;
+                 it2++)
             {
                 if (strmatch(cl->prefix, *it2))
                     return false;
@@ -161,9 +165,11 @@ bool Server::isbanned(Client *cl, std::string chan)
     return false;
 }
 
-bool Server::isinvited(std::string nickname, std::string chan)
+bool Server::isinvited(std::string & nickname, std::string & chan)
 {
-    for (std::vector<std::string>::iterator it = _m_invite[chan].begin() ; it != _m_invite[chan].end() ; it++)
+    for (std::vector<std::string>::iterator it = _m_invite[chan].begin() ;
+         it != _m_invite[chan].end() ;
+         it++)
     {
         if (*it == nickname)
             return true;
