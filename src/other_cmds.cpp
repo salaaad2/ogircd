@@ -59,14 +59,37 @@ void Server::topiccmd(Message *msg, Client *cl)
         }
         else
         {
-            std::cout << "CHAN : " << chan << "\n";
+            if (_m_uflags[chan][cl].find('o') == std::string::npos)
+            {
+                send_reply("", cl, ERR_CHANOPRIVSNEEDED);
+                return ;
+            }
             _m_topics[chan] = msg->params[1];
             send_to_channel(":" + cl->prefix + " TOPIC " + chan + " :" + msg->params[1] + "\r\n", chan, NULL);
         }
     }
 }
 
-// void Server::kickcmd(Message *msg, Client *cl)
-// {
+void Server::kickcmd(Message *msg, Client *cl)
+{
+    if (msg->params.size() < 2)
+    {
+        send_reply("", cl, ERR_NEEDMOREPARAMS);
+        return ;
+    }
 
-// }
+    std::string chan = msg->params[0];
+    std::string user = msg->params[1];
+
+    if (_m_chans.find(chan) == _m_chans.end())
+        send_reply("", cl, ERR_NOSUCHCHANNEL);
+    else if (_m_uflags[chan][cl].find('o') == std::string::npos)
+        send_reply("", cl, ERR_CHANOPRIVSNEEDED);
+    else if (!isNickonchan(cl->nickname, chan))
+        send_reply(chan, cl, ERR_NOTOCHANNEL);
+    else
+    {
+        _m_chans[chan].erase(clposition(user, chan));
+        _m_pclients[cl->prefix]->chans.erase(chposition(cl, chan));
+    }
+}

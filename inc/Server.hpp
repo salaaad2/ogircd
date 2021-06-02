@@ -55,8 +55,6 @@ class Server
 		std::map<std::string, Client*>							_m_pclients; // _m_pclients[prefix] = find client with prefix
 		std::map<std::string, std::stack<Client*> >				_m_nickdb; // _m_nickdb[name] = last client with nickname "name"
 
-		
-
 		/*channels maps */
 
 		std::map<std::string, std::vector<Client*> > 			_m_chans; // _m_chans[#channel] = vector containing all clients on #channel

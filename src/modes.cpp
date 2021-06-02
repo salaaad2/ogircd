@@ -41,7 +41,7 @@ void Server::setChanMode(std::vector<std::string> params, Client *cl)
     std::string c_par;
     bool        ar = true;
 
-    std::string modes = "aimnqpsrt";
+    std::string modes = "imqpsrt";
     std::string pmodes = "OovklbeI";
 
     for (size_t j = 1 ; j < params.size() ; j++)
