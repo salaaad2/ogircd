@@ -238,18 +238,18 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
             {
                 if (cmd[0] == '+')
                 {
-                    if (_m_uflags[chan][cl].find('v') == std::string::npos)
+                    if (_m_uflags[chan][_m_pclients[(*it)->prefix]].find('v') == std::string::npos)
                     {
-                        _m_uflags[chan][cl].push_back('v');
+                        _m_uflags[chan][_m_pclients[(*it)->prefix]].push_back('v');
                         send_to_channel(":" + cl->prefix + " MODE " + chan + " +v " + arg + "\r\n", chan, NULL);
                     }
                     return ;
                 }
                 else if (cmd[0] == '-')
                 {
-                    if (_m_uflags[chan][cl].find('v') != std::string::npos)
+                    if (_m_uflags[chan][_m_pclients[(*it)->prefix]].find('v') != std::string::npos)
                     {
-                        _m_uflags[chan][cl].erase(_m_uflags[chan][cl].find('v'), 1);
+                        _m_uflags[chan][_m_pclients[(*it)->prefix]].erase(_m_uflags[chan][cl].find('v'), 1);
                         send_to_channel(":" + cl->prefix + " MODE " + chan + " -v " + arg + "\r\n", chan, NULL);
                     }
                     return ;
@@ -266,7 +266,6 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
             {
                 if (cmd[0] == '+')
                 {
-                    std::cout << _m_uflags[chan][_m_pclients[(*it)->prefix]] << "\n";
                     if (_m_uflags[chan][_m_pclients[(*it)->prefix]].find('o') == std::string::npos)
                     {
                         _m_uflags[chan][_m_pclients[(*it)->prefix]].push_back('o');

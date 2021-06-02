@@ -89,7 +89,13 @@ void Server::kickcmd(Message *msg, Client *cl)
         send_reply(chan, cl, ERR_NOTOCHANNEL);
     else
     {
+        std::string comment;
+        if (msg->params.size() >= 3)
+            comment = msg->params[2];
+        else
+            comment = cl->nickname;
+        send_to_channel(":" + cl->prefix + " KICK " + chan + " " + user + " :" + comment + "\r\n", chan, NULL);
         _m_chans[chan].erase(clposition(user, chan));
-        _m_pclients[cl->prefix]->chans.erase(chposition(cl, chan));
+        _m_nickdb[user].top()->chans.erase(chposition(_m_nickdb[user].top(), chan));
     }
 }

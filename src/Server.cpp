@@ -216,8 +216,8 @@ void Server::do_command(Message *msg, int fd)
 			whoiscmd(msg, cl);
 		else if (msg->command == "TOPIC")
 			topiccmd(msg, cl);
-		else
-			send_reply(msg->command, cl, ERR_NOTOCHANNEL);
+		else if (msg->command == "KICK")
+			kickcmd(msg, cl);
 	}
 	else
 		send_reply("", cl, ERR_NOTREGISTERED);
