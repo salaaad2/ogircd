@@ -32,7 +32,7 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
         }
         case RPL_INFO :
             return (msg_rpl(s, RPL_VERSION, cl)
-            + "\n" + msg_rpl(s, RPL_STATSUPTIME, cl));
+            + " " + msg_rpl(s, RPL_STATSUPTIME, cl));
         case RPL_ENDOFINFO :
             return (":End of /INFO list");
         case RPL_ENDOFNAMES :

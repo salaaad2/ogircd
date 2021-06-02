@@ -200,8 +200,6 @@ void Server::do_command(Message *msg, int fd)
 			quitcmd(msg, cl);
 		else if (msg->command == "VERSION")
 			versioncmd(msg, cl);
-		else if (msg->command == "STATS")
-			statscmd(msg, cl);
 		else if (msg->command == "TIME")
 			timecmd(msg, cl);
 		else if (msg->command == "INFO")

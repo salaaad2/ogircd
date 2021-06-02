@@ -116,8 +116,6 @@ class Server
 		/*server*/
 		void quitcmd(Message *msg, Client *cl);
 		void versioncmd(Message *msg, Client *cl);
-		void statscmd(Message *msg, Client *cl);
-		//	void linkscmd(Message *msg, Client *cl);
 		void timecmd(Message *msg, Client *cl);
 		void infocmd(Message *msg, Client *cl);
 		void whocmd(Message *msg, Client *cl);

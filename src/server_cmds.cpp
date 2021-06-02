@@ -1,6 +1,6 @@
 #include "../inc/Server.hpp"
 
-void Server::quitcmd(Message *msg, Client *cl) // TODO: NOT WORKING SERVER_SELECT ERROR
+void Server::quitcmd(Message *msg, Client *cl)
 {
     (void)msg;
     cl->is_logged = false;
@@ -8,40 +8,28 @@ void Server::quitcmd(Message *msg, Client *cl) // TODO: NOT WORKING SERVER_SELEC
     FD_CLR(cl->clfd, &_fds->master);
 }
 
-void Server::versioncmd(Message *msg, Client *cl) // TODO :parameter: server
+void Server::versioncmd(Message *msg, Client *cl)
 {
     (void)msg;
     send_reply("",  cl, RPL_VERSION);
 }
 
-void Server::statscmd(Message *msg, Client *cl) // TODO :parameters: c - h - i - k - l - m - o - y - server
-{
-    if (msg->params[0] == "u")
-    {
-        send_reply("",  cl, RPL_STATSUPTIME);
-        send_reply(msg->params[0],  cl, RPL_ENDOFSTATS);
-    }
-}
 
-//void Server::linkscmd(Message *msg, std::string cl) TODO
-
-
-void Server::timecmd(Message *msg, Client *cl) //TODO :parameter server
+void Server::timecmd(Message *msg, Client *cl)
 {
     (void)msg;
     send_reply("", cl, RPL_TIME);
 }
 
-void Server::infocmd(Message *msg, Client *cl) //TODO :parameter server
+void Server::infocmd(Message *msg, Client *cl)
 {
     (void)msg;
-    std::cout << "CLFD : " << cl->clfd << "\n";
     send_reply("", cl, RPL_INFO);
     send_reply("", cl, RPL_ENDOFINFO);
 }
 
 
-void Server::whocmd(Message *msg, Client *cl) //TODO :o flag @ flag for operator
+void Server::whocmd(Message *msg, Client *cl)
 {
     typedef std::map<std::string, std::vector<Client*> >::iterator chan_it;
     typedef std::map<std::string, Client *>::iterator p_it;
@@ -94,7 +82,7 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :o flag @ flag for operator
     send_reply(msg->params[0] + " ", cl, RPL_ENDOFWHO);
 }
 
-void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RPL_WHOISOPERATOR
+void Server::whoiscmd(Message *msg, Client *cl)
 {
     typedef std::map<std::string, Client *>::iterator p_it;
     std::string req;
@@ -113,25 +101,22 @@ void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RP
             {
                 req = (*it).second->nickname + " " + (*it).second->username + " " + (*it).second->host + " * :" + (*it).second->realname;
                 send_reply(req, cl, RPL_WHOISUSER);
-                find = true;
-            }
-            else if (_m_chans.count(msg->params[i]) == 1)
-            {
-                for (std::vector<Client *>::iterator cl_it = _m_chans[msg->params[i]].begin(); cl_it != _m_chans[msg->params[i]].end(); cl_it++)
+                req = (*it).second->nickname + " :";
+                for (std::vector<std::string>::iterator c_it = (*it).second->chans.begin(); c_it != (*it).second->chans.end(); c_it++)
                 {
-                  req = (*cl_it)->nickname + " :";
-                  if (_m_uflags[msg->params[i]][(*cl_it)].find("o") !=
+
+                  if (_m_uflags[(*c_it)][(*it).second].find("o") !=
                       std::string::npos)
-                    req += "@ :0 " + msg->params[i];
-                  else if (_m_uflags[msg->params[i]][(*cl_it)].find("v") !=
+                    req += " @" + *c_it;
+                  else if (_m_uflags[(*c_it)][(*it).second].find("v") !=
                            std::string::npos)
-                    req += "+ :0 " + msg->params[i];
+                    req += " +" + *c_it;
                   else
-                    req += " :0 " + msg->params[i];
-                  send_reply(req, cl, RPL_WHOISCHANNELS);
+                    req += " " + *c_it;
                 }
+                if (req != (*it).second->nickname + " :")
+                    send_reply(req, cl, RPL_WHOISCHANNELS);
                 find = true;
-                break;
             }
         }
         if (msg->params[i] != "," && msg->params[i] != " " && find == false) {
