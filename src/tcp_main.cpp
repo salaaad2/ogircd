@@ -26,8 +26,6 @@ int main_loop(Server &serv, Fds *fds)
 			{
 				if ((newfd = serv.addclient(serv.listener)) != -1)
 				{
-
-					// std::cout << "NEW FD :" << newfd << "\n";
 					if(newfd > fds->fdmax)
 						fds->fdmax = newfd;
 					return newfd;

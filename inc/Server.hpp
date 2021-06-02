@@ -106,6 +106,9 @@ class Server
 		/* MESSAGE TREATMENT */
 
 	public:
+
+		void delog(int fd);
+
 		/*registration*/
 		void do_command(Message *msg, int fd);
 		void passcmd(Message *msg, int fd);
@@ -132,6 +135,7 @@ class Server
 		std::vector<std::string> parse_m_chans(std::string chan);
 		std::vector<std::string> parse_keys(std::string keys, std::vector<std::string> channels);
 		bool isbanned(Client *cl, std::string chan);
+		bool isexcepted(Client *cl, std::string chan);
 		void new_channel(std::string chan, Client *cl);
 		void partcmd(Message *msg, Client *cl);
 		void namescmd(Message *msg, Client *cl);

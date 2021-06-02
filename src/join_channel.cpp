@@ -161,6 +161,16 @@ bool Server::isbanned(Client *cl, std::string chan)
     return false;
 }
 
+bool Server::isexcepted(Client *cl, std::string chan)
+{
+    for (std::vector<std::string>::iterator it = _m_exceptmask[chan].begin() ; it != _m_exceptmask[chan].end() ; it++)
+    {
+        if (strmatch(cl->prefix, *it))
+            return true;
+    }
+    return false;
+}
+
 bool Server::isinvited(std::string nickname, std::string chan)
 {
     for (std::vector<std::string>::iterator it = _m_invite[chan].begin() ; it != _m_invite[chan].end() ; it++)

@@ -28,6 +28,7 @@ void rec_data(Server &serv, int i, Fds *fds)
             std::cout << "socket " << i << " hung up\n";
         else
             std::cout << "recv() error\n";
+        serv.delog(i);
         close(i);
         FD_CLR(i, &fds->master);
     }
