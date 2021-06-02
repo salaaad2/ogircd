@@ -46,7 +46,7 @@ void Server::new_serv()
 	}
 	if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 	{
-		std::cout << SETSOCK_ERROR << std::endl;;
+		std::cerr << SETSOCK_ERROR << std::endl;;
 		exit(1);
 	}
 	_port = _pm->getPort();
@@ -76,17 +76,13 @@ int Server::addclient(int listener)
 	Client *nc = new Client();
 	std::string s;
 
-	std::cout << "ADDCLIENT\n";
 	if((nc->clfd = accept(listener, nc->clientaddr, &nc->addrlen)) == -1)
 	{
-		std::cout << "Server-accept() error\n";
+		std::cerr << "Server-accept() error\n";
 		return (-1);
 	}
 	else
-		std::cout << "Server-accept() is OK...\n";
-	std::cout << "New connection from " << inet_ntoa(((struct sockaddr_in*)nc->clientaddr)->sin_addr);
 	nc->host = inet_ntoa(((struct sockaddr_in*)nc->clientaddr)->sin_addr);
-	std::cout << " on socket " << nc->clfd << std::endl;
 	s = ft_utoa(nc->clfd);
 	_m_pclients[s] = nc;
 	_m_fdprefix[nc->clfd] = s;
@@ -109,10 +105,6 @@ void Server::getIP()
 	socklen_t namelen = sizeof(name);
 	err = getsockname(sock, (struct sockaddr*) &name, &namelen);
 	const char* p = inet_ntoa(name.sin_addr);
-	if(p != NULL)
-	{
-		std::cout << "Local ip is : " << p << "\n";
-	}
 	strcpy(_ip, p);
 }
 
@@ -132,7 +124,6 @@ void Server::send_reply(std::string s, Client *cl, int code)
 	prefix += _ip;
 
 	to_send += (prefix +  " " + ccmd + " " + cl->nickname + " " + msg_rpl(s, code, cl) + "\r\n");
-	std::cout << "send to client : " << to_send;
 	send(cl->clfd, to_send.c_str(), to_send.length(), 0);
 }
 
@@ -158,7 +149,6 @@ void Server::send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code,
 
 void Server::do_command(Message *msg, int fd)
 {
-	std::cout << "FD [" << fd << "] says " << msg->command << "\n";
 	std::string req;
 	Client *cl = _m_pclients[_m_fdprefix[fd]];
 

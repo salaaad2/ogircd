@@ -27,7 +27,6 @@ int main_loop(Server &serv, Fds *fds)
 				if ((newfd = serv.addclient(serv.listener)) != -1)
 				{
 
-					// std::cout << "NEW FD :" << newfd << "\n";
 					if(newfd > fds->fdmax)
 						fds->fdmax = newfd;
 					return newfd;
@@ -53,7 +52,7 @@ int main(int ac, char *av[])
 {
 	if (ac < 3)
 	{
-		std::cout << "Insufficient parameters. \nUsage : ./ircserv [PORT] [PASS]" << std::endl;
+		std::cerr << "Insufficient parameters. \nUsage : ./ircserv [PORT] [PASS]" << std::endl;
 		return (1);
 	}
 	Params *pm = new Params(ac, getParams(ac, av));
@@ -71,7 +70,7 @@ int main(int ac, char *av[])
 		fds->read = fds->master;
 		if(select(fds->fdmax + 1, &fds->read, NULL, NULL, NULL) == -1)
 		{
-			std::cout << "Server-select() error";
+			std::cerr << "Server-select() error";
 			exit(1);
 		}
 		if ((newfd = main_loop(serv, fds)) > 0)

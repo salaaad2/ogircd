@@ -2,7 +2,6 @@
 
 void Server::send_to_channel(std::string to_send, std::string & chan, Client *cl)
 {
-    std::cout << "send to channel : " << to_send;
     for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
     {
         if (cl == NULL)

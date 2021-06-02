@@ -24,10 +24,6 @@ void rec_data(Server &serv, int i, Fds *fds)
     ft_bzero(buf, 512);
     if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
     {
-        if(nbytes == 0)
-            std::cout << "socket " << i << " hung up\n";
-        else
-            std::cout << "recv() error\n";
         close(i);
         FD_CLR(i, &fds->master);
     }
