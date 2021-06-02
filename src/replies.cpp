@@ -61,6 +61,10 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
             return (s);
         case RPL_ENDOFWHOIS :
             return (s + ":End of /WHOIS list");
+        case RPL_WHOWASUSER :
+            return (s);
+        case RPL_ENDOFWHOWAS :
+            return (s + ":End of /WHOWAS list");
         case RPL_WHOISSERVER :
             return (s);
         case RPL_LISTSTART :
@@ -93,13 +97,17 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
         case ERR_PASSWDMISMATCH :
             return std::string(s + ":Password doesn't match the server's" );
         case ERR_NONICKNAMEGIVEN :
-            return std::string(s + ":Nickname too long." );
+            return std::string(s + ":No nickname given" );
+        case ERR_ERRONEUSNICKNAME :
+            return std::string(s + ":Erroneus nickname" );
         case ERR_NEEDMOREPARAMS :
             return std::string( s + ":Insufficient parameter count" );
         case ERR_USERSDONTMATCH :
             return std::string( s + ":Usernames don't match" );
         case ERR_NOSUCHNICK :
             return std::string( s + ":No such nick/channel" );
+        case ERR_WASNOSUCHNICK :
+            return std::string( s + ":There was no such nick" );
         case ERR_NOTEXTTOSEND :
             return std::string ( s + ":There is no text to send" );
         case ERR_NOTOCHANNEL :

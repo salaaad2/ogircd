@@ -1,7 +1,5 @@
 #include "../inc/Server.hpp"
 
-#include <netdb.h>
-
 void Server::quitcmd(Message *msg, Client *cl) // TODO: NOT WORKING SERVER_SELECT ERROR
 {
     (void)msg;
@@ -27,13 +25,13 @@ void Server::statscmd(Message *msg, Client *cl) // TODO :parameters: c - h - i -
 //void Server::linkscmd(Message *msg, std::string cl) TODO
 
 
-void Server::timecmd(Message *msg, Client *cl)
+void Server::timecmd(Message *msg, Client *cl) //TODO :parameter server
 {
     (void)msg;
     send_reply("", cl, RPL_TIME);
 }
 
-void Server::infocmd(Message *msg, Client *cl)
+void Server::infocmd(Message *msg, Client *cl) //TODO :parameter server
 {
     (void)msg;
     std::cout << "CLFD : " << cl->clfd << "\n";
@@ -71,7 +69,8 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :o flag @ flag for operator
                     || strmatch((*it).second->realname, msg->params[0])
                     || strmatch((*it).second->nickname, msg->params[0]))
                 {
-                    req = cl->nickname + " " + (*it).second->username + " " + (*it).second->host + " " + (*it).second->nickname + " H@ :0 " + (*it).second->realname;
+                    if ((*it).second->is_logged == true)
+                        req = cl->nickname + " " + (*it).second->username + " " + (*it).second->host + " " + (*it).second->nickname + " H@ :0 " + (*it).second->realname;
                     send_reply(req, cl, RPL_WHOREPLY);
                 }
             }
@@ -93,7 +92,7 @@ void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RP
     {
         for (p_it it = _m_pclients.begin(); it != _m_pclients.end(); it++)
         {
-            if ((*it).second->nickname == msg->params[i])
+            if ((*it).second->nickname == msg->params[i] && (*it).second->is_logged == true)
             {
                 req = (*it).second->nickname + " " + (*it).second->username + " " + (*it).second->host + " * :" + (*it).second->realname;
                 send_reply(req, cl, RPL_WHOISUSER);
@@ -113,6 +112,36 @@ void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RP
 
         }
     }
+}
+
+void Server::whowascmd(Message *msg, Client *cl)
+{
+    int count = -1;
+    std::string req;
+    std::stack<Client*> n_db;
+    if (!msg->params.size())
+    {
+        send_reply("", cl, ERR_NONICKNAMEGIVEN);
+        return;
+    }
+    if (msg->params.size() == 2)
+        req = atoi(msg->params[1].c_str());
+    if (_m_nickdb.count(msg->params[0]) == 0 || _m_nickdb[msg->params[0]].top()->is_logged == true)
+    {
+        send_reply(msg->params[0], cl, ERR_WASNOSUCHNICK);
+        return;
+    }
+    n_db = _m_nickdb[msg->params[0]];
+    for (int i = 0; i < count &&!n_db.empty(); i++)
+    {
+        req = n_db.top()->nickname + " " + n_db.top()->username + " " + n_db.top()->host + " * :" + n_db.top()->realname;
+        send_reply(req, cl, RPL_WHOWASUSER);
+        send_reply(msg->params[0], cl, RPL_ENDOFWHOWAS);
+        n_db.pop();
+    }
+
+
+
 }
 
 void Server::pingcmd(Message *msg, Client *cl)

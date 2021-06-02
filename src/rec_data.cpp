@@ -22,7 +22,6 @@ void rec_data(Server &serv, int i, Fds *fds)
     int nbytes;
 
     ft_bzero(buf, 512);
-    std::cout << "REC DATA\n";
     if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
     {
         if(nbytes == 0)
@@ -34,10 +33,8 @@ void rec_data(Server &serv, int i, Fds *fds)
     }
     tmp = buf;
     serv._m_fdreq[i] += tmp;
-    std::cout << "serv._m_fdreq[i] [" << serv._m_fdreq[i] << "]\n";
     if (tmp.find("\r") != std::string::npos)
     {
-        std::cout << "DATA RECEIVED : [" << serv._m_fdreq[i] << "]\n";
         vm = parse_message(serv._m_fdreq[i]);
         for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
             if ((*it)->command.size() > 0)

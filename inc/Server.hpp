@@ -125,6 +125,7 @@ class Server
 		void whocmd(Message *msg, Client *cl);
 		void pingcmd(Message *msg, Client *cl);
 		void whoiscmd(Message *msg, Client *cl);
+		void whowascmd(Message *msg, Client *cl);
 
 		/*channels*/
 

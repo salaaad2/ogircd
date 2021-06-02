@@ -208,6 +208,8 @@ void Server::do_command(Message *msg, int fd)
 			infocmd(msg, cl);
 		else if (msg->command == "WHO")
 			whocmd(msg, cl);
+		else if (msg->command == "WHOWAS")
+			whowascmd(msg, cl);
 		else if (msg->command == "PING")
 			pingcmd(msg, cl);
 		else if (msg->command == "WHOIS")
