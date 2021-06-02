@@ -95,7 +95,11 @@ void Server::new_channel(std::string chan, Client *cl)
 {
     _m_chans[chan].push_back(cl);
     cl->chans.push_back(chan);
+<<<<<<< HEAD
     _m_topics[chan] = "Welcome to the channel you chose";
+=======
+    _m_topics[chan] = "";
+>>>>>>> 527f8f1c9d4ac96e0f75e27bee258953962bffb0
     _m_flags[chan] = "";
     _m_uflags[chan][cl] = "o";
 }

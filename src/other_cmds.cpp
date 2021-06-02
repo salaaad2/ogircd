@@ -34,3 +34,38 @@ void Server::invitecmd(Message *msg, Client *cl)
         _m_invite[msg->params[1]].push_back(nickname);
     }
 }
+
+void Server::topiccmd(Message *msg, Client *cl)
+{
+    if (msg->params.size() == 0)
+    {
+        send_reply("", cl, ERR_NEEDMOREPARAMS);
+        return ;
+    }
+    else
+    {
+        std::string chan = msg->params[0];
+
+        if (_m_chans.find(chan) == _m_chans.end())
+            send_reply("", cl, ERR_NOSUCHCHANNEL);
+        else if (!isNickonchan(cl->nickname, chan))
+            send_reply(chan, cl, ERR_NOTOCHANNEL);
+        else if (msg->params.size() == 1)
+        {
+            if (_m_topics[chan].size() == 0)
+                send_reply("", cl, RPL_NOTOPIC);
+            else
+                send_reply("", cl, RPL_TOPIC);
+        }
+        else
+        {
+            _m_topics[chan] = msg->params[1];
+            send_to_channel(":" + cl->prefix + " TOPIC " + chan + " :" + msg->params[1] + "\r\n", chan);
+        }
+    }
+}
+
+// void Server::kickcmd(Message *msg, Client *cl)
+// {
+
+// }
