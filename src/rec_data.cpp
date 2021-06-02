@@ -1,17 +1,5 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   rec_data.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/05/03 11:02:36 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/05/31 13:34:00 by tbajrami         ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ftirc.hpp"
-#include "../inc/message.hpp"
+#include "../inc/Message.hpp"
 #include "../inc/Server.hpp"
 
 void rec_data(Server &serv, int i, Fds *fds)

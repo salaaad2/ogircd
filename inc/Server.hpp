@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tbajrami <tbajrami@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/29 13:30:58 by tbajrami          #+#    #+#             */
-/*   Updated: 2021/06/01 15:47:46 by tbajrami         ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
 #include <map>
@@ -22,8 +10,8 @@
 #include <unistd.h>
 #include <ctime>
 
-#include "message.hpp"
-#include "client.hpp"
+#include "Message.hpp"
+#include "Client.hpp"
 #include "fds.hpp"
 #include "Params.hpp"
 #include "replies.hpp"
