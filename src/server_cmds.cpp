@@ -56,10 +56,19 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :o flag @ flag for operator
             {
                 for (std::vector<Client *>::iterator cl_it = (*it).second.begin(); cl_it != (*it).second.end(); cl_it++)
                 {
-                    req = (*it).first + " " + (*cl_it)->username + " " + (*cl_it)->host + " " + (*cl_it)->nickname + " H@ :0 " + (*cl_it)->realname;
+                    req =  msg->params[0] + " " + (*cl_it)->username + " " + (*cl_it)->host + " " + (*cl_it)->nickname + " H *";
+                    if (_m_uflags[(*it).first][(*cl_it)].find("o") != std::string::npos)
+                        req += "@ :0 " + (*cl_it)->realname;
+                    else if (_m_uflags[(*it).first][(*cl_it)].find("v") != std::string::npos)
+                        req += "+ :0 " + (*cl_it)->realname;
+                    else
+                        req += " :0 " + (*cl_it)->realname;
                     send_reply(req, cl, RPL_WHOREPLY);
                 }
             }
+            // "<channel> <user> <host> <server> <nick>
+            //   ( "H" / "G" > ["*"] [ ( "@" / "+" ) ]
+            //   :<hopcount> <real name>"
         }
         if (req.empty())
         {
@@ -70,13 +79,15 @@ void Server::whocmd(Message *msg, Client *cl) //TODO :o flag @ flag for operator
                     || strmatch((*it).second->nickname, msg->params[0]))
                 {
                     if ((*it).second->is_logged == true)
-                        req = cl->nickname + " " + (*it).second->username + " " + (*it).second->host + " " + (*it).second->nickname + " H@ :0 " + (*it).second->realname;
-                    send_reply(req, cl, RPL_WHOREPLY);
+                        {
+                            req = "* " + msg->params[0] + " " + (*it).second->username + " " + (*it).second->host + " " + (*it).second->nickname + " H@ :0 " + (*it).second->realname;
+                            send_reply(req, cl, RPL_WHOREPLY);
+                        }
                 }
             }
         }
     }
-    send_reply(std::string(cl->nickname) + " " +msg->params[0] + " ", cl, RPL_ENDOFWHO);
+    send_reply(msg->params[0] + " ", cl, RPL_ENDOFWHO);
 }
 
 void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RPL_WHOISOPERATOR
@@ -97,17 +108,18 @@ void Server::whoiscmd(Message *msg, Client *cl) //TODO : @ flag for operator, RP
                 req = (*it).second->nickname + " " + (*it).second->username + " " + (*it).second->host + " * :" + (*it).second->realname;
                 send_reply(req, cl, RPL_WHOISUSER);
                 send_reply(std::string(cl->nickname) + " " +msg->params[i] + " ", cl, RPL_ENDOFWHOIS);
+                return;
             }
             else if (_m_chans.count(msg->params[i]) == 1)
             {
                 req = msg->params[i];
                 send_reply(req + " @ ", cl, RPL_WHOISCHANNELS);
                 send_reply(std::string(cl->nickname) + " " + msg->params[i] + " ", cl, RPL_ENDOFWHOIS);
+                return;
             }
             else if (msg->params[i] != "," && msg->params[i] != " ")
             {
                 send_reply(msg->params[i] + " ", cl, ERR_NOSUCHNICK);
-                send_reply(cl->nickname + " ", cl, RPL_ENDOFWHOIS);
             }
 
         }
@@ -129,14 +141,15 @@ void Server::whowascmd(Message *msg, Client *cl)
     if (_m_nickdb.count(msg->params[0]) == 0 || _m_nickdb[msg->params[0]].top()->is_logged == true)
     {
         send_reply(msg->params[0], cl, ERR_WASNOSUCHNICK);
+        send_reply(msg->params[0] + " ", cl, RPL_ENDOFWHOWAS);
         return;
     }
     n_db = _m_nickdb[msg->params[0]];
-    for (int i = 0; i < count &&!n_db.empty(); i++)
+    for (; count != 0 &&!n_db.empty(); count--)
     {
         req = n_db.top()->nickname + " " + n_db.top()->username + " " + n_db.top()->host + " * :" + n_db.top()->realname;
         send_reply(req, cl, RPL_WHOWASUSER);
-        send_reply(msg->params[0], cl, RPL_ENDOFWHOWAS);
+        send_reply(msg->params[0] + " ", cl, RPL_ENDOFWHOWAS);
         n_db.pop();
     }
 
