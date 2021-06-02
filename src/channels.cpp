@@ -1,6 +1,6 @@
 #include "../inc/Server.hpp"
 
-bool Server::isNickonchan(std::string nick, std::string chan)
+bool Server::isNickonchan(std::string & nick, std::string & chan)
 {
     for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
     {
@@ -10,7 +10,7 @@ bool Server::isNickonchan(std::string nick, std::string chan)
     return false;
 }
 
-std::vector<Client *>::iterator Server::clposition(std::string nick, std::string chan)
+std::vector<Client *>::iterator Server::clposition(std::string & nick, std::string & chan)
 {
     for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
     {
@@ -20,7 +20,7 @@ std::vector<Client *>::iterator Server::clposition(std::string nick, std::string
     return _m_chans[chan].end();
 }
 
-std::vector<std::string>::iterator Server::chposition(Client *cl, std::string chan)
+std::vector<std::string>::iterator Server::chposition(Client *cl, std::string & chan)
 {
     for (std::vector<std::string>::iterator it = cl->chans.begin() ; it != cl->chans.end() ; it++)
     {

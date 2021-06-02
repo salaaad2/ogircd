@@ -5,6 +5,7 @@ void Server::quitcmd(Message *msg, Client *cl) // TODO: NOT WORKING SERVER_SELEC
     (void)msg;
     cl->is_logged = false;
     close(cl->clfd);
+    FD_CLR(cl->clfd, &_fds->master);
 }
 
 void Server::versioncmd(Message *msg, Client *cl) // TODO :parameter: server
