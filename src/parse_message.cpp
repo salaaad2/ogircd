@@ -33,8 +33,6 @@ count_commands(std::string buf)
 int
 get_command(std::string buf, Message *nm, size_t i)
 {
-    //  std::cout << "buf : " << buf;
-    // std::cout << "got command : " << nm->command << "\n";
     while (buf[i] && buf[i] != ' ' && buf[i] != '\r') {
         nm->command += buf[i];
         i++;
@@ -97,20 +95,9 @@ parse_message(std::string buf)
         else
             i = get_params(buf, nm, i);
         vm.push_back(nm);
-        //std::cout << "nm command : " << nm->command << "\n";
         nc++;
         if (nc != n)
             nm = new Message;
     }
-    // std::cout << "count : " << n <<  "\n";
-    // std::cout << "command number : " << nc << "command : " << nm->command <<
-    // "first param : " << nm->params[0] << "\n";
-    // i = 0;
-    // std::cout << "CMD " << nm->command <<  "\n";
-    // while (i < nm->params.size()) {
-    //     std::cout << "[" << nm->params[i] << "] ";
-    //     i++;
-    // }
-    // std::cout << "\n";
     return vm;
 }

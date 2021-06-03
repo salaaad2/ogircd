@@ -12,6 +12,7 @@ struct Message
     size_t len;
 
     Message() : command(), params() {}
+    ~Message() {delete this;}
 };
 
 std::vector<Message*> parse_message(std::string buf);

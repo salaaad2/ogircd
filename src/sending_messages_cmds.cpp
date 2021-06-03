@@ -58,7 +58,7 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const & cmd)
     for (std::list<std::string>::iterator it = chans.begin(); it != chans.end(); it++)
     {
         cl->current_chan = *it;
-        if (isNickonchan(cl->nickname, *it) && (_m_flags[*it].find("m") == std::string::npos || _m_uflags[*it][cl].find("v") != std::string::npos || !isbanned(cl, *it)))
+        if ((isNickonchan(cl->nickname, *it) && (_m_flags[*it].find("m") == std::string::npos || _m_uflags[*it][cl].find("v") != std::string::npos)) && !isbanned(cl, *it))
             send_to_channel(":" + cl->prefix + " " + cmd + " " + *it + " " + text + "\r\n", *it, cl);
         else
             send_reply(*it, cl, ERR_CANNOTSENDTOCHAN);
