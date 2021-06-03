@@ -164,6 +164,8 @@ void Server::do_command(Message *msg, int fd)
 			 _m_pclients[_m_fdprefix[fd]]->is_register == true) {
 		if (msg->command == "JOIN")
 			joincmd(msg, cl);
+		else if (msg->command == "INVITE")
+			invitecmd(msg, cl);
 		else if (msg->command == "PART")
 			partcmd(msg, cl);
 		else if (msg->command == "NAMES")

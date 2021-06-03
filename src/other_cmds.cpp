@@ -32,6 +32,10 @@ void Server::invitecmd(Message *msg, Client *cl)
             }
         }
         _m_invite[msg->params[1]].push_back(nickname);
+        std::string to_send = ":" + cl->prefix + " INVITE " + nickname + " " + msg->params[1] + "\r\n";
+        send(_m_nickdb[nickname].top()->clfd, to_send.c_str(), to_send.length(), 0);
+        to_send = ":" + _m_nickdb[nickname].top()->prefix + " 341 " + cl->nickname + " " + nickname + " " + msg->params[1] + "\r\n";
+        send(cl->clfd, to_send.c_str(), to_send.length(), 0);
     }
 }
 
