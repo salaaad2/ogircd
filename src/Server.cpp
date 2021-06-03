@@ -200,7 +200,21 @@ void Server::do_command(Message *msg, int fd)
 	delete msg;
 }
 
+void Server::delog(int fd)
+{
+	Client *cl = _m_pclients[_m_fdprefix[fd]];
 
+	std::cout << "size : " << cl->chans.size();
+
+	for (std::vector<std::string>::iterator it = cl->chans.begin() ; it != cl->chans.end() ; it++)
+	{
+		send_to_channel(":" + cl->prefix + " QUIT :Client closed connection\r\n", *it, NULL);
+		_m_chans[*it].erase(clposition(cl->nickname, *it));
+	}
+	cl->chans.clear();
+	cl->is_logged = false;
+	_m_pclients.erase(cl->prefix);
+}
 
 
 //===============================================================================

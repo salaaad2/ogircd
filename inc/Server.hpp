@@ -28,17 +28,19 @@ class Server
 {
 	private:
 
-		//server
+		/* server */
+
 		std::string                                             _servername;
-		struct sockaddr_in			                _addr;
-		char						        _ip[INET_ADDRSTRLEN];
-		std::string						_password;
+		struct sockaddr_in										_addr;
+		char													_ip[INET_ADDRSTRLEN];
+		std::string												_password;
 		int                                                     _port;
-		Fds							*_fds;
+		Fds														*_fds;
 		Params                                                  *_pm;
 		time_t													_launch_time;
 
-		//client
+		/* client */
+
 		std::map<int, std::string>                              _m_fdprefix; // _m_pclients[_m_fdprefix[fd]] = find client with fd
 		std::map<std::string, Client*>							_m_pclients; // _m_pclients[prefix] = find client with prefix
 		std::map<std::string, std::stack<Client*> >				_m_nickdb; // _m_nickdb[name] = last client with nickname "name"
@@ -65,21 +67,23 @@ class Server
 		std::map<std::string, std::string>						_m_whoexcept; // _m_whoexcept[pattern] = name of those who ban except the pattern
 		std::map<std::string, uint64_t>							_m_exceptid; // _m_exceptid[pattern] = unique id of except
 
+		/* other */
+
 		std::map<std::string, std::string>						_m_chankey; // _m_chankey[#channel] = password of channel if set
 		std::map<std::string, std::map<Client*, std::string> >	_m_uflags; // _m_uflags[#channel][client] = flags set for user in given channel
 		std::map<std::string, size_t>							_m_limits; // _m_limits[#channel] = limit of users in channel (if 'l' mode set)
 
 	public:
 
-		int							listener;
-		std::map<int, std::string>                              _m_fdreq;
+		int														listener;
+		std::map<int, std::string>								_m_fdreq;
 
 		Server(Params *pm);
 		int     addclient(int listener);
-
 		void setFds(Fds *fds);
 		Fds *getFds() const;
-
+		void delog(int fd);
+		void do_command(Message *msg, int fd);
 
 	private:
 
@@ -90,12 +94,11 @@ class Server
 		void send_reply(std::string s, Client *cl, int code);
 		void send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code, Message *msg);
 		std::string msg_rpl(std::string s, int code, Client *cl);
+		
 
 		/* MESSAGE TREATMENT */
 
-	public:
 		/*registration*/
-		void do_command(Message *msg, int fd);
 		void passcmd(Message *msg, int fd);
 		void nickcmd(Message *msg, int fd);
 		void usercmd(Message *msg, int fd);
@@ -118,6 +121,7 @@ class Server
 		std::vector<std::string> parse_m_chans(std::string & chan);
 		std::vector<std::string> parse_keys(std::string & keys, std::vector<std::string> & channels);
 		bool isbanned(Client *cl, std::string & chan);
+		bool isexcepted(Client *cl, std::string chan);
 		void new_channel(std::string chan, Client *cl);
 		void partcmd(Message *msg, Client *cl);
 		void namescmd(Message *msg, Client *cl);

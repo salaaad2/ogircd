@@ -132,7 +132,8 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
             return std::string(s + ":Cannot join channel (+i) -- Invited users only");
         case ERR_NORECIPIENT :
             return std::string(s + ":No recipient given (PRIVMSG)");
-        case ERR_USERNOTINCHANNEL :
+        case ERR_CANNOTSENDTOCHAN :
+            return std::string(s + ":Cannot send to channel");
         default :
             return s;
     }

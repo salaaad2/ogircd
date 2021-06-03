@@ -184,6 +184,15 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
         _m_banmask[chan].push_back(ban);
         send_to_channel(":" + cl->prefix + " MODE " + chan + " +b " + ban + "\r\n", chan, NULL);
         _m_banid[ban] = reinterpret_cast<uint64_t>(&_m_banmask[chan].back());
+        for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
+        {
+            if (strmatch((*it)->prefix, ban) && !isexcepted(*it, chan))
+            {
+                _m_chans[chan].erase(clposition((*it)->nickname, chan));
+                _m_nickdb[(*it)->nickname].top()->chans.erase(chposition(_m_nickdb[(*it)->nickname].top(), chan));
+                return ;
+            }
+        }
     }
     else if (cmd[1] == 'b')
     {
