@@ -75,73 +75,78 @@ class Server
 
 	public:
 
+		Server(Params *pm);
+
 		int														listener;
 		std::map<int, std::string>								_m_fdreq;
 
-		Server(Params *pm);
-		int     addclient(int listener);
-		void setFds(Fds *fds);
-		Fds *getFds() const;
-		void delog(int fd);
-		void do_command(Message *msg, int fd);
+		int  													addclient(int listener);
+		void													setFds(Fds *fds);
+		Fds														*getFds() const;
+		void													delog(int fd);
+		void													do_command(Message *msg, int fd);
 
 	private:
 
-		void new_serv();
-		void do_registration(int fd);
-		void create_client_prefix(int fd);
-		void getIP();
-		void send_reply(std::string s, Client *cl, int code);
-		void send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code, Message *msg);
-		std::string msg_rpl(std::string s, int code, Client *cl);
+		void													new_serv();
+		void													do_registration(int fd);
+		void													create_client_prefix(int fd);
+		void													getIP();
+		void													send_reply(std::string s, Client *cl, int code);
+		void													send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code, Message *msg);
+		std::string												msg_rpl(std::string s, int code, Client *cl);
 		
 
 		/* MESSAGE TREATMENT */
 
-		/*registration*/
-		void passcmd(Message *msg, int fd);
-		void nickcmd(Message *msg, int fd);
-		void usercmd(Message *msg, int fd);
-		void send_to_channel(std::string send, std::string & chan, Client *cl);
+		/* registration */
 
-		/*server*/
-		void quitcmd(Message *msg, Client *cl);
-		void versioncmd(Message *msg, Client *cl);
-		void timecmd(Message *msg, Client *cl);
-		void infocmd(Message *msg, Client *cl);
-		void whocmd(Message *msg, Client *cl);
-		void pingcmd(Message *msg, Client *cl);
-		void whoiscmd(Message *msg, Client *cl);
-		void whowascmd(Message *msg, Client *cl);
+		void													passcmd(Message *msg, int fd);
+		void													nickcmd(Message *msg, int fd);
+		void													usercmd(Message *msg, int fd);
+		void													send_to_channel(std::string send, std::string & chan, Client *cl);
 
-		/*channels*/
+		/* server */
 
-		void joincmd(Message *msg, Client *cl);
-		void join2(std::string & chan, std::string & key, Client *cl);
-		std::vector<std::string> parse_m_chans(std::string & chan);
-		std::vector<std::string> parse_keys(std::string & keys, std::vector<std::string> & channels);
-		bool isbanned(Client *cl, std::string & chan);
-		bool isexcepted(Client *cl, std::string chan);
-		void new_channel(std::string chan, Client *cl);
-		void partcmd(Message *msg, Client *cl);
-		void namescmd(Message *msg, Client *cl);
-		bool isNickonchan(std::string & nick, std::string & chan);
-		void listcmd(Message *msg, Client *cl);
-		void modecmd(Message *msg, Client *cl);
-		void setChanMode(std::vector<std::string> params, Client *cl);
-		void chanMode(std::vector<std::string> params, Client *cl);
-		void treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, Client *cl);
-		void treat_args(std::string chan, std::string cmd, Client *cl);
-		bool isinvited(std::string & nickname, std::string & chan);
+		void													quitcmd(Message *msg, Client *cl);
+		void													versioncmd(Message *msg, Client *cl);
+		void													timecmd(Message *msg, Client *cl);
+		void													infocmd(Message *msg, Client *cl);
+		void													whocmd(Message *msg, Client *cl);
+		void													pingcmd(Message *msg, Client *cl);
+		void													whoiscmd(Message *msg, Client *cl);
+		void													whowascmd(Message *msg, Client *cl);
 
-		void invitecmd(Message *msg, Client *cl);
-		void topiccmd(Message *msg, Client *cl);
-		void kickcmd(Message *msg, Client *cl);
+		/* channels */
 
-		/*messages*/
-		void privmsgcmd(Message *msg, Client *cl, std::string const & cmd);
-		void chan_msg(Message * msg, Client *cl);
+		void													joincmd(Message *msg, Client *cl);
+		void													join2(std::string & chan, std::string & key, Client *cl);
+		std::vector<std::string>								parse_m_chans(std::string & chan);
+		std::vector<std::string>								parse_keys(std::string & keys, std::vector<std::string> & channels);
+		bool													isbanned(Client *cl, std::string & chan);
+		bool													isexcepted(Client *cl, std::string chan);
+		void													new_channel(std::string chan, Client *cl);
+		void													partcmd(Message *msg, Client *cl);
+		void													namescmd(Message *msg, Client *cl);
+		bool													isNickonchan(std::string & nick, std::string & chan);
+		void													listcmd(Message *msg, Client *cl);
+		void													modecmd(Message *msg, Client *cl);
+		void													setChanMode(std::vector<std::string> params, Client *cl);
+		void													chanMode(std::vector<std::string> params, Client *cl);
+		void													treat_modes(std::vector<std::string> params, std::vector<std::string> cmds, Client *cl);
+		void													treat_args(std::string chan, std::string cmd, Client *cl);
+		bool													isinvited(std::string & nickname, std::string & chan);
+		void													invitecmd(Message *msg, Client *cl);
+		void													topiccmd(Message *msg, Client *cl);
+		void													kickcmd(Message *msg, Client *cl);
 
-		std::vector<Client *>::iterator clposition(std::string & nick, std::string & chan);
-		std::vector<std::string>::iterator chposition(Client *cl, std::string & chan);
+		/* messages */
+
+		void													privmsgcmd(Message *msg, Client *cl, std::string const & cmd);
+		void													chan_msg(Message * msg, Client *cl);
+
+		/* utils */
+
+		std::vector<Client *>::iterator							clposition(std::string & nick, std::string & chan);
+		std::vector<std::string>::iterator						chposition(Client *cl, std::string & chan);
 };
