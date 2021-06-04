@@ -66,7 +66,7 @@ ${OBJS_DIR}:
 $(NAME): ${OBJS}
 	${CC} ${CFLAGS} ${CDEFS} -o ${NAME} ${OBJS} ${LDFLAGS}
 #------------------------------------------------------------------------------#
-all: ${OBJS_DIR} ${NAME} ctest
+all: ${OBJS_DIR} ${NAME}
 #------------------------------------------------------------------------------#
 asan: CFLAGS += -g3
 asan: CFLAGS += -fsanitize=address
