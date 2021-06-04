@@ -154,3 +154,4 @@ compile_flags.txt
 TAGS
 *.supp
 ctest
+.vscode
