@@ -35,6 +35,7 @@ class Server
 		char													_ip[INET_ADDRSTRLEN];
 		std::string												_password;
 		int                                                     _port;
+		int                                                     _status;
 		Fds														*_fds;
 		Params                                                  *_pm;
 		time_t													_launch_time;
@@ -76,6 +77,7 @@ class Server
 	public:
 
 		Server(Params *pm);
+		~Server();
 
 		int														listener;
 		std::map<int, std::string>								_m_fdreq;
@@ -83,6 +85,7 @@ class Server
 		int  													addclient(int listener);
 		void													setFds(Fds *fds);
 		Fds														*getFds() const;
+		int														getStatus() const;
 		void													delog(int fd);
 		void													do_command(Message *msg, int fd);
 
@@ -108,6 +111,7 @@ class Server
 
 		/* server */
 
+		void													shutdcmd(Message *msg, Client *cl);
 		void													quitcmd(Message *msg, Client *cl);
 		void													versioncmd(Message *msg, Client *cl);
 		void													timecmd(Message *msg, Client *cl);

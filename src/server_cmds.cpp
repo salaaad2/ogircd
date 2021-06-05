@@ -8,6 +8,23 @@ void Server::quitcmd(Message *msg, Client *cl)
     FD_CLR(cl->clfd, &_fds->master);
 }
 
+void Server::shutdcmd(Message *msg, Client *cl)
+{
+    (void)msg;
+    if (!cl->is_logged || !cl->is_register) {
+        std::cerr << "Shutdown command must be used by a registered user\n";
+    }
+    else if (msg->params.empty() ||
+             msg->params[0] != _password) {
+        std::cerr << "Shutdown: Wrong password\n";
+    }
+    else {
+        std::cerr << "Shutting down server...\n";
+        _status = 0;
+    }
+    return ;
+}
+
 void Server::versioncmd(Message *msg, Client *cl)
 {
     (void)msg;
