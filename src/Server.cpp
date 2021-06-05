@@ -8,16 +8,6 @@ Fds *Server::getFds() const { return (_fds);}
 
 int Server::getStatus() const { return (_status);}
 
-Server::~Server() {
-	delete _fds;
-
-	std::map<std::string, Client*>::iterator mit;
-	for (mit=_m_pclients.begin(); mit!=_m_pclients.end(); ++mit) {
-		delete (*mit).second;
-	}
-}
-
-
 Server::Server(Params *pm)
 {
 	time(&_launch_time);
@@ -26,6 +16,15 @@ Server::Server(Params *pm)
 	new_serv();
 	_servername = _ip;
 	_status = 1;
+}
+
+Server::~Server() {
+	delete _fds;
+
+	std::map<std::string, Client*>::iterator mit;
+	for (mit=_m_pclients.begin(); mit!=_m_pclients.end(); ++mit) {
+		delete (*mit).second;
+	}
 }
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================

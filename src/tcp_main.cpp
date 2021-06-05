@@ -4,7 +4,7 @@
 
 int main_loop(Server &serv, Fds *fds)
 {
-	int newfd;
+	int newfd = 0;
 
 	for (int i = 0 ; i <= fds->fdmax ; i++)
 	{
@@ -66,7 +66,7 @@ int main(int ac, char *av[])
 		}
 		fds = serv.getFds();
 		fds->read = fds->master;
-		if(select(fds->fdmax + 1, &fds->read, NULL, NULL, NULL) == -1)
+		if (select(fds->fdmax + 1, &fds->read, NULL, NULL, NULL) == -1)
 		{
 			std::cerr << "Server-select() error";
 			exit(1);

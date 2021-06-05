@@ -1,5 +1,7 @@
 #include "../inc/Params.hpp"
 
+#include <cstdlib>
+
 Params::Params() {}
 Params::~Params() {}
 
@@ -12,7 +14,7 @@ Params::Params(int ac, std::vector<std::string> av)
     }
     else if (ac == 3)
     {
-        _port = ft_atoi(av[0].c_str());
+        _port = atoi(av[0].c_str());
         _password = av[1];
     }
 }
