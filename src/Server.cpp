@@ -6,6 +6,7 @@ void Server::setFds(Fds *fds) {_fds = fds;}
 
 Fds *Server::getFds() const { return (_fds);}
 
+int Server::getStatus() const { return (_status);}
 
 Server::Server(Params *pm)
 {
@@ -14,6 +15,16 @@ Server::Server(Params *pm)
 	_servername = "42lyon.irc.fr";
 	new_serv();
 	_servername = _ip;
+	_status = 1;
+}
+
+Server::~Server() {
+	delete _fds;
+
+	std::map<std::string, Client*>::iterator mit;
+	for (mit=_m_pclients.begin(); mit!=_m_pclients.end(); ++mit) {
+		delete (*mit).second;
+	}
 }
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================
@@ -196,6 +207,8 @@ void Server::do_command(Message *msg, int fd)
 			topiccmd(msg, cl);
 		else if (msg->command == "KICK")
 			kickcmd(msg, cl);
+		else if (msg->command == "SHUTDOWN")
+			shutdcmd(msg, cl);
 	}
 	else
 		send_reply("", cl, ERR_NOTREGISTERED);
