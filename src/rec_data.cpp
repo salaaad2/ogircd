@@ -17,12 +17,18 @@ void rec_data(Server &serv, int i, Fds *fds)
     }
     tmp = buf;
     serv._m_fdreq[i] += tmp;
+#ifdef DEBUG_IRC
+				std::cout << "debug: data received : [" << buf << "]" << std::endl;
+#endif
     if (tmp.find("\r") != std::string::npos)
     {
         vm = parse_message(serv._m_fdreq[i]);
         for (std::vector<Message*>::iterator it = vm.begin(); it!=vm.end(); ++it) {
             if ((*it)->command.size() > 0)
             {
+#ifdef DEBUG_IRC
+				std::cout << "debug: executing command :" << (*it)->command << std::endl;
+#endif
                 serv.do_command(*it, i);
             }
         }
