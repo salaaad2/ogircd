@@ -20,7 +20,7 @@ void rec_data(Server &serv, int i, Fds *fds)
     tmp = buf;
     serv._m_fdreq[i] += tmp;
 #ifdef DEBUG_IRC
-				std::cout << "debug: data received : [" << buf() << "]" << std::endl;
+				std::cout << "debug: data received : [" << buf << "]" << std::endl;
 #endif
     if (tmp.find("\r") != std::string::npos)
     {
