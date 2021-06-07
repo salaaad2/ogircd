@@ -113,7 +113,7 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
         case ERR_NOTEXTTOSEND :
             return std::string ( s + ":There is no text to send" );
         case ERR_NOTOCHANNEL :
-            return std::string (s + ":You're not on that channel");
+            return std::string (s + ":User not on channel");
         case ERR_BADCHANMASK :
             return std::string (":Invalid JOIN parameter" + s);
         case ERR_UNKNOWNMODE :

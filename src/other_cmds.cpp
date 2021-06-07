@@ -89,7 +89,8 @@ void Server::kickcmd(Message *msg, Client *cl)
         send_reply("", cl, ERR_NOSUCHCHANNEL);
     else if (_m_uflags[chan][cl].find('o') == std::string::npos)
         send_reply("", cl, ERR_CHANOPRIVSNEEDED);
-    else if (!isNickonchan(cl->nickname, chan))
+    else if (!isNickonchan(cl->nickname, chan) ||
+             !isNickonchan(user, chan))
         send_reply(chan, cl, ERR_NOTOCHANNEL);
     else
     {

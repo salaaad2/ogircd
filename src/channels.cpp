@@ -4,7 +4,7 @@ bool Server::isNickonchan(std::string & nick, std::string & chan)
 {
     for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
     {
-        if ((*it)->nickname == nick)
+        if ((*it)->nickname.compare(nick) == 0)
             return true;
     }
     return false;
@@ -14,7 +14,7 @@ std::vector<Client *>::iterator Server::clposition(std::string & nick, std::stri
 {
     for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
     {
-        if ((*it)->nickname == nick)
+        if ((*it)->nickname.compare(nick) == 0)
             return it;
     }
     return _m_chans[chan].end();
