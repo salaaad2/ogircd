@@ -22,6 +22,7 @@ void Server::shutdcmd(Message *msg, Client *cl)
     else {
         std::cerr << "Shutting down server...\n";
         _status = 0;
+        delete msg;
     }
     return ;
 }

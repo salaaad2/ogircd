@@ -20,6 +20,7 @@ Server::Server(Params *pm)
 
 Server::~Server() {
 	delete _fds;
+	delete _pm;
 
 	std::map<std::string, Client*>::iterator mit;
 	for (mit=_m_pclients.begin(); mit!=_m_pclients.end(); ++mit) {
@@ -227,6 +228,7 @@ void Server::delog(int fd)
 	cl->chans.clear();
 	cl->is_logged = false;
 	_m_pclients.erase(cl->prefix);
+	delete cl;
 }
 
 
