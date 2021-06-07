@@ -257,7 +257,7 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
                 {
                     if (_m_uflags[chan][_m_pclients[(*it)->prefix]].find('v') != std::string::npos)
                     {
-                        _m_uflags[chan][_m_pclients[(*it)->prefix]].erase(_m_uflags[chan][cl].find('v'), 1);
+                        _m_uflags[chan][_m_pclients[(*it)->prefix]].erase(_m_uflags[chan][_m_pclients[(*it)->prefix]].find('v'), 1);
                         send_to_channel(":" + cl->prefix + " MODE " + chan + " -v " + arg + "\r\n", chan, NULL);
                     }
                     return ;
