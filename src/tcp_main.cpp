@@ -12,11 +12,11 @@ int main_loop(Server &serv, Fds *fds)
 		{
 			if (i == serv.listener)
 			{
+				if ((newfd = serv.addclient(serv.listener)) != -1)
+				{
 #ifdef DEBUG_IRC
 				std::cout << "debug: New fd : " << i << std::endl;
 #endif
-				if ((newfd = serv.addclient(serv.listener)) != -1)
-				{
 					if(newfd > fds->fdmax)
 						fds->fdmax = newfd;
 					return newfd;

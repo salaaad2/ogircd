@@ -4,6 +4,7 @@ void Server::quitcmd(Message *msg, Client *cl)
 {
     (void)msg;
     cl->is_logged = false;
+    delog(cl->clfd);
     close(cl->clfd);
     FD_CLR(cl->clfd, &_fds->master);
 }
