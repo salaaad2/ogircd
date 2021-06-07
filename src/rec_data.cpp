@@ -12,10 +12,14 @@ void rec_data(Server &serv, int i, Fds *fds)
     ft_bzero(buf, 512);
     if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
     {
+        std::vector<Message*>::iterator it;
         serv.delog(i);
         close(i);
         FD_CLR(i, &fds->master);
         serv._m_fdreq[i].clear();
+        for (it=vm.begin(); it!=vm.end(); ++i) {
+            delete *it;
+        }
     }
     tmp = buf;
     serv._m_fdreq[i] += tmp;

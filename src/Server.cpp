@@ -20,8 +20,6 @@ Server::Server(Params *pm)
 
 Server::~Server() {
 	delete _fds;
-	delete _pm;
-
 	std::map<std::string, Client*>::iterator mit;
 	for (mit=_m_pclients.begin(); mit!=_m_pclients.end(); ++mit) {
 		delete (*mit).second;
@@ -224,10 +222,15 @@ void Server::delog(int fd)
 	{
 		send_to_channel(":" + cl->prefix + " QUIT :Client closed connection\r\n", *it, NULL);
 		_m_chans[*it].erase(clposition(cl->nickname, *it));
+		if (_m_uflags[*it].find(cl) != _m_uflags[*it].end())
+			_m_uflags[*it].erase(cl);
 	}
 	cl->chans.clear();
 	cl->is_logged = false;
 	_m_pclients.erase(cl->prefix);
+	_m_nickdb.erase(cl->nickname);
+    close(cl->clfd);
+    FD_CLR(cl->clfd, &_fds->master);
 	delete cl;
 }
 
