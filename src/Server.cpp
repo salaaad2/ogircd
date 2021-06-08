@@ -18,7 +18,7 @@ int Server::getStatus() const
 	return (_status);
 }
 
-Server::Server(std::vector<std::string> & vm)
+Server::Server(std::vector<std::string> &vm)
 {
 	time(&_launch_time);
 	_servername = "42lyon.irc.fr";
@@ -37,7 +37,7 @@ Server::~Server()
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================
 
-void Server::new_serv(std::vector<std::string> & vm)
+void Server::new_serv(std::vector<std::string> &vm)
 {
 	int yes = 1;
 

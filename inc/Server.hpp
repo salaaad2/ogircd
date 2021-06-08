@@ -85,7 +85,7 @@ class Server {
 		_m_limits; // _m_limits[#channel] = limit of users in channel (if 'l' mode set)
 
     public:
-	Server(std::vector<std::string> & vm);
+	Server(std::vector<std::string> &vm);
 	~Server();
 
 	int listener;
@@ -99,7 +99,7 @@ class Server {
 	void do_command(Message *msg, int fd);
 
     private:
-	void new_serv(std::vector<std::string> & vm);
+	void new_serv(std::vector<std::string> &vm);
 	void do_registration(int fd);
 	void create_client_prefix(int fd);
 	void getIP();
