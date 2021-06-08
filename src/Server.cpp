@@ -2,16 +2,19 @@
 
 #include <netdb.h>
 
-void Server::setFds(Fds *fds) {_fds = fds;}
+void Server::setFds(Fds *fds)
+{_fds = fds;}
 
-Fds *Server::getFds() const { return (_fds);}
+Fds *Server::getFds() const
+{ return (_fds);}
 
-int Server::getStatus() const { return (_status);}
+int Server::getStatus() const
+{ return (_status);}
 
-Server::Server(Params *pm)
+Server::Server(Params &pm)
+	: _pm(pm)
 {
 	time(&_launch_time);
-	_pm = pm;
 	_servername = "42lyon.irc.fr";
 	new_serv();
 	_servername = _ip;
@@ -19,7 +22,6 @@ Server::Server(Params *pm)
 }
 
 Server::~Server() {
-	delete _fds;
 	std::map<std::string, Client*>::iterator mit;
 	for (mit=_m_pclients.begin(); mit!=_m_pclients.end(); ++mit) {
 		delete (*mit).second;
@@ -33,10 +35,9 @@ void Server::new_serv()
 	int yes = 1;
 
 	getIP();
-	_fds = new Fds;
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = INADDR_ANY;
-	_addr.sin_port = htons(_pm->getPort());
+	_addr.sin_port = htons(_pm.getPort());
 	if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
 		std::cerr << SOCKET_ERROR << std::endl;
@@ -47,8 +48,8 @@ void Server::new_serv()
 		std::cerr << SETSOCK_ERROR << std::endl;;
 		exit(1);
 	}
-	_port = _pm->getPort();
-	_password = _pm->getPwd();
+	_port = _pm.getPort();
+	_password = _pm.getPwd();
 	ft_bzero(&(_addr.sin_zero), 8);
 	if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
 	{
@@ -60,8 +61,6 @@ void Server::new_serv()
 		perror(LISTEN_ERROR);
 		exit(1);
 	}
-	else
-		delete _pm;
 }
 
 

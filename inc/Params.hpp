@@ -14,7 +14,7 @@ private:
 public:
 
 		Params();
-		Params(int ac, std::vector<std::string>);
+		Params(std::vector<std::string> av);
 		~Params();
 
 		std::string getHost() const

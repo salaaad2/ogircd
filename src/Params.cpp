@@ -5,14 +5,14 @@
 Params::Params() {}
 Params::~Params() {}
 
-Params::Params(int ac, std::vector<std::string> av)
+Params::Params(std::vector<std::string> av)
 {
-    if (ac != 3)
+    if (av.size() != 2)
     {
         std::cerr << "wrong parameters\n";
         return ;
     }
-    else if (ac == 3)
+    else
     {
         _port = atoi(av[0].c_str());
         _password = av[1];

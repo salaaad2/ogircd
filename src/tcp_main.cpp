@@ -29,7 +29,7 @@ int main_loop(Server &serv, Fds *fds)
 	return 0;
 }
 
-std::vector<std::string> getParams(size_t  ac, char **av)
+std::vector<std::string> parseParams(size_t  ac, char **av)
 {
 	std::vector<std::string> vec;
 	size_t i = 0;
@@ -51,11 +51,12 @@ int main(int ac, char *av[])
 		std::cerr << "Insufficient parameters. \nUsage : ./ircserv [PORT] [PASS]" << std::endl;
 		return (1);
 	}
-	std::vector<std::string> vec = getParams(ac, av);
-	Params * pm = new Params(ac, vec);
+	std::vector<std::string> pvec = parseParams(ac, av);
+	Params pm(pvec);
 	Server serv(pm);
+	Fds * fds = new Fds;
 	int newfd;
-	Fds *fds = serv.getFds();
+	serv.setFds(fds);
 
 	FD_ZERO(&fds->master);
 	FD_ZERO(&fds->read);
@@ -65,6 +66,7 @@ int main(int ac, char *av[])
 	{
 		if (serv.getStatus() == 0) {
 			std::cerr << "exit\n";
+			delete fds;
 			return (0);
 		}
 		fds = serv.getFds();

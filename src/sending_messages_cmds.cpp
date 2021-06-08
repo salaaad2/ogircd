@@ -15,10 +15,11 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const & cmd)
     std::string text;
     Client *cl_tmp;
     size_t i = 0;
+    bool isprivmsg = (cmd == "PRIVMSG");
 
-    if (msg->params.size() == 0)
+    if (msg->params.size() == 0 && isprivmsg)
         return (send_reply(c_dest, cl, ERR_NORECIPIENT));
-    else if (msg->params.size() == 1)
+    else if (msg->params.size() == 1 && isprivmsg)
         return (send_reply(c_dest, cl, ERR_NOTEXTTOSEND));
     else {
         dests = msg->params[0];
@@ -32,7 +33,7 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const & cmd)
         {
             if (_m_chans.count(c_dest) == 1)
                 chans.push_back(c_dest);
-            else
+            else if (isprivmsg)
                 send_reply(c_dest, cl, ERR_NOSUCHCHANNEL);
             c_dest.clear();
         }
@@ -44,7 +45,7 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const & cmd)
                 if (cl_tmp->is_logged == true)
                     nicknames.push_back(cl_tmp);
             }
-            else
+            else if (isprivmsg)
                 send_reply(msg->params[i], cl, ERR_NOSUCHNICK);
             c_dest.clear();
         }
@@ -62,7 +63,7 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const & cmd)
         cl->current_chan = *it;
         if ((isNickonchan(cl->nickname, *it) && (_m_flags[*it].find("m") == std::string::npos || (_m_uflags[*it][cl].find("v") != std::string::npos || _m_uflags[*it][cl].find("o") != std::string::npos))) && !isbanned(cl, *it))
             send_to_channel(":" + cl->prefix + " " + cmd + " " + *it + " " + text + "\r\n", *it, cl);
-        else
+        else if (isprivmsg)
             send_reply(*it, cl, ERR_CANNOTSENDTOCHAN);
     }
     cl->current_chan = curr_chan_tmp;

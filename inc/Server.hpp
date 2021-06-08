@@ -37,7 +37,7 @@ class Server
 		int                                                     _port;
 		int                                                     _status;
 		Fds														*_fds;
-		Params                                                  *_pm;
+		Params                                                  &_pm;
 		time_t													_launch_time;
 
 		/* client */
@@ -76,7 +76,7 @@ class Server
 
 	public:
 
-		Server(Params *pm);
+		Server(Params &pm);
 		~Server();
 
 		int														listener;
