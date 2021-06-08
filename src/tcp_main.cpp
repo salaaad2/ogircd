@@ -6,36 +6,32 @@ int main_loop(Server &serv, Fds *fds)
 {
 	int newfd = 0;
 
-	for (int i = 0 ; i <= fds->fdmax ; i++)
-	{
-		if(FD_ISSET(i, &fds->read))
-		{
-			if (i == serv.listener)
-			{
-				if ((newfd = serv.addclient(serv.listener)) != -1)
-				{
+	for (int i = 0; i <= fds->fdmax; i++) {
+		if (FD_ISSET(i, &fds->read)) {
+			if (i == serv.listener) {
+				if ((newfd = serv.addclient(serv.listener)) !=
+				    -1) {
 #ifdef DEBUG_IRC
-				std::cout << "debug: New fd : " << i << std::endl;
+					std::cout << "debug: New fd : " << i
+						  << std::endl;
 #endif
-					if(newfd > fds->fdmax)
+					if (newfd > fds->fdmax)
 						fds->fdmax = newfd;
 					return newfd;
 				}
-			}
-			else
+			} else
 				rec_data(serv, i, fds);
 		}
 	}
 	return 0;
 }
 
-std::vector<std::string> parseParams(size_t  ac, char **av)
+std::vector<std::string> parseParams(size_t ac, char **av)
 {
 	std::vector<std::string> vec;
 	size_t i = 0;
 
-	for (i = 1; i < ac; i++)
-	{
+	for (i = 1; i < ac; i++) {
 		vec.push_back(std::string(av[i]));
 		// std::cout << "i : " << i << std::endl;
 	}
@@ -46,15 +42,16 @@ std::vector<std::string> parseParams(size_t  ac, char **av)
 
 int main(int ac, char *av[])
 {
-	if (ac < 3)
-	{
-		std::cerr << "Insufficient parameters. \nUsage : ./ircserv [PORT] [PASS]" << std::endl;
+	if (ac < 3) {
+		std::cerr
+			<< "Insufficient parameters. \nUsage : ./ircserv [PORT] [PASS]"
+			<< std::endl;
 		return (1);
 	}
 	std::vector<std::string> pvec = parseParams(ac, av);
 	Params pm(pvec);
 	Server serv(pm);
-	Fds * fds = new Fds;
+	Fds *fds = new Fds;
 	int newfd;
 	serv.setFds(fds);
 
@@ -62,8 +59,7 @@ int main(int ac, char *av[])
 	FD_ZERO(&fds->read);
 	FD_SET(serv.listener, &fds->master);
 	fds->fdmax = serv.listener;
-	for(;;)
-	{
+	for (;;) {
 		if (serv.getStatus() == 0) {
 			std::cerr << "exit\n";
 			delete fds;
@@ -71,8 +67,8 @@ int main(int ac, char *av[])
 		}
 		fds = serv.getFds();
 		fds->read = fds->master;
-		if (select(fds->fdmax + 1, &fds->read, NULL, NULL, NULL) == -1)
-		{
+		if (select(fds->fdmax + 1, &fds->read, NULL, NULL, NULL) ==
+		    -1) {
 			std::cerr << "Server-select() error";
 			exit(1);
 		}

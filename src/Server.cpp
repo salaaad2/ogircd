@@ -3,16 +3,21 @@
 #include <netdb.h>
 
 void Server::setFds(Fds *fds)
-{_fds = fds;}
+{
+	_fds = fds;
+}
 
 Fds *Server::getFds() const
-{ return (_fds);}
+{
+	return (_fds);
+}
 
 int Server::getStatus() const
-{ return (_status);}
+{
+	return (_status);
+}
 
-Server::Server(Params &pm)
-	: _pm(pm)
+Server::Server(Params &pm) : _pm(pm)
 {
 	time(&_launch_time);
 	_servername = "42lyon.irc.fr";
@@ -21,9 +26,10 @@ Server::Server(Params &pm)
 	_status = 1;
 }
 
-Server::~Server() {
-	std::map<std::string, Client*>::iterator mit;
-	for (mit=_m_pclients.begin(); mit!=_m_pclients.end(); ++mit) {
+Server::~Server()
+{
+	std::map<std::string, Client *>::iterator mit;
+	for (mit = _m_pclients.begin(); mit != _m_pclients.end(); ++mit) {
 		delete (*mit).second;
 	}
 }
@@ -38,48 +44,42 @@ void Server::new_serv()
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = INADDR_ANY;
 	_addr.sin_port = htons(_pm.getPort());
-	if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-	{
+	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		std::cerr << SOCKET_ERROR << std::endl;
 		exit(1);
 	}
-	if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-	{
-		std::cerr << SETSOCK_ERROR << std::endl;;
+	if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) ==
+	    -1) {
+		std::cerr << SETSOCK_ERROR << std::endl;
+		;
 		exit(1);
 	}
 	_port = _pm.getPort();
 	_password = _pm.getPwd();
 	ft_bzero(&(_addr.sin_zero), 8);
-	if(bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
-	{
+	if (bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
 		perror(BIND_ERROR);
 		exit(1);
 	}
-	if(listen(listener, 10) == -1)
-	{
+	if (listen(listener, 10) == -1) {
 		perror(LISTEN_ERROR);
 		exit(1);
 	}
 }
 
-
 //========================================================================================
-
-
 
 int Server::addclient(int listener)
 {
 	Client *nc = new Client();
 	std::string s;
 
-	if((nc->clfd = accept(listener, nc->clientaddr, &nc->addrlen)) == -1)
-	{
+	if ((nc->clfd = accept(listener, nc->clientaddr, &nc->addrlen)) == -1) {
 		std::cerr << "Server-accept() error\n";
 		return (-1);
-	}
-	else
-	nc->host = inet_ntoa(((struct sockaddr_in*)nc->clientaddr)->sin_addr);
+	} else
+		nc->host = inet_ntoa(
+			((struct sockaddr_in *)nc->clientaddr)->sin_addr);
 	s = ft_utoa(nc->clfd);
 	_m_pclients[s] = nc;
 	_m_fdprefix[nc->clfd] = s;
@@ -89,24 +89,21 @@ int Server::addclient(int listener)
 void Server::getIP()
 {
 	struct sockaddr_in serv;
-	const char* google_dns_server = "8.8.8.8";
+	const char *google_dns_server = "8.8.8.8";
 	int dns_port = 53;
-	int sock = socket ( AF_INET, SOCK_DGRAM, 0);
+	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-	memset( &serv, 0, sizeof(serv) );
+	memset(&serv, 0, sizeof(serv));
 	serv.sin_family = AF_INET;
-	serv.sin_addr.s_addr = inet_addr( google_dns_server );
-	serv.sin_port = htons( dns_port );
-	int err = connect( sock , (const struct sockaddr*) &serv , sizeof(serv) );
+	serv.sin_addr.s_addr = inet_addr(google_dns_server);
+	serv.sin_port = htons(dns_port);
+	int err = connect(sock, (const struct sockaddr *)&serv, sizeof(serv));
 	struct sockaddr_in name;
 	socklen_t namelen = sizeof(name);
-	err = getsockname(sock, (struct sockaddr*) &name, &namelen);
-	const char* p = inet_ntoa(name.sin_addr);
+	err = getsockname(sock, (struct sockaddr *)&name, &namelen);
+	const char *p = inet_ntoa(name.sin_addr);
 	strcpy(_ip, p);
 }
-
-
-
 
 //==============================TREAT COMMANDS======================================
 
@@ -120,23 +117,22 @@ void Server::send_reply(std::string s, Client *cl, int code)
 	prefix = ":";
 	prefix += _ip;
 
-	to_send += (prefix +  " " + ccmd + " " + cl->nickname + " " + msg_rpl(s, code, cl) + "\r\n");
+	to_send += (prefix + " " + ccmd + " " + cl->nickname + " " +
+		    msg_rpl(s, code, cl) + "\r\n");
 	send(cl->clfd, to_send.c_str(), to_send.length(), 0);
 }
 
-void Server::send_reply_broad(Client *cl, std::vector<Client*> & v_cl, int code, Message *msg)
+void Server::send_reply_broad(Client *cl, std::vector<Client *> &v_cl, int code,
+			      Message *msg)
 {
 	std::string s;
 
-	for (size_t i = 0; i < v_cl.size(); i++)
-	{
-		if (v_cl[i]->clfd != cl->clfd)
-		{
+	for (size_t i = 0; i < v_cl.size(); i++) {
+		if (v_cl[i]->clfd != cl->clfd) {
 			if (code != -1)
 				send_reply("", v_cl[i], code);
-			else
-			{
-				for(size_t i = 0; i < msg->params.size(); i++)
+			else {
+				for (size_t i = 0; i < msg->params.size(); i++)
 					s += msg->params[i];
 				send_reply(s, v_cl[i], 0);
 			}
@@ -151,26 +147,22 @@ void Server::do_command(Message *msg, int fd)
 
 	if (msg->command == "PASS") {
 		passcmd(msg, fd);
-	}
-	else if (msg->command == "NICK")
-	{
+	} else if (msg->command == "NICK") {
 		if (_m_fdprefix.count(fd) != 0)
 			nickcmd(msg, fd);
 		else if (_m_pclients[_m_fdprefix[fd]]->password != _password)
 			send_reply("", cl, ERR_PASSWDMISMATCH);
 		else
 			nickcmd(msg, fd);
-	}
-	else if (msg->command == "USER" ) {
+	} else if (msg->command == "USER") {
 		if (_m_pclients[_m_fdprefix[fd]]->password != _password)
 			send_reply("", cl, ERR_PASSWDMISMATCH);
 		else if (_m_pclients[_m_fdprefix[fd]]->nickname[0] == 0)
 			send_reply("", cl, ERR_NONICKNAMEGIVEN);
 		else
 			usercmd(msg, fd);
-	}
-	else if (_m_pclients.count(_m_fdprefix[fd]) &&
-			 _m_pclients[_m_fdprefix[fd]]->is_register == true) {
+	} else if (_m_pclients.count(_m_fdprefix[fd]) &&
+		   _m_pclients[_m_fdprefix[fd]]->is_register == true) {
 		if (msg->command == "JOIN")
 			joincmd(msg, cl);
 		else if (msg->command == "INVITE")
@@ -207,8 +199,7 @@ void Server::do_command(Message *msg, int fd)
 			kickcmd(msg, cl);
 		else if (msg->command == "SHUTDOWN")
 			shutdcmd(msg, cl);
-	}
-	else
+	} else
 		send_reply("", cl, ERR_NOTREGISTERED);
 	delete msg;
 }
@@ -217,9 +208,11 @@ void Server::delog(int fd)
 {
 	Client *cl = _m_pclients[_m_fdprefix[fd]];
 
-	for (std::vector<std::string>::iterator it = cl->chans.begin() ; it != cl->chans.end() ; it++)
-	{
-		send_to_channel(":" + cl->prefix + " QUIT :Client closed connection\r\n", *it, NULL);
+	for (std::vector<std::string>::iterator it = cl->chans.begin();
+	     it != cl->chans.end(); it++) {
+		send_to_channel(":" + cl->prefix +
+					" QUIT :Client closed connection\r\n",
+				*it, NULL);
 		_m_chans[*it].erase(clposition(cl->nickname, *it));
 		if (_m_uflags[*it].find(cl) != _m_uflags[*it].end())
 			_m_uflags[*it].erase(cl);
@@ -228,10 +221,9 @@ void Server::delog(int fd)
 	cl->is_logged = false;
 	_m_pclients.erase(cl->prefix);
 	_m_nickdb.erase(cl->nickname);
-    close(cl->clfd);
-    FD_CLR(cl->clfd, &_fds->master);
+	close(cl->clfd);
+	FD_CLR(cl->clfd, &_fds->master);
 	delete cl;
 }
-
 
 //===============================================================================

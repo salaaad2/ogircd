@@ -21,4 +21,4 @@
 #include "Server.hpp"
 #include "Params.hpp"
 
-void    rec_data(Server &serv, int i, Fds *fdmax);
+void rec_data(Server &serv, int i, Fds *fdmax);

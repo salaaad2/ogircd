@@ -3,11 +3,10 @@
 
 #include <sys/types.h>
 
-struct Fds
-{
-    fd_set master;
-    fd_set read;
-    int    fdmax;
+struct Fds {
+	fd_set master;
+	fd_set read;
+	int fdmax;
 };
 
 #endif // __FDS_H_
