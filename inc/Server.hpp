@@ -156,7 +156,7 @@ class Server {
 
 	/* messages */
 
-	void privmsgcmd(Message *msg, Client *cl, std::string const &cmd);
+	void privmsgcmd(Message *msg, Client *cl, bool reply);
 	void chan_msg(Message *msg, Client *cl);
 
 	/* utils */

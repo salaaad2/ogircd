@@ -1,4 +1,5 @@
 #include "../inc/Server.hpp"
+#include "../inc/commands.hpp"
 
 #include <netdb.h>
 #include <iostream>
@@ -145,7 +146,11 @@ void Server::do_command(Message *msg, int fd)
 {
 	std::string req;
 	Client *cl = _m_pclients[_m_fdprefix[fd]];
+	static std::map<std::string, e_commands> c_map;
 
+	if (c_map.empty()) {
+		initcmdmap(&c_map);
+	}
 	if (msg->command == "PASS") {
 		passcmd(msg, fd);
 	} else if (msg->command == "NICK") {
@@ -163,43 +168,28 @@ void Server::do_command(Message *msg, int fd)
 		else
 			usercmd(msg, fd);
 	} else if (_m_pclients.count(_m_fdprefix[fd]) &&
-		   _m_pclients[_m_fdprefix[fd]]->is_register == true) {
-		if (msg->command == "JOIN")
-			joincmd(msg, cl);
-		else if (msg->command == "INVITE")
-			invitecmd(msg, cl);
-		else if (msg->command == "PART")
-			partcmd(msg, cl);
-		else if (msg->command == "NAMES")
-			namescmd(msg, cl);
-		else if (msg->command == "LIST")
-			listcmd(msg, cl);
-		else if (msg->command == "MODE")
-			modecmd(msg, cl);
-		else if (msg->command == "PRIVMSG" || msg->command == "NOTICE")
-			privmsgcmd(msg, cl, msg->command);
-		else if (msg->command == "QUIT")
-			quitcmd(msg, cl);
-		else if (msg->command == "VERSION")
-			versioncmd(msg, cl);
-		else if (msg->command == "TIME")
-			timecmd(msg, cl);
-		else if (msg->command == "INFO")
-			infocmd(msg, cl);
-		else if (msg->command == "WHO")
-			whocmd(msg, cl);
-		else if (msg->command == "WHOWAS")
-			whowascmd(msg, cl);
-		else if (msg->command == "PING")
-			pingcmd(msg, cl);
-		else if (msg->command == "WHOIS")
-			whoiscmd(msg, cl);
-		else if (msg->command == "TOPIC")
-			topiccmd(msg, cl);
-		else if (msg->command == "KICK")
-			kickcmd(msg, cl);
-		else if (msg->command == "SHUTDOWN")
-			shutdcmd(msg, cl);
+			   _m_pclients[_m_fdprefix[fd]]->is_register == true) {
+		switch(c_map[msg->command]) {
+			case JOIN: joincmd(msg, cl); break;
+			case INVITE: invitecmd(msg, cl); break;
+			case PART: partcmd(msg, cl); break;
+			case NAMES: namescmd(msg, cl); break;
+			case LIST: listcmd(msg, cl); break;
+			case MODE: modecmd(msg, cl); break;
+			case PRIVMSG: privmsgcmd(msg, cl, 1); break;
+			case NOTICE: privmsgcmd(msg, cl, 0); break;
+			case QUIT: quitcmd(msg, cl); break;
+			case VERSION: versioncmd(msg, cl); break;
+			case TIME: timecmd(msg, cl); break;
+			case INFO: infocmd(msg, cl); break;
+			case WHO: whocmd(msg, cl); break;
+			case WHOWAS: whowascmd(msg, cl); break;
+			case PING: pingcmd(msg, cl); break;
+			case WHOIS: whoiscmd(msg, cl); break;
+			case TOPIC: topiccmd(msg, cl); break;
+			case KICK: kickcmd(msg, cl); break;
+			case SHUTDOWN: shutdcmd(msg, cl); break;
+		}
 	} else
 		send_reply("", cl, ERR_NOTREGISTERED);
 	delete msg;

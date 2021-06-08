@@ -6,9 +6,6 @@
 using std::string;
 
 enum e_commands {
-	PASS,
-	NICK,
-	USER,
 	JOIN,
 	INVITE,
 	PART,
@@ -16,6 +13,7 @@ enum e_commands {
 	LIST,
 	MODE,
 	PRIVMSG,
+	NOTICE,
 	QUIT,
 	VERSION,
 	TIME,
@@ -29,52 +27,26 @@ enum e_commands {
 	SHUTDOWN
 };
 
-string getStrFromEnum(e_commands e)
-{
-	switch (e) {
-	case PASS:
-		return ("PASS");
-	case NICK:
-		return ("NICK");
-	case USER:
-		return ("USER");
-	case JOIN:
-		return ("JOIN");
-	case INVITE:
-		return ("INVITE");
-	case PART:
-		return ("PART");
-	case NAMES:
-		return ("NAMES");
-	case LIST:
-		return ("LIST");
-	case MODE:
-		return ("MODE");
-	case PRIVMSG:
-		return ("PRIVMSG");
-	case QUIT:
-		return ("QUIT");
-	case VERSION:
-		return ("VERSION");
-	case TIME:
-		return ("TIME");
-	case INFO:
-		return ("INFO");
-	case WHO:
-		return ("WHO");
-	case WHOWAS:
-		return ("WHOWAS");
-	case PING:
-		return ("PING");
-	case WHOIS:
-		return ("WHOIS");
-	case TOPIC:
-		return ("TOPIC");
-	case KICK:
-		return ("KICK");
-	case SHUTDOWN:
-		return ("SHUTDOWN");
-	}
+void initcmdmap(std::map<std::string, e_commands> * c_map) {
+	(*c_map)["JOIN"] = JOIN;
+	(*c_map)["INVITE"] = INVITE;
+	(*c_map)["PART"] = PART;
+	(*c_map)["NAMES"] = NAMES;
+	(*c_map)["LIST"] = LIST;
+	(*c_map)["MODE"] = MODE;
+	(*c_map)["PRIVMSG"] = PRIVMSG;
+	(*c_map)["NOTICE"] = NOTICE;
+	(*c_map)["QUIT"] = QUIT;
+	(*c_map)["VERSION"] = VERSION;
+	(*c_map)["TIME"] = TIME;
+	(*c_map)["INFO"] = INFO;
+	(*c_map)["WHO"] = WHO;
+	(*c_map)["WHOWAS"] = WHOWAS;
+	(*c_map)["PING"] = PING;
+	(*c_map)["WHOIS"] = WHOIS;
+	(*c_map)["TOPIC"] = TOPIC;
+	(*c_map)["KICK"] = KICK;
+	(*c_map)["SHUTDOWN"] = SHUTDOWN;
 }
 
 #endif // COMMANDS_H_

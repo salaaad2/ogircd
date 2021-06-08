@@ -1,6 +1,6 @@
 #include "../inc/Server.hpp"
 
-void Server::privmsgcmd(Message *msg, Client *cl, std::string const &cmd)
+void Server::privmsgcmd(Message *msg, Client *cl, bool reply)
 {
 	// ERR_NORECIPIENT --NO                ERR_NOTEXTTOSEND -- Yes
 	// ERR_CANNOTSENDTOCHAN --No            ERR_NOTOPLEVEL -- No
@@ -15,11 +15,10 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const &cmd)
 	std::string text;
 	Client *cl_tmp;
 	size_t i = 0;
-	bool isprivmsg = (cmd == "PRIVMSG");
 
-	if (msg->params.size() == 0 && isprivmsg)
+	if (msg->params.size() == 0 && reply)
 		return (send_reply(c_dest, cl, ERR_NORECIPIENT));
-	else if (msg->params.size() == 1 && isprivmsg)
+	else if (msg->params.size() == 1 && reply)
 		return (send_reply(c_dest, cl, ERR_NOTEXTTOSEND));
 	else {
 		dests = msg->params[0];
@@ -31,7 +30,7 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const &cmd)
 		else if (c_dest[0] == '#' || c_dest[0] == '&') {
 			if (_m_chans.count(c_dest) == 1)
 				chans.push_back(c_dest);
-			else if (isprivmsg)
+			else if (reply)
 				send_reply(c_dest, cl, ERR_NOSUCHCHANNEL);
 			c_dest.clear();
 		} else {
@@ -39,7 +38,7 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const &cmd)
 				cl_tmp = _m_nickdb[c_dest].top();
 				if (cl_tmp->is_logged == true)
 					nicknames.push_back(cl_tmp);
-			} else if (isprivmsg)
+			} else if (reply)
 				send_reply(msg->params[i], cl, ERR_NOSUCHNICK);
 			c_dest.clear();
 		}
@@ -58,10 +57,10 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const &cmd)
 		      (_m_uflags[*it][cl].find("v") != std::string::npos ||
 		       _m_uflags[*it][cl].find("o") != std::string::npos))) &&
 		    !isbanned(cl, *it))
-			send_to_channel(":" + cl->prefix + " " + cmd + " " +
+			send_to_channel(":" + cl->prefix + " " + msg->command + " " +
 						*it + " " + text + "\r\n",
 					*it, cl);
-		else if (isprivmsg)
+		else if (reply)
 			send_reply(*it, cl, ERR_CANNOTSENDTOCHAN);
 	}
 	cl->current_chan = curr_chan_tmp;
@@ -69,7 +68,7 @@ void Server::privmsgcmd(Message *msg, Client *cl, std::string const &cmd)
 	std::string to_send;
 	for (std::vector<Client *>::iterator it = vec.begin(); it != vec.end();
 	     it++) {
-		to_send = ":" + cl->prefix + " " + cmd + " " + (*it)->nickname +
+		to_send = ":" + cl->prefix + " " + msg->command + " " + (*it)->nickname +
 			  " " + text + "\r\n";
 		send((*it)->clfd, to_send.c_str(), to_send.length(), 0);
 	}
