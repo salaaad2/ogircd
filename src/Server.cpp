@@ -1,6 +1,7 @@
 #include "../inc/Server.hpp"
 
 #include <netdb.h>
+#include <iostream>
 
 void Server::setFds(Fds *fds)
 {
@@ -17,11 +18,11 @@ int Server::getStatus() const
 	return (_status);
 }
 
-Server::Server(Params &pm) : _pm(pm)
+Server::Server(std::vector<std::string> & vm)
 {
 	time(&_launch_time);
 	_servername = "42lyon.irc.fr";
-	new_serv();
+	new_serv(vm);
 	_servername = _ip;
 	_status = 1;
 }
@@ -36,14 +37,14 @@ Server::~Server()
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================
 
-void Server::new_serv()
+void Server::new_serv(std::vector<std::string> & vm)
 {
 	int yes = 1;
 
 	getIP();
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = INADDR_ANY;
-	_addr.sin_port = htons(_pm.getPort());
+	_addr.sin_port = htons(atoi(vm[0].c_str()));
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		std::cerr << SOCKET_ERROR << std::endl;
 		exit(1);
@@ -54,8 +55,8 @@ void Server::new_serv()
 		;
 		exit(1);
 	}
-	_port = _pm.getPort();
-	_password = _pm.getPwd();
+	_port = atoi(vm[0].c_str());
+	_password = vm[1];
 	ft_bzero(&(_addr.sin_zero), 8);
 	if (bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
 		perror(BIND_ERROR);

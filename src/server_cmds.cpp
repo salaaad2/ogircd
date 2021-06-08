@@ -1,5 +1,7 @@
 #include "../inc/Server.hpp"
 
+#include <iostream>
+
 void Server::quitcmd(Message *msg, Client *cl)
 {
 	(void)msg;

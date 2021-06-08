@@ -19,10 +19,9 @@ OBJS_DIR		 = obj/
 #==============================================================================#
 SRCS_NAME		  = parse_message
 SRCS_NAME		  += rec_data
-SRCS_NAME		  += tcp_main
+SRCS_NAME		  += main
 SRCS_NAME		  += Utils
 SRCS_NAME		  += Server
-SRCS_NAME		  += Params
 SRCS_NAME		  += replies
 SRCS_NAME		  += reg_cmds
 SRCS_NAME		  += join_channel

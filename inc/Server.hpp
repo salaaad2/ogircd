@@ -13,7 +13,6 @@
 #include "Message.hpp"
 #include "Client.hpp"
 #include "fds.hpp"
-#include "Params.hpp"
 #include "replies.hpp"
 #include "utils.hpp"
 
@@ -33,7 +32,6 @@ class Server {
 	int _port;
 	int _status;
 	Fds *_fds;
-	Params &_pm;
 	time_t _launch_time;
 
 	/* client */
@@ -87,7 +85,7 @@ class Server {
 		_m_limits; // _m_limits[#channel] = limit of users in channel (if 'l' mode set)
 
     public:
-	Server(Params &pm);
+	Server(std::vector<std::string> & vm);
 	~Server();
 
 	int listener;
@@ -101,7 +99,7 @@ class Server {
 	void do_command(Message *msg, int fd);
 
     private:
-	void new_serv();
+	void new_serv(std::vector<std::string> & vm);
 	void do_registration(int fd);
 	void create_client_prefix(int fd);
 	void getIP();

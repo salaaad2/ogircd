@@ -1,8 +1,7 @@
 #include "../inc/ftirc.hpp"
-#include "../inc/Params.hpp"
 #include "../inc/Server.hpp"
 
-int main_loop(Server &serv, Fds *fds)
+int postSelectLoop(Server &serv, Fds *fds)
 {
 	int newfd = 0;
 
@@ -33,10 +32,7 @@ std::vector<std::string> parseParams(size_t ac, char **av)
 
 	for (i = 1; i < ac; i++) {
 		vec.push_back(std::string(av[i]));
-		// std::cout << "i : " << i << std::endl;
 	}
-	// std::cout << "[" << 0 << "]" << vec[0] << "\n";
-	// std::cout << "[" << 1 << "]" << vec[1] << "\n";
 	return (vec);
 }
 
@@ -49,8 +45,7 @@ int main(int ac, char *av[])
 		return (1);
 	}
 	std::vector<std::string> pvec = parseParams(ac, av);
-	Params pm(pvec);
-	Server serv(pm);
+	Server serv(pvec);
 	Fds *fds = new Fds;
 	int newfd;
 	serv.setFds(fds);
@@ -72,7 +67,7 @@ int main(int ac, char *av[])
 			std::cerr << "Server-select() error";
 			exit(1);
 		}
-		if ((newfd = main_loop(serv, fds)) > 0)
+		if ((newfd = postSelectLoop(serv, fds)) > 0)
 			FD_SET(newfd, &fds->master);
 	}
 	return 0;
