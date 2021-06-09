@@ -19,7 +19,7 @@ int Server::getStatus() const
 	return (_status);
 }
 
-Server::Server(std::vector<std::string> &vm)
+Server::Server(std::vector<string> &vm)
 {
 	time(&_launch_time);
 	_servername = "42lyon.irc.fr";
@@ -30,7 +30,7 @@ Server::Server(std::vector<std::string> &vm)
 
 Server::~Server()
 {
-	std::map<std::string, Client *>::iterator mit;
+	std::map<string, Client *>::iterator mit;
 	for (mit = _m_pclients.begin(); mit != _m_pclients.end(); ++mit) {
 		delete (*mit).second;
 	}
@@ -38,7 +38,7 @@ Server::~Server()
 
 //=====================CREATION AND CONNECTION OF THE SERVER============================
 
-void Server::new_serv(std::vector<std::string> &vm)
+void Server::new_serv(std::vector<string> &vm)
 {
 	int yes = 1;
 
@@ -74,7 +74,7 @@ void Server::new_serv(std::vector<std::string> &vm)
 int Server::addclient(int listener)
 {
 	Client *nc = new Client();
-	std::string s;
+	string s;
 
 	if ((nc->clfd = accept(listener, nc->clientaddr, &nc->addrlen)) == -1) {
 		std::cerr << "Server-accept() error\n";
@@ -109,11 +109,11 @@ void Server::getIP()
 
 //==============================TREAT COMMANDS======================================
 
-void Server::send_reply(std::string s, Client *cl, int code)
+void Server::send_reply(string s, Client *cl, int code)
 {
-	std::string ccmd;
-	std::string to_send;
-	std::string prefix;
+	string ccmd;
+	string to_send;
+	string prefix;
 	if (code)
 		ccmd = ft_format_cmd(ft_utoa(code));
 	prefix = ":";
@@ -127,7 +127,7 @@ void Server::send_reply(std::string s, Client *cl, int code)
 void Server::send_reply_broad(Client *cl, std::vector<Client *> &v_cl, int code,
 			      Message *msg)
 {
-	std::string s;
+	string s;
 
 	for (size_t i = 0; i < v_cl.size(); i++) {
 		if (v_cl[i]->clfd != cl->clfd) {
@@ -144,9 +144,9 @@ void Server::send_reply_broad(Client *cl, std::vector<Client *> &v_cl, int code,
 
 void Server::do_command(Message *msg, int fd)
 {
-	std::string req;
+	string req;
 	Client *cl = _m_pclients[_m_fdprefix[fd]];
-	static std::map<std::string, e_commands> c_map;
+	static std::map<string, e_commands> c_map;
 
 	if (c_map.empty()) {
 		initcmdmap(&c_map);
@@ -199,7 +199,7 @@ void Server::delog(int fd)
 {
 	Client *cl = _m_pclients[_m_fdprefix[fd]];
 
-	for (std::vector<std::string>::iterator it = cl->chans.begin();
+	for (std::vector<string>::iterator it = cl->chans.begin();
 	     it != cl->chans.end(); it++) {
 		send_to_channel(":" + cl->prefix +
 					" QUIT :Client closed connection\r\n",

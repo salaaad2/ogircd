@@ -5,18 +5,20 @@
 #include <vector>
 #include <arpa/inet.h>
 
+using std::string;
+
 struct Client {
-	std::vector<std::string> chans;
-	std::string current_chan;
+	std::vector<string> chans;
+	string current_chan;
 	sockaddr *clientaddr;
 	unsigned int addrlen;
 	int clfd;
-	std::string password;
-	std::string nickname;
-	std::string username;
-	std::string realname;
-	std::string host;
-	std::string prefix;
+	string password;
+	string nickname;
+	string username;
+	string realname;
+	string host;
+	string prefix;
 	bool is_register;
 	bool is_logged;
 

@@ -1,21 +1,21 @@
 #include "../inc/ftirc.hpp"
 #include "../inc/Server.hpp"
 
-size_t count_commands(std::string buf)
+size_t count_commands(string buf)
 {
-	std::string tmp(buf);
+	string tmp(buf);
 	size_t a;
 	size_t c;
 
 	c = 0;
-	for (a = tmp.find("\r\n"); a != std::string::npos;
+	for (a = tmp.find("\r\n"); a != string::npos;
 	     a = tmp.find("\r\n", a + 2)) {
 		c++;
 	}
 	return (c);
 }
 
-int get_command(std::string buf, Message *nm, size_t i)
+int get_command(string buf, Message *nm, size_t i)
 {
 	while (buf[i] && buf[i] != ' ' && buf[i] != '\r') {
 		nm->command += buf[i];
@@ -25,7 +25,7 @@ int get_command(std::string buf, Message *nm, size_t i)
 	return (i);
 }
 
-int get_params(std::string buf, Message *nm, size_t i)
+int get_params(string buf, Message *nm, size_t i)
 {
 	while (buf[i] && buf[i] != '\r' && buf[i] == ' ')
 		i++;
@@ -33,7 +33,7 @@ int get_params(std::string buf, Message *nm, size_t i)
 		if (buf[i] == ' ' || buf[i] == ',')
 			i++;
 		else if (buf[i] != ':') {
-			std::string param;
+			string param;
 			while (buf[i] && buf[i] != '\r' && buf[i] != ' ' &&
 			       buf[i] != ',') {
 				param += buf[i];
@@ -43,7 +43,7 @@ int get_params(std::string buf, Message *nm, size_t i)
 			nm->params.push_back(param);
 		} else if (buf[i] == ':') {
 			i++;
-			std::string param;
+			string param;
 			while (buf[i] && buf[i] != '\r' && buf[i] != ',') {
 				param += buf[i];
 				nm->len++;
@@ -57,7 +57,7 @@ int get_params(std::string buf, Message *nm, size_t i)
 	return i;
 }
 
-std::vector<Message *> parse_message(std::string buf)
+std::vector<Message *> parse_message(string buf)
 {
 	std::vector<Message *> vm;
 	Message *nm = new Message;

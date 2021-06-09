@@ -1,6 +1,6 @@
 #include "../inc/Server.hpp"
 
-void Server::send_to_channel(std::string to_send, std::string &chan, Client *cl)
+void Server::send_to_channel(string to_send, string &chan, Client *cl)
 {
 	for (std::vector<Client *>::iterator it = _m_chans[chan].begin();
 	     it != _m_chans[chan].end(); it++) {
@@ -21,27 +21,27 @@ void Server::modecmd(Message *msg, Client *cl)
 	//     userMode(msg->params, cl);
 }
 
-void Server::chanMode(std::vector<std::string> params, Client *cl)
+void Server::chanMode(std::vector<string> params, Client *cl)
 {
-	std::string chan = params[0];
+	string chan = params[0];
 
 	if (_m_chans.find(params[0]) == _m_chans.end())
 		send_reply(params[0] + params[1], cl, ERR_NOSUCHCHANNEL);
-	else if (_m_uflags[chan][cl].find('o') == std::string::npos)
+	else if (_m_uflags[chan][cl].find('o') == string::npos)
 		send_reply(chan, cl, ERR_CHANOPRIVSNEEDED);
 	else
 		setChanMode(params, cl);
 }
 
-void Server::setChanMode(std::vector<std::string> params, Client *cl)
+void Server::setChanMode(std::vector<string> params, Client *cl)
 {
 	std::vector<size_t> par;
-	std::vector<std::string> cmds;
-	std::string c_par;
+	std::vector<string> cmds;
+	string c_par;
 	bool ar = true;
 
-	std::string modes = "imqpsrt";
-	std::string pmodes = "OovklbeI";
+	string modes = "imqpsrt";
+	string pmodes = "OovklbeI";
 
 	for (size_t j = 1; j < params.size(); j++)
 		c_par += params[j] + ' ';
@@ -53,10 +53,10 @@ void Server::setChanMode(std::vector<std::string> params, Client *cl)
 			ar = true;
 		else if (c_par[j] == '-')
 			ar = false;
-		else if (ar && (modes.find(c_par[j]) != std::string::npos))
-			cmds.push_back(std::string("+") + c_par[j]);
-		else if (ar && (pmodes.find(c_par[j]) != std::string::npos)) {
-			cmds.push_back(std::string("+") + c_par[j] + " ");
+		else if (ar && (modes.find(c_par[j]) != string::npos))
+			cmds.push_back(string("+") + c_par[j]);
+		else if (ar && (pmodes.find(c_par[j]) != string::npos)) {
+			cmds.push_back(string("+") + c_par[j] + " ");
 			size_t k = j;
 			size_t begin;
 			size_t end;
@@ -73,10 +73,10 @@ void Server::setChanMode(std::vector<std::string> params, Client *cl)
 			end = k;
 			if (begin != end)
 				c_par.erase(begin, end - begin);
-		} else if (!ar && (modes.find(c_par[j]) != std::string::npos))
-			cmds.push_back(std::string("-") + c_par[j]);
-		else if (!ar && (pmodes.find(c_par[j]) != std::string::npos)) {
-			cmds.push_back(std::string("-") + c_par[j] + " ");
+		} else if (!ar && (modes.find(c_par[j]) != string::npos))
+			cmds.push_back(string("-") + c_par[j]);
+		else if (!ar && (pmodes.find(c_par[j]) != string::npos)) {
+			cmds.push_back(string("-") + c_par[j] + " ");
 			size_t k = j;
 			size_t begin;
 			size_t end;
@@ -93,24 +93,24 @@ void Server::setChanMode(std::vector<std::string> params, Client *cl)
 			end = k;
 			if (begin != end)
 				c_par.erase(begin, end - begin);
-		} else if (modes.find(c_par[j]) == std::string::npos ||
-			   pmodes.find(c_par[j]) == std::string::npos)
-			cmds.push_back(std::string(".") + c_par[j]);
+		} else if (modes.find(c_par[j]) == string::npos ||
+			   pmodes.find(c_par[j]) == string::npos)
+			cmds.push_back(string(".") + c_par[j]);
 	}
 	treat_modes(params, cmds, cl);
 }
 
-void Server::treat_modes(std::vector<std::string> params,
-			 std::vector<std::string> cmds, Client *cl)
+void Server::treat_modes(std::vector<string> params,
+			 std::vector<string> cmds, Client *cl)
 {
-	std::string cmd;
+	string cmd;
 	bool ar;
-	std::string chan = params[0];
+	string chan = params[0];
 
 	for (size_t i = 0; i < cmds.size(); i++) {
 		if (cmds[i][0] == '+' && cmds[i].size() == 2) {
 			if (_m_flags[chan].find(cmds[i][1]) ==
-			    std::string::npos) {
+			    string::npos) {
 				if (cmd.empty() || !ar) {
 					ar = true;
 					cmd += "+";
@@ -120,7 +120,7 @@ void Server::treat_modes(std::vector<std::string> params,
 			}
 		} else if (cmds[i][0] == '-' && cmds[i].size() == 2) {
 			if (_m_flags[chan].find(cmds[i][1]) !=
-			    std::string::npos) {
+			    string::npos) {
 				if (cmd.empty() || ar) {
 					ar = false;
 					cmd += "-";
@@ -138,9 +138,9 @@ void Server::treat_modes(std::vector<std::string> params,
 				chan, NULL);
 }
 
-void Server::treat_args(std::string chan, std::string cmd, Client *cl)
+void Server::treat_args(string chan, string cmd, Client *cl)
 {
-	std::string arg;
+	string arg;
 	size_t i = 0;
 
 	while (cmd[i] != ' ')
@@ -153,21 +153,21 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 	if (cmd[1] == 'b' && arg.size()) {
 		size_t u1;
 		size_t u2;
-		std::string ban;
+		string ban;
 
 		u1 = arg.find('!');
 		u2 = arg.find('@');
-		if (u1 != std::string::npos && u2 != std::string::npos &&
+		if (u1 != string::npos && u2 != string::npos &&
 		    u1 < u2)
 			ban = arg;
-		else if (u1 != std::string::npos && u2 == std::string::npos)
+		else if (u1 != string::npos && u2 == string::npos)
 			ban = arg + "@*";
-		else if (u2 != std::string::npos && u2 < u1)
+		else if (u2 != string::npos && u2 < u1)
 			ban = arg.substr(0, arg.length() - u2) + "!*" +
 			      arg.substr(u2);
-		else if (u2 == u1 && u2 == std::string::npos)
+		else if (u2 == u1 && u2 == string::npos)
 			ban = arg + "!*@*";
-		for (std::vector<std::string>::iterator it =
+		for (std::vector<string>::iterator it =
 			     _m_banmask[chan].begin();
 		     it != _m_banmask[chan].end(); it++) {
 			if (*it == ban && cmd[0] == '-') {
@@ -203,7 +203,7 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 			}
 		}
 	} else if (cmd[1] == 'b') {
-		for (std::vector<std::string>::iterator it =
+		for (std::vector<string>::iterator it =
 			     _m_banmask[chan].begin();
 		     it != _m_banmask[chan].end(); it++)
 			send_reply(chan + " " + *it + " " + _m_whoban[*it] +
@@ -213,21 +213,21 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 	} else if (cmd[1] == 'e' && arg.size()) {
 		size_t u1;
 		size_t u2;
-		std::string except;
+		string except;
 
 		u1 = arg.find('!');
 		u2 = arg.find('@');
-		if (u1 != std::string::npos && u2 != std::string::npos &&
+		if (u1 != string::npos && u2 != string::npos &&
 		    u1 < u2)
 			except = arg;
-		else if (u1 != std::string::npos && u2 == std::string::npos)
+		else if (u1 != string::npos && u2 == string::npos)
 			except = arg + "@*";
-		else if (u2 != std::string::npos && u2 < u1)
+		else if (u2 != string::npos && u2 < u1)
 			except = arg.substr(0, arg.length() - u2) + "!*" +
 				 arg.substr(u2);
-		else if (u2 == u1 && u2 == std::string::npos)
+		else if (u2 == u1 && u2 == string::npos)
 			except = arg + "!*@*";
-		for (std::vector<std::string>::iterator it =
+		for (std::vector<string>::iterator it =
 			     _m_exceptmask[chan].begin();
 		     it != _m_exceptmask[chan].end(); it++) {
 			if (*it == except && cmd[0] == '-') {
@@ -249,7 +249,7 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 		_m_exceptid[except] =
 			reinterpret_cast<uint64_t>(&_m_exceptmask[chan].back());
 	} else if (cmd[1] == 'e') {
-		for (std::vector<std::string>::iterator it =
+		for (std::vector<string>::iterator it =
 			     _m_exceptmask[chan].begin();
 		     it != _m_exceptmask[chan].end(); it++)
 			send_reply(chan + " " + *it + " " + _m_whoexcept[*it] +
@@ -265,7 +265,7 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 					if (_m_uflags[chan]
 						     [_m_pclients[(*it)->prefix]]
 							     .find('v') ==
-					    std::string::npos) {
+					    string::npos) {
 						_m_uflags[chan]
 							 [_m_pclients
 								  [(*it)->prefix]]
@@ -283,7 +283,7 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 					if (_m_uflags[chan]
 						     [_m_pclients[(*it)->prefix]]
 							     .find('v') !=
-					    std::string::npos) {
+					    string::npos) {
 						_m_uflags[chan][_m_pclients
 									[(*it)->prefix]]
 							.erase(_m_uflags
@@ -313,7 +313,7 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 					if (_m_uflags[chan]
 						     [_m_pclients[(*it)->prefix]]
 							     .find('o') ==
-					    std::string::npos) {
+					    string::npos) {
 						_m_uflags[chan]
 							 [_m_pclients
 								  [(*it)->prefix]]
@@ -331,7 +331,7 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 					if (_m_uflags[chan]
 						     [_m_pclients[(*it)->prefix]]
 							     .find('o') !=
-					    std::string::npos) {
+					    string::npos) {
 						_m_uflags[chan][_m_pclients
 									[(*it)->prefix]]
 							.erase(_m_uflags
@@ -355,13 +355,13 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 	} else if (cmd[1] == 'k') {
 		if (cmd[0] == '+' && arg.size()) {
 			_m_chankey[chan] = arg;
-			if (_m_flags[chan].find('k') == std::string::npos)
+			if (_m_flags[chan].find('k') == string::npos)
 				_m_flags[chan].push_back('k');
 			send_to_channel(":" + cl->prefix + " MODE " + chan +
 						" +k " + arg + "\r\n",
 					chan, NULL);
 		} else if (cmd[0] == '-' &&
-			   _m_flags[chan].find('k') != std::string::npos) {
+			   _m_flags[chan].find('k') != string::npos) {
 			_m_flags[chan].erase(_m_flags[chan].find('k'), 1);
 			_m_chankey[chan] = "";
 			send_to_channel(":" + cl->prefix + " MODE " + chan +
@@ -371,12 +371,12 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
 	} else if (cmd[1] == 'l') {
 		if (cmd[0] == '+' && arg.size()) {
 			_m_flags[chan].push_back('l');
-			_m_limits[chan] = ft_atoi(arg.c_str());
+			_m_limits[chan] = atoi(arg.c_str());
 			send_to_channel(":" + cl->prefix + " MODE " + chan +
 						" +l " + arg + "\r\n",
 					chan, NULL);
 		} else if (cmd[0] == '-' &&
-			   _m_flags[chan].find('l') != std::string::npos) {
+			   _m_flags[chan].find('l') != string::npos) {
 			_m_flags[chan].erase(_m_flags[chan].find('l'), 1);
 			send_to_channel(":" + cl->prefix + " MODE " + chan +
 						" -l" + "\r\n",

@@ -2,7 +2,7 @@
 
 void Server::invitecmd(Message *msg, Client *cl)
 {
-	std::string nickname;
+	string nickname;
 
 	if (_m_nickdb.count(msg->params[0]) == 1)
 		nickname = msg->params[0];
@@ -14,7 +14,7 @@ void Server::invitecmd(Message *msg, Client *cl)
 		send_reply(msg->params[0], cl, ERR_NEEDMOREPARAMS);
 		return;
 	} else if (_m_uflags[msg->params[1]][cl].find('o') ==
-		   std::string::npos) {
+		   string::npos) {
 		send_reply("", cl, ERR_CHANOPRIVSNEEDED);
 		return;
 	}
@@ -29,7 +29,7 @@ void Server::invitecmd(Message *msg, Client *cl)
 			}
 		}
 		_m_invite[msg->params[1]].push_back(nickname);
-		std::string to_send = ":" + cl->prefix + " INVITE " + nickname +
+		string to_send = ":" + cl->prefix + " INVITE " + nickname +
 				      " " + msg->params[1] + "\r\n";
 		send(_m_nickdb[nickname].top()->clfd, to_send.c_str(),
 		     to_send.length(), 0);
@@ -46,7 +46,7 @@ void Server::topiccmd(Message *msg, Client *cl)
 		send_reply("", cl, ERR_NEEDMOREPARAMS);
 		return;
 	} else {
-		std::string chan = msg->params[0];
+		string chan = msg->params[0];
 
 		if (_m_chans.find(chan) == _m_chans.end())
 			send_reply("", cl, ERR_NOSUCHCHANNEL);
@@ -59,7 +59,7 @@ void Server::topiccmd(Message *msg, Client *cl)
 				send_reply(chan, cl, RPL_TOPIC);
 		} else {
 			if (_m_uflags[chan][cl].find('o') ==
-			    std::string::npos) {
+			    string::npos) {
 				send_reply("", cl, ERR_CHANOPRIVSNEEDED);
 				return;
 			}
@@ -78,17 +78,17 @@ void Server::kickcmd(Message *msg, Client *cl)
 		return;
 	}
 
-	std::string chan = msg->params[0];
-	std::string user = msg->params[1];
+	string chan = msg->params[0];
+	string user = msg->params[1];
 
 	if (_m_chans.find(chan) == _m_chans.end())
 		send_reply("", cl, ERR_NOSUCHCHANNEL);
-	else if (_m_uflags[chan][cl].find('o') == std::string::npos)
+	else if (_m_uflags[chan][cl].find('o') == string::npos)
 		send_reply("", cl, ERR_CHANOPRIVSNEEDED);
 	else if (!isNickonchan(cl->nickname, chan) || !isNickonchan(user, chan))
 		send_reply(chan, cl, ERR_NOTOCHANNEL);
 	else {
-		std::string comment;
+		string comment;
 		if (msg->params.size() >= 3)
 			comment = msg->params[2];
 		else

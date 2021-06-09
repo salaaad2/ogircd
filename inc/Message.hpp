@@ -4,9 +4,11 @@
 #include <vector>
 #include <string>
 
+using std::string;
+
 struct Message {
-	std::string command;
-	std::vector<std::string> params;
+	string command;
+	std::vector<string> params;
 	size_t count;
 	size_t len;
 
@@ -15,6 +17,6 @@ struct Message {
 	}
 };
 
-std::vector<Message *> parse_message(std::string buf);
+std::vector<Message *> parse_message(string buf);
 
 #endif // __MESSAGE_H_

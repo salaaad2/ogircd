@@ -7,12 +7,12 @@ void Server::privmsgcmd(Message *msg, Client *cl, bool reply)
 	// ERR_WILDTOPLEVEL --No                ERR_TOOMANYTARGETS --No
 	// ERR_NOSUCHNICK --Yes
 	//  RPL_AWAY --No
-	std::list<std::string> chans;
+	std::list<string> chans;
 	std::list<Client *> nicknames;
-	std::string curr_chan_tmp;
-	std::string dests;
-	std::string c_dest;
-	std::string text;
+	string curr_chan_tmp;
+	string dests;
+	string c_dest;
+	string text;
 	Client *cl_tmp;
 	size_t i = 0;
 
@@ -49,13 +49,13 @@ void Server::privmsgcmd(Message *msg, Client *cl, bool reply)
 	chans.sort();
 	chans.unique();
 	curr_chan_tmp = cl->current_chan;
-	for (std::list<std::string>::iterator it = chans.begin();
+	for (std::list<string>::iterator it = chans.begin();
 	     it != chans.end(); it++) {
 		cl->current_chan = *it;
 		if ((isNickonchan(cl->nickname, *it) &&
-		     (_m_flags[*it].find("m") == std::string::npos ||
-		      (_m_uflags[*it][cl].find("v") != std::string::npos ||
-		       _m_uflags[*it][cl].find("o") != std::string::npos))) &&
+		     (_m_flags[*it].find("m") == string::npos ||
+		      (_m_uflags[*it][cl].find("v") != string::npos ||
+		       _m_uflags[*it][cl].find("o") != string::npos))) &&
 		    !isbanned(cl, *it))
 			send_to_channel(":" + cl->prefix + " " + msg->command +
 						" " + *it + " " + text + "\r\n",
@@ -65,7 +65,7 @@ void Server::privmsgcmd(Message *msg, Client *cl, bool reply)
 	}
 	cl->current_chan = curr_chan_tmp;
 	std::vector<Client *> vec(nicknames.begin(), nicknames.end());
-	std::string to_send;
+	string to_send;
 	for (std::vector<Client *>::iterator it = vec.begin(); it != vec.end();
 	     it++) {
 		to_send = ":" + cl->prefix + " " + msg->command + " " +

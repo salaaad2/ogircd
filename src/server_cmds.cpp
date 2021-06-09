@@ -45,9 +45,9 @@ void Server::infocmd(Message *msg, Client *cl)
 
 void Server::whocmd(Message *msg, Client *cl)
 {
-	typedef std::map<std::string, std::vector<Client *> >::iterator chan_it;
-	typedef std::map<std::string, Client *>::iterator p_it;
-	std::string req;
+	typedef std::map<string, std::vector<Client *> >::iterator chan_it;
+	typedef std::map<string, Client *>::iterator p_it;
+	string req;
 	bool op = false;
 	if (msg->params.size() >= 1) {
 		if (msg->params.size() == 2 && msg->params[1] == "o")
@@ -61,7 +61,7 @@ void Server::whocmd(Message *msg, Client *cl)
 					if (op == false ||
 					    _m_uflags[(*it).first][(*cl_it)]
 							    .find("o") !=
-						    std::string::npos) {
+						    string::npos) {
 						req = msg->params[0] + " " +
 						      (*cl_it)->username + " " +
 						      (*cl_it)->host + " " +
@@ -70,13 +70,13 @@ void Server::whocmd(Message *msg, Client *cl)
 						if (_m_uflags[(*it).first]
 							     [(*cl_it)]
 								     .find("o") !=
-						    std::string::npos)
+						    string::npos)
 							req += "@ :0 " +
 							       (*cl_it)->realname;
 						else if (_m_uflags[(*it).first]
 								  [(*cl_it)]
 									  .find("v") !=
-							 std::string::npos)
+							 string::npos)
 							req += "+ :0 " +
 							       (*cl_it)->realname;
 						else
@@ -118,8 +118,8 @@ void Server::whocmd(Message *msg, Client *cl)
 
 void Server::whoiscmd(Message *msg, Client *cl)
 {
-	typedef std::map<std::string, Client *>::iterator p_it;
-	std::string req;
+	typedef std::map<string, Client *>::iterator p_it;
+	string req;
 	bool find;
 	if (msg->params.size() == 0) {
 		send_reply("", cl, ERR_NONICKNAMEGIVEN);
@@ -137,17 +137,17 @@ void Server::whoiscmd(Message *msg, Client *cl)
 				      " * :" + (*it).second->realname;
 				send_reply(req, cl, RPL_WHOISUSER);
 				req = (*it).second->nickname + " :";
-				for (std::vector<std::string>::iterator c_it =
+				for (std::vector<string>::iterator c_it =
 					     (*it).second->chans.begin();
 				     c_it != (*it).second->chans.end();
 				     c_it++) {
 					if (_m_uflags[(*c_it)][(*it).second]
 						    .find("o") !=
-					    std::string::npos)
+					    string::npos)
 						req += " @" + *c_it;
 					else if (_m_uflags[(*c_it)][(*it).second]
 							 .find("v") !=
-						 std::string::npos)
+						 string::npos)
 						req += " +" + *c_it;
 					else
 						req += " " + *c_it;
@@ -162,7 +162,7 @@ void Server::whoiscmd(Message *msg, Client *cl)
 			send_reply(msg->params[i] + " ", cl, ERR_NOSUCHNICK);
 		}
 		if (find)
-			send_reply(std::string(cl->nickname) + " " +
+			send_reply(string(cl->nickname) + " " +
 					   msg->params[i],
 				   cl, RPL_ENDOFWHOIS);
 	}
@@ -171,7 +171,7 @@ void Server::whoiscmd(Message *msg, Client *cl)
 void Server::whowascmd(Message *msg, Client *cl)
 {
 	int count = -1;
-	std::string req;
+	string req;
 	std::stack<Client *> n_db;
 	if (!msg->params.size()) {
 		send_reply("", cl, ERR_NONICKNAMEGIVEN);
@@ -200,7 +200,7 @@ void Server::pingcmd(Message *msg, Client *cl)
 	if (msg->params[0].empty()) {
 		send_reply(msg->params[0], cl, ERR_NOSUCHSERVER);
 	} else {
-		std::string to_send;
+		string to_send;
 
 		to_send +=
 			(":" + cl->prefix + " PONG " + _servername + " \r\n");

@@ -3,7 +3,7 @@
 
 void Server::passcmd(Message *msg, int fd)
 {
-	std::string s = ft_utoa(fd);
+	string s = ft_utoa(fd);
 
 	if (_m_pclients[s]->is_register == true) {
 		send_reply("", _m_pclients[_m_fdprefix[fd]],
@@ -18,7 +18,7 @@ void Server::passcmd(Message *msg, int fd)
 
 void Server::nickcmd(Message *msg, int fd)
 {
-	std::string s = ft_utoa(fd);
+	string s = ft_utoa(fd);
 
 	if (msg->params[0].empty() == 1) {
 		send_reply(msg->params[0], _m_pclients[_m_fdprefix[fd]],
@@ -39,7 +39,7 @@ void Server::nickcmd(Message *msg, int fd)
 			s = ":" + _m_fdprefix[fd] + " NICK " + ":" +
 			    msg->params[0] + "\r\n";
 			send(fd, s.c_str(), strlen(s.c_str()), 0);
-			for (std::vector<std::string>::iterator it =
+			for (std::vector<string>::iterator it =
 				     _m_pclients[_m_fdprefix[fd]]->chans.begin();
 			     it != _m_pclients[_m_fdprefix[fd]]->chans.end();
 			     it++)
@@ -56,7 +56,7 @@ void Server::nickcmd(Message *msg, int fd)
 
 void Server::usercmd(Message *msg, int fd)
 {
-	std::string s = ft_utoa(fd);
+	string s = ft_utoa(fd);
 
 	if (_m_pclients[s]->is_register == true)
 		send_reply("", _m_pclients[_m_fdprefix[fd]],
@@ -73,7 +73,7 @@ void Server::usercmd(Message *msg, int fd)
 
 void Server::do_registration(int fd)
 {
-	std::string s = ft_utoa(fd);
+	string s = ft_utoa(fd);
 
 	if (_m_pclients[s]->nickname[0] &&
 	    !_m_pclients[s]->password.compare(_password)) {
@@ -87,8 +87,8 @@ void Server::do_registration(int fd)
 
 void Server::create_client_prefix(int fd)
 {
-	std::string prefix;
-	std::string s;
+	string prefix;
+	string s;
 
 	s = _m_fdprefix[fd];
 	prefix += _m_pclients[s]->nickname;

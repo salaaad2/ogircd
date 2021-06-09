@@ -80,13 +80,13 @@ size_t ft_strlcpy(char *dst, const char *src, size_t size)
 	return (ft_strlen(src));
 }
 
-std::string ft_utoa(unsigned int n)
+string ft_utoa(unsigned int n)
 {
-	std::string str;
+	string str;
 	size_t i;
 
 	if (n == 0)
-		return (std::string("0"));
+		return (string("0"));
 	i = n;
 	while (i) {
 		str.insert(str.begin(), (i % 10) + 48);
@@ -95,14 +95,14 @@ std::string ft_utoa(unsigned int n)
 	return (str);
 }
 
-std::string ft_format_cmd(std::string cmd)
+string ft_format_cmd(string cmd)
 {
 	while (cmd.size() < 3)
 		cmd.insert(cmd.begin(), '0');
 	return (cmd);
 }
 
-std::string ft_current_time(void)
+string ft_current_time(void)
 {
 	time_t rawtime;
 	struct tm *timeinfo;
@@ -112,7 +112,7 @@ std::string ft_current_time(void)
 	return (asctime(timeinfo));
 }
 
-std::string ft_uptime(time_t &launch_time)
+string ft_uptime(time_t &launch_time)
 {
 	time_t rawtime;
 	time_t uptime;
@@ -125,7 +125,7 @@ std::string ft_uptime(time_t &launch_time)
 		ft_utoa(s_uptime->tm_min) + ":" + ft_utoa(s_uptime->tm_sec));
 }
 
-int finding(std::vector<std::vector<int> > &dp, std::string &s, std::string &p,
+int finding(std::vector<std::vector<int> > &dp, string &s, string &p,
 	    int n, int m)
 {
 	// return 1 if n and m are negative
@@ -165,7 +165,7 @@ int finding(std::vector<std::vector<int> > &dp, std::string &s, std::string &p,
 	return dp[n][m];
 }
 
-bool isMatch(std::vector<std::vector<int> > &dp, std::string s, std::string p)
+bool isMatch(std::vector<std::vector<int> > &dp, string s, string p)
 {
 	dp.clear();
 
@@ -175,7 +175,7 @@ bool isMatch(std::vector<std::vector<int> > &dp, std::string s, std::string p)
 		       finding(dp, s, p, s.size() - 1, p.size() - 1);
 }
 
-bool strmatch(std::string s, std::string p)
+bool strmatch(string s, string p)
 {
 	std::vector<std::vector<int> > dp;
 	return isMatch(dp, s, p);

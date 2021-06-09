@@ -5,7 +5,7 @@
 void rec_data(Server &serv, int i, Fds *fds)
 {
 	std::vector<Message *> vm;
-	std::string tmp;
+	string tmp;
 	char buf[512];
 	int nbytes;
 
@@ -25,7 +25,7 @@ void rec_data(Server &serv, int i, Fds *fds)
 #ifdef DEBUG_IRC
 	std::cout << "debug: data received : [" << buf << "]" << std::endl;
 #endif
-	if (tmp.find("\r") != std::string::npos) {
+	if (tmp.find("\r") != string::npos) {
 		vm = parse_message(serv._m_fdreq[i]);
 		for (std::vector<Message *>::iterator it = vm.begin();
 		     it != vm.end(); ++it) {

@@ -28,7 +28,7 @@ enum e_commands {
 	SHUTDOWN
 };
 
-void initcmdmap(std::map<std::string, e_commands> *c_map)
+void initcmdmap(std::map<string, e_commands> *c_map)
 {
 	(*c_map)["JOIN"] = JOIN;
 	(*c_map)["INVITE"] = INVITE;

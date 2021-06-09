@@ -1,18 +1,18 @@
 #include "../inc/replies.hpp"
 #include "../inc/Server.hpp"
 
-std::string Server::msg_rpl(std::string s, int code, Client *cl)
+string Server::msg_rpl(string s, int code, Client *cl)
 {
-	std::string response;
+	string response;
 
 	switch (code) {
 		/* REPLIES */
 
 	case RPL_WELCOME:
-		return std::string("Welcome to the Internet Relay Network " +
+		return string("Welcome to the Internet Relay Network " +
 				   cl->prefix);
 	case RPL_YOURHOST:
-		return (":Your host is " + std::string(_ip) +
+		return (":Your host is " + string(_ip) +
 			" running ircserv");
 	case RPL_TOPIC:
 		return (s + " :" + _m_topics[s]);
@@ -20,10 +20,10 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
 		response += "= " + s + " :";
 		for (size_t i = 0; i < _m_chans[s].size(); i++) {
 			if (_m_uflags[s][_m_chans[s][i]].find('o') !=
-			    std::string::npos)
+			    string::npos)
 				response += "@";
 			else if (_m_uflags[s][_m_chans[s][i]].find('v') !=
-				 std::string::npos)
+				 string::npos)
 				response += "+";
 			response += _m_chans[s][i]->nickname;
 			response += " ";
@@ -68,11 +68,11 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
 	case RPL_WHOISSERVER:
 		return (s);
 	case RPL_LISTSTART:
-		return (std::string() + "Channel :Users  Name");
+		return (string() + "Channel :Users  Name");
 	case RPL_LIST:
 		return (s + " :" + _m_topics[s]);
 	case RPL_LISTEND:
-		return (std::string() + ":End of /LIST");
+		return (string() + ":End of /LIST");
 	case RPL_CHANNELMODEIS:
 		return (s);
 	case RPL_BANLIST:
@@ -89,57 +89,57 @@ std::string Server::msg_rpl(std::string s, int code, Client *cl)
 		/* ERRORS */
 
 	case ERR_ALREADYREGISTERED:
-		return std::string(s + ":You may not reregister");
+		return string(s + ":You may not reregister");
 	case ERR_NICKNAMEINUSE:
-		return std::string(s + ":Nickname already in use");
+		return string(s + ":Nickname already in use");
 	case ERR_USERONCHANNEL:
-		return std::string(s + ":User already on channel");
+		return string(s + ":User already on channel");
 	case ERR_NOTREGISTERED:
-		return std::string(
+		return string(
 			s + ":You need to register before trying this command");
 	case ERR_PASSWDMISMATCH:
-		return std::string(s + ":Password doesn't match the server's");
+		return string(s + ":Password doesn't match the server's");
 	case ERR_NONICKNAMEGIVEN:
-		return std::string(s + ":No nickname given");
+		return string(s + ":No nickname given");
 	case ERR_ERRONEUSNICKNAME:
-		return std::string(s + ":Erroneus nickname");
+		return string(s + ":Erroneus nickname");
 	case ERR_NEEDMOREPARAMS:
-		return std::string(s + ":Insufficient parameter count");
+		return string(s + ":Insufficient parameter count");
 	case ERR_USERSDONTMATCH:
-		return std::string(s + ":Usernames don't match");
+		return string(s + ":Usernames don't match");
 	case ERR_NOSUCHNICK:
-		return std::string(s + ":No such nick/channel");
+		return string(s + ":No such nick/channel");
 	case ERR_WASNOSUCHNICK:
-		return std::string(s + ":There was no such nick");
+		return string(s + ":There was no such nick");
 	case ERR_NOTEXTTOSEND:
-		return std::string(s + ":There is no text to send");
+		return string(s + ":There is no text to send");
 	case ERR_NOTOCHANNEL:
-		return std::string(s + ":User not on channel");
+		return string(s + ":User not on channel");
 	case ERR_BADCHANMASK:
-		return std::string(":Invalid JOIN parameter" + s);
+		return string(":Invalid JOIN parameter" + s);
 	case ERR_UNKNOWNMODE:
-		return std::string(s + ":is unknown mode char to me");
+		return string(s + ":is unknown mode char to me");
 	case ERR_NOSUCHCHANNEL:
-		return std::string(s + ":No such channel");
+		return string(s + ":No such channel");
 	case ERR_CHANOPRIVSNEEDED:
-		return std::string(":You are not channel operator");
+		return string(":You are not channel operator");
 	case ERR_BADCHANNELKEY:
-		return std::string(
+		return string(
 			s + ":Cannot join channel (+k) -- Wrong channel key");
 	case ERR_BANNEDFROMCHAN:
-		return std::string(
+		return string(
 			s + ":Cannot join channel (+b) -- You are banned");
 	case ERR_CHANNELISFULL:
-		return std::string(
+		return string(
 			s +
 			":Cannot join channel (+l) -- Channel is full, try later");
 	case ERR_INVITEONLYCHAN:
-		return std::string(
+		return string(
 			s + ":Cannot join channel (+i) -- Invited users only");
 	case ERR_NORECIPIENT:
-		return std::string(s + ":No recipient given (PRIVMSG)");
+		return string(s + ":No recipient given (PRIVMSG)");
 	case ERR_CANNOTSENDTOCHAN:
-		return std::string(s + ":Cannot send to channel");
+		return string(s + ":Cannot send to channel");
 	default:
 		return s;
 	}

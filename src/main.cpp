@@ -25,13 +25,13 @@ int postSelectLoop(Server &serv, Fds *fds)
 	return 0;
 }
 
-std::vector<std::string> parseParams(size_t ac, char **av)
+std::vector<string> parseParams(size_t ac, char **av)
 {
-	std::vector<std::string> vec;
+	std::vector<string> vec;
 	size_t i = 0;
 
 	for (i = 1; i < ac; i++) {
-		vec.push_back(std::string(av[i]));
+		vec.push_back(string(av[i]));
 	}
 	return (vec);
 }
@@ -44,7 +44,7 @@ int main(int ac, char *av[])
 			<< std::endl;
 		return (1);
 	}
-	std::vector<std::string> pvec = parseParams(ac, av);
+	std::vector<string> pvec = parseParams(ac, av);
 	Server serv(pvec);
 	Fds *fds = new Fds;
 	int newfd;
