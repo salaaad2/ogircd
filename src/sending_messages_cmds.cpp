@@ -57,8 +57,8 @@ void Server::privmsgcmd(Message *msg, Client *cl, bool reply)
 		      (_m_uflags[*it][cl].find("v") != std::string::npos ||
 		       _m_uflags[*it][cl].find("o") != std::string::npos))) &&
 		    !isbanned(cl, *it))
-			send_to_channel(":" + cl->prefix + " " + msg->command + " " +
-						*it + " " + text + "\r\n",
+			send_to_channel(":" + cl->prefix + " " + msg->command +
+						" " + *it + " " + text + "\r\n",
 					*it, cl);
 		else if (reply)
 			send_reply(*it, cl, ERR_CANNOTSENDTOCHAN);
@@ -68,8 +68,8 @@ void Server::privmsgcmd(Message *msg, Client *cl, bool reply)
 	std::string to_send;
 	for (std::vector<Client *>::iterator it = vec.begin(); it != vec.end();
 	     it++) {
-		to_send = ":" + cl->prefix + " " + msg->command + " " + (*it)->nickname +
-			  " " + text + "\r\n";
+		to_send = ":" + cl->prefix + " " + msg->command + " " +
+			  (*it)->nickname + " " + text + "\r\n";
 		send((*it)->clfd, to_send.c_str(), to_send.length(), 0);
 	}
 }

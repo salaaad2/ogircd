@@ -2,6 +2,7 @@
 #define COMMANDS_H_
 
 #include <iostream>
+#include <map>
 
 using std::string;
 
@@ -27,7 +28,8 @@ enum e_commands {
 	SHUTDOWN
 };
 
-void initcmdmap(std::map<std::string, e_commands> * c_map) {
+void initcmdmap(std::map<std::string, e_commands> *c_map)
+{
 	(*c_map)["JOIN"] = JOIN;
 	(*c_map)["INVITE"] = INVITE;
 	(*c_map)["PART"] = PART;

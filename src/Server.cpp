@@ -154,9 +154,8 @@ void Server::do_command(Message *msg, int fd)
 	if (msg->command == "PASS") {
 		passcmd(msg, fd);
 	} else if (msg->command == "NICK") {
-		if (_m_fdprefix.count(fd) != 0)
-			nickcmd(msg, fd);
-		else if (_m_pclients[_m_fdprefix[fd]]->password != _password)
+		if (_m_pclients[_m_fdprefix[fd]]->password != _password &&
+			_m_fdprefix.count(fd) != 0)
 			send_reply("", cl, ERR_PASSWDMISMATCH);
 		else
 			nickcmd(msg, fd);
@@ -169,7 +168,8 @@ void Server::do_command(Message *msg, int fd)
 			usercmd(msg, fd);
 	} else if (_m_pclients.count(_m_fdprefix[fd]) &&
 			   _m_pclients[_m_fdprefix[fd]]->is_register == true) {
-		switch(c_map[msg->command]) {
+		switch(c_map[msg->command])
+		{
 			case JOIN: joincmd(msg, cl); break;
 			case INVITE: invitecmd(msg, cl); break;
 			case PART: partcmd(msg, cl); break;
