@@ -54,7 +54,7 @@ void Server::whocmd(Message *msg, Client *cl)
 			op = true;
 		for (chan_it it = _m_chans.begin(); it != _m_chans.end();
 		     it++) {
-			if (strmatch((*it).first, msg->params[0])) {
+			if (u_strmatch((*it).first, msg->params[0])) {
 				for (std::vector<Client *>::iterator cl_it =
 					     (*it).second.begin();
 				     cl_it != (*it).second.end(); cl_it++) {
@@ -91,11 +91,11 @@ void Server::whocmd(Message *msg, Client *cl)
 		if (req.empty()) {
 			for (p_it it = _m_pclients.begin();
 			     it != _m_pclients.end(); it++) {
-				if (strmatch((*it).second->host,
+				if (u_strmatch((*it).second->host,
 					     msg->params[0]) ||
-				    strmatch((*it).second->realname,
+				    u_strmatch((*it).second->realname,
 					     msg->params[0]) ||
-				    strmatch((*it).second->nickname,
+				    u_strmatch((*it).second->nickname,
 					     msg->params[0])) {
 					if ((*it).second->is_logged == true) {
 						req = "* " + msg->params[0] +

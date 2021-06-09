@@ -191,7 +191,7 @@ void Server::treat_args(string chan, string cmd, Client *cl)
 		for (std::vector<Client *>::iterator it =
 			     _m_chans[chan].begin();
 		     it != _m_chans[chan].end(); it++) {
-			if (strmatch((*it)->prefix, ban) &&
+			if (u_strmatch((*it)->prefix, ban) &&
 			    !isexcepted(*it, chan)) {
 				_m_chans[chan].erase(
 					clposition((*it)->nickname, chan));
@@ -207,7 +207,7 @@ void Server::treat_args(string chan, string cmd, Client *cl)
 			     _m_banmask[chan].begin();
 		     it != _m_banmask[chan].end(); it++)
 			send_reply(chan + " " + *it + " " + _m_whoban[*it] +
-					   " " + ft_utoa(_m_banid[*it]),
+					   " " + u_utoa(_m_banid[*it]),
 				   cl, RPL_BANLIST);
 		send_reply("", cl, RPL_ENDOFBANLIST);
 	} else if (cmd[1] == 'e' && arg.size()) {
@@ -253,7 +253,7 @@ void Server::treat_args(string chan, string cmd, Client *cl)
 			     _m_exceptmask[chan].begin();
 		     it != _m_exceptmask[chan].end(); it++)
 			send_reply(chan + " " + *it + " " + _m_whoexcept[*it] +
-					   " " + ft_utoa(_m_exceptid[*it]),
+					   " " + u_utoa(_m_exceptid[*it]),
 				   cl, RPL_EXCEPTLIST);
 		send_reply("", cl, RPL_ENDOFEXCEPTLIST);
 	} else if (cmd[1] == 'v' && arg.size()) {

@@ -42,9 +42,9 @@ string Server::msg_rpl(string s, int code, Client *cl)
 	case RPL_VERSION:
 		return (":Version is 1.0.1");
 	case RPL_STATSUPTIME:
-		return (":Up " + ft_uptime(_launch_time));
+		return (":Up " + u_uptime(_launch_time));
 	case RPL_TIME:
-		return (ft_current_time());
+		return (u_current_time());
 	case RPL_ENDOFSTATS:
 		return (":End of /STATS report");
 	case RPL_WHOREPLY:

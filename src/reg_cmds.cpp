@@ -3,7 +3,7 @@
 
 void Server::passcmd(Message *msg, int fd)
 {
-	string s = ft_utoa(fd);
+	string s = u_utoa(fd);
 
 	if (_m_pclients[s]->is_register == true) {
 		send_reply("", _m_pclients[_m_fdprefix[fd]],
@@ -18,7 +18,7 @@ void Server::passcmd(Message *msg, int fd)
 
 void Server::nickcmd(Message *msg, int fd)
 {
-	string s = ft_utoa(fd);
+	string s = u_utoa(fd);
 
 	if (msg->params[0].empty() == 1) {
 		send_reply(msg->params[0], _m_pclients[_m_fdprefix[fd]],
@@ -56,7 +56,7 @@ void Server::nickcmd(Message *msg, int fd)
 
 void Server::usercmd(Message *msg, int fd)
 {
-	string s = ft_utoa(fd);
+	string s = u_utoa(fd);
 
 	if (_m_pclients[s]->is_register == true)
 		send_reply("", _m_pclients[_m_fdprefix[fd]],
@@ -73,7 +73,7 @@ void Server::usercmd(Message *msg, int fd)
 
 void Server::do_registration(int fd)
 {
-	string s = ft_utoa(fd);
+	string s = u_utoa(fd);
 
 	if (_m_pclients[s]->nickname[0] &&
 	    !_m_pclients[s]->password.compare(_password)) {

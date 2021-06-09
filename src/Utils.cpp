@@ -1,86 +1,6 @@
 #include "../inc/ftirc.hpp"
 
-int ft_atoi(const char *str)
-{
-	int i;
-	int s;
-	int nb;
-
-	i = 0;
-	s = 1;
-	nb = 0;
-	while (str[i] == ' ' || str[i] == '\t' || str[i] == '\n' ||
-	       str[i] == '\f' || str[i] == '\r' || str[i] == '\v')
-		i++;
-	if (str[i] == '-' || str[i] == '+') {
-		if (str[i] == '-')
-			s = -1;
-		i++;
-	}
-	while (str[i] >= '0' && str[i] <= '9') {
-		nb = nb * 10 + (str[i] - '0');
-		i++;
-	}
-	return (s * nb);
-}
-
-void ft_bzero(void *s, size_t n)
-{
-	unsigned char *str;
-	size_t i;
-
-	i = 0;
-	str = (unsigned char *)s;
-	while (i < n) {
-		*str = 0;
-		str++;
-		i++;
-	}
-}
-
-int ft_isalpha(const char c)
-{
-	if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122))
-		return (1);
-	else
-		return (0);
-}
-
-int ft_isnum(const char c)
-{
-	if (c >= 48 && c <= 57)
-		return (1);
-	else
-		return (0);
-}
-
-size_t ft_strlen(const char *src)
-{
-	size_t i = 0;
-
-	while (src[i])
-		i++;
-	return i;
-}
-
-size_t ft_strlcpy(char *dst, const char *src, size_t size)
-{
-	size_t i;
-
-	if (!dst || !src)
-		return (0);
-	i = 0;
-	if (size == 0)
-		return (ft_strlen(src));
-	while (i < size - 1 && src[i]) {
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-	return (ft_strlen(src));
-}
-
-string ft_utoa(unsigned int n)
+string u_utoa(unsigned int n)
 {
 	string str;
 	size_t i;
@@ -95,14 +15,14 @@ string ft_utoa(unsigned int n)
 	return (str);
 }
 
-string ft_format_cmd(string cmd)
+string u_format_cmd(string cmd)
 {
 	while (cmd.size() < 3)
 		cmd.insert(cmd.begin(), '0');
 	return (cmd);
 }
 
-string ft_current_time(void)
+string u_current_time(void)
 {
 	time_t rawtime;
 	struct tm *timeinfo;
@@ -112,7 +32,7 @@ string ft_current_time(void)
 	return (asctime(timeinfo));
 }
 
-string ft_uptime(time_t &launch_time)
+string u_uptime(time_t &launch_time)
 {
 	time_t rawtime;
 	time_t uptime;
@@ -120,9 +40,9 @@ string ft_uptime(time_t &launch_time)
 	time(&rawtime);
 	uptime = rawtime - launch_time;
 	s_uptime = localtime(&uptime);
-	return (ft_utoa(s_uptime->tm_mday - 1) + " days " +
-		ft_utoa(s_uptime->tm_hour - 1) + ":" +
-		ft_utoa(s_uptime->tm_min) + ":" + ft_utoa(s_uptime->tm_sec));
+	return (u_utoa(s_uptime->tm_mday - 1) + " days " +
+		u_utoa(s_uptime->tm_hour - 1) + ":" +
+		u_utoa(s_uptime->tm_min) + ":" + u_utoa(s_uptime->tm_sec));
 }
 
 int finding(std::vector<std::vector<int> > &dp, string &s, string &p,
@@ -175,7 +95,7 @@ bool isMatch(std::vector<std::vector<int> > &dp, string s, string p)
 		       finding(dp, s, p, s.size() - 1, p.size() - 1);
 }
 
-bool strmatch(string s, string p)
+bool u_strmatch(string s, string p)
 {
 	std::vector<std::vector<int> > dp;
 	return isMatch(dp, s, p);

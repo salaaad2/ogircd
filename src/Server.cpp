@@ -58,7 +58,7 @@ void Server::new_serv(std::vector<string> &vm)
 	}
 	_port = atoi(vm[0].c_str());
 	_password = vm[1];
-	ft_bzero(&(_addr.sin_zero), 8);
+	bzero(&(_addr.sin_zero), 8);
 	if (bind(listener, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
 		perror(BIND_ERROR);
 		exit(1);
@@ -82,7 +82,7 @@ int Server::addclient(int listener)
 	} else
 		nc->host = inet_ntoa(
 			((struct sockaddr_in *)nc->clientaddr)->sin_addr);
-	s = ft_utoa(nc->clfd);
+	s = u_utoa(nc->clfd);
 	_m_pclients[s] = nc;
 	_m_fdprefix[nc->clfd] = s;
 	return (nc->clfd);
@@ -115,7 +115,7 @@ void Server::send_reply(string s, Client *cl, int code)
 	string to_send;
 	string prefix;
 	if (code)
-		ccmd = ft_format_cmd(ft_utoa(code));
+		ccmd = u_format_cmd(u_utoa(code));
 	prefix = ":";
 	prefix += _ip;
 

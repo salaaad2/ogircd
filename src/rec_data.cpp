@@ -9,7 +9,7 @@ void rec_data(Server &serv, int i, Fds *fds)
 	char buf[512];
 	int nbytes;
 
-	ft_bzero(buf, 512);
+	bzero(buf, 512);
 	if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0) {
 		std::vector<Message *>::iterator it;
 		serv.delog(i);
