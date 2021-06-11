@@ -211,7 +211,6 @@ void Server::delog(int fd)
 	cl->chans.clear();
 	cl->is_logged = false;
 	_m_pclients.erase(cl->prefix);
-	_m_nickdb.erase(cl->nickname);
 	close(cl->clfd);
 	FD_CLR(cl->clfd, &_fds->master);
 	delete cl;
