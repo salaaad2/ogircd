@@ -188,8 +188,9 @@ void Server::treat_args(std::string chan, std::string cmd, Client *cl)
         {
             if (strmatch((*it)->prefix, ban) && !isexcepted(*it, chan))
             {
-                _m_chans[chan].erase(clposition((*it)->nickname, chan));
-                _m_nickdb[(*it)->nickname].top()->chans.erase(chposition(_m_nickdb[(*it)->nickname].top(), chan));
+				std::string nickname = (*it)->nickname;
+                _m_chans[chan].erase(clposition(nickname, chan));
+                _m_nickdb[nickname].top()->chans.erase(chposition(_m_nickdb[nickname].top(), chan));
                 return ;
             }
         }
