@@ -17,19 +17,20 @@ OBJS_DIR		 = obj/
 #==============================================================================#
 #--------------------------------- FILES --------------------------------------#
 #==============================================================================#
-SRCS_NAME		  = parse_message
-SRCS_NAME		  += rec_data
-SRCS_NAME		  += main
-SRCS_NAME		  += Utils
+
+SRCS_NAME		  = ogircd
+SRCS_NAME		  += c_chanmgmt
+SRCS_NAME		  += c_channels
+SRCS_NAME		  += c_join
+SRCS_NAME		  += c_messages
+SRCS_NAME		  += c_modes
+SRCS_NAME		  += c_servmanagement
+SRCS_NAME		  += u_parsing
+SRCS_NAME		  += u_recdata
+SRCS_NAME		  += u_regcmds
+SRCS_NAME		  += u_replies
+SRCS_NAME		  += u_utils
 SRCS_NAME		  += Server
-SRCS_NAME		  += replies
-SRCS_NAME		  += reg_cmds
-SRCS_NAME		  += join_channel
-SRCS_NAME		  += channels
-SRCS_NAME		  += sending_messages_cmds
-SRCS_NAME		  += server_cmds
-SRCS_NAME		  += modes
-SRCS_NAME		  += other_cmds
 #------------------------------------------------------------------------------#
 CLIENTSRC		 = client/tcp_chat_client
 #------------------------------------------------------------------------------#
@@ -49,6 +50,8 @@ CFLAGS			+= -Wextra
 CFLAGS			+= -Werror
 CFLAGS			+= -pedantic
 CFLAGS			+= -std=c++98
+CFLAGS			+= -march=native -O2 -pipe
+#==============================================================================#
 #--------------------------------- UNIX ---------------------------------------#
 #==============================================================================#
 RM				= rm -rf

@@ -85,7 +85,7 @@ int finding(std::vector<std::vector<int> > &dp, string &s, string &p,
 	return dp[n][m];
 }
 
-bool isMatch(std::vector<std::vector<int> > &dp, string s, string p)
+bool u_ismatch(std::vector<std::vector<int> > &dp, string s, string p)
 {
 	dp.clear();
 
@@ -98,5 +98,5 @@ bool isMatch(std::vector<std::vector<int> > &dp, string s, string p)
 bool u_strmatch(string s, string p)
 {
 	std::vector<std::vector<int> > dp;
-	return isMatch(dp, s, p);
+	return u_ismatch(dp, s, p);
 }
