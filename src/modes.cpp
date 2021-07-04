@@ -182,7 +182,7 @@ void Server::treat_args(string chan, string cmd, Client *cl)
         _m_banid[ban] = reinterpret_cast<uint64_t>(&_m_banmask[chan].back());
         for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
         {
-            if (strmatch((*it)->prefix, ban) && !isexcepted(*it, chan))
+            if (u_strmatch((*it)->prefix, ban) && !isexcepted(*it, chan))
             {
 				std::string nickname = (*it)->nickname;
                 _m_chans[chan].erase(clposition(nickname, chan));
@@ -194,7 +194,7 @@ void Server::treat_args(string chan, string cmd, Client *cl)
     else if (cmd[1] == 'b')
     {
         for (std::vector<std::string>::iterator it = _m_banmask[chan].begin() ; it != _m_banmask[chan].end() ; it++)
-            send_reply(chan + " " + *it + " " + _m_whoban[*it] + " " + ft_utoa(_m_banid[*it]), cl, RPL_BANLIST);
+            send_reply(chan + " " + *it + " " + _m_whoban[*it] + " " + u_utoa(_m_banid[*it]), cl, RPL_BANLIST);
         send_reply("", cl, RPL_ENDOFBANLIST);
     }
     else if (cmd[1] == 'e' && arg.size())
