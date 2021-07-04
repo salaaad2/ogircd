@@ -155,65 +155,53 @@ void Server::treat_args(string chan, string cmd, Client *cl)
 		size_t u2;
 		string ban;
 
-		u1 = arg.find('!');
-		u2 = arg.find('@');
-		if (u1 != string::npos && u2 != string::npos &&
-		    u1 < u2)
-			ban = arg;
-		else if (u1 != string::npos && u2 == string::npos)
-			ban = arg + "@*";
-		else if (u2 != string::npos && u2 < u1)
-			ban = arg.substr(0, arg.length() - u2) + "!*" +
-			      arg.substr(u2);
-		else if (u2 == u1 && u2 == string::npos)
-			ban = arg + "!*@*";
-		for (std::vector<string>::iterator it =
-			     _m_banmask[chan].begin();
-		     it != _m_banmask[chan].end(); it++) {
-			if (*it == ban && cmd[0] == '-') {
-				_m_banmask[chan].erase(it);
-				send_to_channel(":" + cl->prefix + " MODE " +
-							chan + " -b " + ban +
-							"\r\n",
-						chan, NULL);
-				return;
-			}
-			if (*it == ban && cmd[0] == '+')
-				return;
-		}
-		_m_whoban[ban] = cl->nickname;
-		_m_banmask[chan].push_back(ban);
-		send_to_channel(":" + cl->prefix + " MODE " + chan + " +b " +
-					ban + "\r\n",
-				chan, NULL);
-		_m_banid[ban] =
-			reinterpret_cast<uint64_t>(&_m_banmask[chan].back());
-		for (std::vector<Client *>::iterator it =
-			     _m_chans[chan].begin();
-		     it != _m_chans[chan].end(); it++) {
-			if (u_strmatch((*it)->prefix, ban) &&
-			    !isexcepted(*it, chan)) {
-				_m_chans[chan].erase(
-					clposition((*it)->nickname, chan));
-				_m_nickdb[(*it)->nickname].top()->chans.erase(
-					chposition(
-						_m_nickdb[(*it)->nickname].top(),
-						chan));
-				return;
-			}
-		}
-	} else if (cmd[1] == 'b') {
-		for (std::vector<string>::iterator it =
-			     _m_banmask[chan].begin();
-		     it != _m_banmask[chan].end(); it++)
-			send_reply(chan + " " + *it + " " + _m_whoban[*it] +
-					   " " + u_utoa(_m_banid[*it]),
-				   cl, RPL_BANLIST);
-		send_reply("", cl, RPL_ENDOFBANLIST);
-	} else if (cmd[1] == 'e' && arg.size()) {
-		size_t u1;
-		size_t u2;
-		string except;
+        u1 = arg.find('!');
+        u2 = arg.find('@');
+        if (u1 != std::string::npos && u2 != std::string::npos && u1 < u2)
+            ban = arg;
+        else if (u1 != std::string::npos && u2 == std::string::npos)
+            ban = arg + "@*";
+        else if (u2 != std::string::npos && u2 < u1)
+            ban = arg.substr(0, arg.length() - u2) + "!*" + arg.substr(u2);
+        else if (u2 == u1 && u2 == std::string::npos)
+            ban = arg + "!*@*";
+        for (std::vector<std::string>::iterator it = _m_banmask[chan].begin() ; it != _m_banmask[chan].end() ; it++)
+        {
+            if (*it == ban && cmd[0] == '-')
+            {
+                _m_banmask[chan].erase(it);
+                send_to_channel(":" + cl->prefix + " MODE " + chan + " -b " + ban + "\r\n", chan, NULL);
+                return ;
+            }
+            if (*it == ban && cmd[0] == '+')
+                return ;
+        }
+        _m_whoban[ban] = cl->nickname;
+        _m_banmask[chan].push_back(ban);
+        send_to_channel(":" + cl->prefix + " MODE " + chan + " +b " + ban + "\r\n", chan, NULL);
+        _m_banid[ban] = reinterpret_cast<uint64_t>(&_m_banmask[chan].back());
+        for (std::vector<Client *>::iterator it = _m_chans[chan].begin() ; it != _m_chans[chan].end() ; it++)
+        {
+            if (strmatch((*it)->prefix, ban) && !isexcepted(*it, chan))
+            {
+				std::string nickname = (*it)->nickname;
+                _m_chans[chan].erase(clposition(nickname, chan));
+                _m_nickdb[nickname].top()->chans.erase(chposition(_m_nickdb[nickname].top(), chan));
+                return ;
+            }
+        }
+    }
+    else if (cmd[1] == 'b')
+    {
+        for (std::vector<std::string>::iterator it = _m_banmask[chan].begin() ; it != _m_banmask[chan].end() ; it++)
+            send_reply(chan + " " + *it + " " + _m_whoban[*it] + " " + ft_utoa(_m_banid[*it]), cl, RPL_BANLIST);
+        send_reply("", cl, RPL_ENDOFBANLIST);
+    }
+    else if (cmd[1] == 'e' && arg.size())
+    {
+        size_t u1;
+        size_t u2;
+        std::string except;
 
 		u1 = arg.find('!');
 		u2 = arg.find('@');
