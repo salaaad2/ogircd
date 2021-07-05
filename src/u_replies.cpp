@@ -4,6 +4,7 @@
 string Server::msg_rpl(string s, int code, Client *cl)
 {
 	string response;
+	std::map<string, e_commands>::iterator it;
 
 	switch (code) {
 		/* REPLIES */
@@ -41,6 +42,12 @@ string Server::msg_rpl(string s, int code, Client *cl)
 		return ("You have been summoned");
 	case RPL_VERSION:
 		return (":Version is 0.1.3"); // UPDATE ON RELEASE
+	case RPL_STATSCOMMANDS:
+		for (it=c_map.begin(); it!=c_map.end(); ++it) {
+			response += (*it).first;
+			response += "\n";
+		}
+		return ("Available commands : " + response);
 	case RPL_STATSLLINE:
 		return (":Connections: " + u_listusers());
 	case RPL_STATSUPTIME:
