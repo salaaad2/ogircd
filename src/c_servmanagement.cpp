@@ -24,13 +24,20 @@ void Server::shutdcmd(Message *msg, Client *cl)
 	return;
 }
 
-void Server::u_listusers()
+string Server::u_listusers(void)
 {
+	std::map<string, std::stack<Client *> >::iterator it;
+	string s;
+
+	for (it=_m_nickdb.begin(); it!=_m_nickdb.end(); ++it) {
+		s += (*it).second.top()->nickname;
+	}
+	return (s);
 }
 
 void Server::statscmd(Message *msg, Client *cl)
 {
-	if (msg->params.count() == 0) {
+	if (msg->params.size() == 0) {
 		return ;
 	}
 	switch (msg->params[0][0]) {

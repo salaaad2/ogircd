@@ -17,6 +17,7 @@ enum e_commands {
 	NOTICE,
 	QUIT,
 	VERSION,
+	STATS,
 	TIME,
 	INFO,
 	WHO,
@@ -40,6 +41,7 @@ void initcmdmap(std::map<string, e_commands> *c_map)
 	(*c_map)["NOTICE"] = NOTICE;
 	(*c_map)["QUIT"] = QUIT;
 	(*c_map)["VERSION"] = VERSION;
+	(*c_map)["STATS"] = STATS;
 	(*c_map)["TIME"] = TIME;
 	(*c_map)["INFO"] = INFO;
 	(*c_map)["WHO"] = WHO;

@@ -86,6 +86,9 @@ class Server {
 	std::map<string, size_t>
 		_m_limits; // _m_limits[#channel] = limit of users in channel (if 'l' mode set)
 
+	/* functions */
+	string u_listusers(void);
+
     public:
 	Server(std::vector<string> &vm);
 	~Server();
