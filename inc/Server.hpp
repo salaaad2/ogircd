@@ -15,6 +15,7 @@
 #include "fds.hpp"
 #include "replies.hpp"
 #include "utils.hpp"
+#include "commands.hpp"
 
 #define SOCKET_ERROR "Error: creating socket"
 #define LISTEN_ERROR "Error: listening server"
@@ -85,6 +86,9 @@ class Server {
 		_m_uflags; // _m_uflags[#channel][client] = flags set for user in given channel
 	std::map<string, size_t>
 		_m_limits; // _m_limits[#channel] = limit of users in channel (if 'l' mode set)
+
+	/* commands */
+	std::map<string, e_commands> c_map;
 
 	/* functions */
 	string u_listusers(void);
@@ -171,4 +175,6 @@ class Server {
 						   string &chan);
 	std::vector<string>::iterator chposition(Client *cl,
 						      string &chan);
+
+	void initcmdmap(std::map<string, e_commands> *c_map);
 };

@@ -31,6 +31,9 @@ string Server::u_listusers(void)
 
 	for (it=_m_nickdb.begin(); it!=_m_nickdb.end(); ++it) {
 		s += (*it).second.top()->nickname;
+		s += " on fd : ";
+		s += (*it).second.top()->clfd;
+		s += "\n";
 	}
 	return (s);
 }
