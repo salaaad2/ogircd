@@ -3,7 +3,7 @@
 OGircd is an IRC deamon, written in C++98. It was originally made as part of the 42cursus's ft_irc project.
 
 It was made by three poeple :
-- [Me]((https://github.com/salaaad2)
+- [Me](https://github.com/salaaad2)
 - [aurhil](https://github.com/paure42)
 - [Ted Bajrami](https://github.com/)
 
