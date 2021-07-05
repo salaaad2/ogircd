@@ -124,6 +124,7 @@ class Server {
 	void shutdcmd(Message *msg, Client *cl);
 	void quitcmd(Message *msg, Client *cl);
 	void versioncmd(Message *msg, Client *cl);
+	void statscmd(Message *msg, Client *cl);
 	void timecmd(Message *msg, Client *cl);
 	void infocmd(Message *msg, Client *cl);
 	void whocmd(Message *msg, Client *cl);

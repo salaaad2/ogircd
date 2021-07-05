@@ -24,6 +24,35 @@ void Server::shutdcmd(Message *msg, Client *cl)
 	return;
 }
 
+void Server::u_listusers()
+{
+}
+
+void Server::statscmd(Message *msg, Client *cl)
+{
+	if (msg->params.count() == 0) {
+		return ;
+	}
+	switch (msg->params[0][0]) {
+		case 'k':
+			send_reply("", cl, RPL_STATSKLINE);
+			break;
+		case 'l':
+			send_reply("", cl, RPL_STATSLLINE);
+			break;
+		case 'm':
+			send_reply("", cl, RPL_STATSCOMMANDS);
+			break;
+		case 'u':
+			send_reply("", cl, RPL_STATSUPTIME);
+			break;
+		default :
+			break;
+	}
+	send_reply("", cl, RPL_ENDOFSTATS);
+
+}
+
 void Server::versioncmd(Message *msg, Client *cl)
 {
 	(void)msg;

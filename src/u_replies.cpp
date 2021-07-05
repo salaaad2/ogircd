@@ -40,7 +40,9 @@ string Server::msg_rpl(string s, int code, Client *cl)
 	case RPL_SUMMONING:
 		return ("You have been summoned");
 	case RPL_VERSION:
-		return (":Version is 1.0.1");
+		return (":Version is 0.1.3"); // UPDATE ON RELEASE
+	case RPL_STATSLLINE:
+		return (":Connections: " + u_listusers());
 	case RPL_STATSUPTIME:
 		return (":Up " + u_uptime(_launch_time));
 	case RPL_TIME:

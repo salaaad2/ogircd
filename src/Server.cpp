@@ -180,6 +180,7 @@ void Server::do_command(Message *msg, int fd)
 			case NOTICE: privmsgcmd(msg, cl, 0); break;
 			case QUIT: quitcmd(msg, cl); break;
 			case VERSION: versioncmd(msg, cl); break;
+			case STATS: statscmd(msg, cl); break;
 			case TIME: timecmd(msg, cl); break;
 			case INFO: infocmd(msg, cl); break;
 			case WHO: whocmd(msg, cl); break;
