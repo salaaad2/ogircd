@@ -14,7 +14,7 @@ string Server::msg_rpl(string s, int code, Client *cl)
 				   cl->prefix);
 	case RPL_YOURHOST:
 		return (":Your host is " + string(_ip) +
-			" running ircserv");
+			" running ogircd");
 	case RPL_TOPIC:
 		return (s + " :" + _m_topics[s]);
 	case RPL_NAMREPLY: {
@@ -44,10 +44,14 @@ string Server::msg_rpl(string s, int code, Client *cl)
 		return (":Version is 0.1.3"); // UPDATE ON RELEASE
 	case RPL_STATSCOMMANDS:
 		for (it=c_map.begin(); it!=c_map.end(); ++it) {
+			response += ":";
+			response += _ip;
+			response += " ";
 			response += (*it).first;
+			response += " 0 0 0";
 			response += "\n";
 		}
-		return ("Available commands : " + response);
+		return (":commands : " + response);
 	case RPL_STATSLLINE:
 		return (":Connections: " + u_listusers());
 	case RPL_STATSUPTIME:

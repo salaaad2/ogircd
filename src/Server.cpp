@@ -115,8 +115,15 @@ void Server::send_reply(string s, Client *cl, int code)
 	string prefix;
 	if (code)
 		ccmd = u_format_cmd(u_utoa(code));
-	prefix = ":";
-	prefix += _ip;
+	if (code != RPL_STATSCOMMANDS)
+	{
+		prefix = ":";
+		prefix += _ip;
+	}
+	else
+	{
+		prefix = "";
+	}
 
 	to_send += (prefix + " " + ccmd + " " + cl->nickname + " " +
 		    msg_rpl(s, code, cl) + "\r\n");
