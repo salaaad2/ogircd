@@ -6,8 +6,8 @@ string Server::msg_rpl(string s, int code, Client *cl)
 	string response;
 	std::map<string, e_commands>::iterator it;
 
+	/* REPLIES */
 	switch (code) {
-		/* REPLIES */
 
 	case RPL_WELCOME:
 		return string("Welcome to the Internet Relay Network " +
@@ -44,8 +44,10 @@ string Server::msg_rpl(string s, int code, Client *cl)
 		return (":Version is 0.1.3"); // UPDATE ON RELEASE
 	case RPL_STATSCOMMANDS:
 		for (it=c_map.begin(); it!=c_map.end(); ++it) {
-			response += ":";
-			response += _ip;
+			if (it != c_map.begin()) {
+				response += ":";
+				response += _ip;
+			}
 			response += " ";
 			response += (*it).first;
 			response += " 0 0 0";
